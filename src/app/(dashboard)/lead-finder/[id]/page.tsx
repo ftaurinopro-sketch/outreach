@@ -2,24 +2,37 @@ import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { getLeadList } from "@/lib/leads/store";
 import { listAgents } from "@/lib/agents/store";
+import { listCampaigns } from "@/lib/campaigns/store";
+import { listActionsForCampaign } from "@/lib/automation/store";
 import { hasClaudeConfig } from "@/lib/claude";
 import DeleteListButton from "./DeleteListButton";
 import ScoreListButton from "./ScoreListButton";
-import FitBadge from "@/components/FitBadge";
+import LeadFilterTable from "./LeadFilterTable";
 
 type Props = { params: Promise<{ id: string }> };
 
 export default async function LeadListPage({ params }: Props) {
   const { id } = await params;
-  const [list, agents, t, locale] = await Promise.all([
+  const [list, agents, campaigns, t, locale] = await Promise.all([
     getLeadList(id),
     listAgents(),
+    listCampaigns(),
     getTranslations("LeadListDetail"),
     getLocale(),
   ]);
   if (!list) notFound();
 
-  const leads = [...list.leads].sort((a, b) => (b.score ?? -1) - (a.score ?? -1));
+  const campaignsForList = campaigns.filter((c) => c.leadListId === list.id && c.status !== "draft");
+  const actionLists = await Promise.all(campaignsForList.map((c) => listActionsForCampaign(c.id)));
+  const contactedUrls = [
+    ...new Set(
+      actionLists
+        .flat()
+        .filter((a) => a.type === "send_connection_request" && a.status === "done")
+        .map((a) => a.leadLinkedinUrl)
+    ),
+  ];
+
   const scoredCount = list.leads.filter((l) => l.fitCategory).length;
 
   return (
@@ -42,55 +55,7 @@ export default async function LeadListPage({ params }: Props) {
         <ScoreListButton listId={list.id} agents={agents} hasClaudeConfig={hasClaudeConfig()} />
       </div>
 
-      <div className="mt-6 overflow-x-auto rounded-lg border border-neutral-200 bg-white">
-        <table className="w-full text-left text-sm">
-          <thead className="border-b border-neutral-200 text-xs text-neutral-400">
-            <tr>
-              <th className="px-4 py-2.5">{t("colFit")}</th>
-              <th className="px-4 py-2.5">{t("colName")}</th>
-              <th className="px-4 py-2.5">{t("colHeadline")}</th>
-              <th className="px-4 py-2.5">{t("colCompany")}</th>
-              <th className="px-4 py-2.5">{t("colPosition")}</th>
-              <th className="px-4 py-2.5">{t("colLocation")}</th>
-              <th className="px-4 py-2.5">LinkedIn</th>
-            </tr>
-          </thead>
-          <tbody>
-            {leads.map((lead, i) => (
-              <tr key={i} className="border-b border-neutral-100 last:border-0">
-                <td className="px-4 py-2.5">
-                  {lead.fitCategory ? (
-                    <div title={lead.scoreReasoning}>
-                      <FitBadge category={lead.fitCategory} score={lead.score} />
-                    </div>
-                  ) : (
-                    <span className="text-xs text-neutral-300">—</span>
-                  )}
-                </td>
-                <td className="px-4 py-2.5">
-                  {lead.firstName} {lead.lastName}
-                </td>
-                <td className="max-w-[220px] truncate px-4 py-2.5 text-neutral-500">
-                  {lead.headline}
-                </td>
-                <td className="px-4 py-2.5">{lead.company}</td>
-                <td className="px-4 py-2.5">{lead.position}</td>
-                <td className="px-4 py-2.5">{lead.location}</td>
-                <td className="px-4 py-2.5">
-                  <a
-                    href={lead.linkedinUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-neutral-500 hover:text-neutral-900 hover:underline"
-                  >
-                    {t("profileLink")} →
-                  </a>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <LeadFilterTable leads={list.leads} contactedUrls={contactedUrls} />
     </div>
   );
 }

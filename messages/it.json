@@ -332,6 +332,22 @@
     "weak_fit": "Weak Fit",
     "no_fit": "No Fit"
   },
+  "LeadFilters": {
+    "keywordPlaceholder": "Cerca nome, azienda, headline...",
+    "fit": "Fit",
+    "unscored": "Non valutati",
+    "industry": "Settore",
+    "location": "Località",
+    "seniority": "Seniority",
+    "scoreMin": "Min",
+    "scoreMax": "Max",
+    "excludeCompanies": "Escludi aziende",
+    "excludeCompaniesPlaceholder": "es. Acme, Beta Corp",
+    "hideContacted": "Nascondi lead già contattati",
+    "reset": "Reimposta filtri",
+    "showingCount": "{filtered} di {total} lead mostrati",
+    "noResults": "Nessun lead corrisponde a questi filtri."
+  },
   "ScoreListButton": {
     "missingApiKey": "Imposta ANTHROPIC_API_KEY in .env.local per abilitare lo scoring AI.",
     "needAgent": "Crea prima un AI Assistant per valutare i lead rispetto al suo ICP.",

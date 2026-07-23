@@ -332,6 +332,22 @@
     "weak_fit": "Weak Fit",
     "no_fit": "No Fit"
   },
+  "LeadFilters": {
+    "keywordPlaceholder": "Search name, company, headline...",
+    "fit": "Fit",
+    "unscored": "Not scored",
+    "industry": "Industry",
+    "location": "Location",
+    "seniority": "Seniority",
+    "scoreMin": "Min",
+    "scoreMax": "Max",
+    "excludeCompanies": "Exclude companies",
+    "excludeCompaniesPlaceholder": "e.g. Acme, Beta Corp",
+    "hideContacted": "Hide already-contacted leads",
+    "reset": "Reset filters",
+    "showingCount": "Showing {filtered} of {total} leads",
+    "noResults": "No leads match these filters."
+  },
   "ScoreListButton": {
     "missingApiKey": "Set ANTHROPIC_API_KEY in .env.local to enable AI scoring.",
     "needAgent": "Create an AI Assistant first to score leads against its ICP.",

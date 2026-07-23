@@ -3,22 +3,34 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
+import {
+  LayoutDashboard,
+  Search,
+  Megaphone,
+  Bot,
+  Users,
+  BarChart3,
+  Inbox as InboxIcon,
+  FlaskConical,
+  Settings as SettingsIcon,
+  type LucideIcon,
+} from "lucide-react";
 import LanguageSwitcher from "./LanguageSwitcher";
 
-const MAIN_NAV = [
-  { href: "/", key: "dashboard" },
-  { href: "/lead-finder", key: "leadFinder" },
-  { href: "/campaigns", key: "campaigns" },
-  { href: "/ai-assistants", key: "aiAssistants" },
-  { href: "/connections", key: "accounts" },
-  { href: "/reports", key: "analytics" },
-] as const;
+const MAIN_NAV: { href: string; key: string; icon: LucideIcon }[] = [
+  { href: "/", key: "dashboard", icon: LayoutDashboard },
+  { href: "/lead-finder", key: "leadFinder", icon: Search },
+  { href: "/campaigns", key: "campaigns", icon: Megaphone },
+  { href: "/ai-assistants", key: "aiAssistants", icon: Bot },
+  { href: "/connections", key: "accounts", icon: Users },
+  { href: "/reports", key: "analytics", icon: BarChart3 },
+];
 
-const TOOLS_NAV = [
-  { href: "/inbox", key: "inbox" },
-  { href: "/sandbox", key: "sandbox" },
-  { href: "/settings", key: "settings" },
-] as const;
+const TOOLS_NAV: { href: string; key: string; icon: LucideIcon }[] = [
+  { href: "/inbox", key: "inbox", icon: InboxIcon },
+  { href: "/sandbox", key: "sandbox", icon: FlaskConical },
+  { href: "/settings", key: "settings", icon: SettingsIcon },
+];
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -42,10 +54,11 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`mx-2 mb-0.5 flex items-center rounded-md px-2.5 py-1.5 text-sm ${
+              className={`mx-2 mb-0.5 flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm ${
                 isActive(item.href) ? "bg-neutral-900 text-white" : "text-neutral-600 hover:bg-neutral-100"
               }`}
             >
+              <item.icon className="h-4 w-4 shrink-0" strokeWidth={2} />
               {t(item.key)}
             </Link>
           ))}
@@ -58,10 +71,11 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`mx-2 mb-0.5 flex items-center rounded-md px-2.5 py-1.5 text-sm ${
+              className={`mx-2 mb-0.5 flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm ${
                 isActive(item.href) ? "bg-neutral-900 text-white" : "text-neutral-600 hover:bg-neutral-100"
               }`}
             >
+              <item.icon className="h-4 w-4 shrink-0" strokeWidth={2} />
               {t(item.key)}
             </Link>
           ))}

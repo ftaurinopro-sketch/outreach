@@ -26,6 +26,7 @@ type ConnectionRow = {
   created_at: string;
   label: string;
   token: string;
+  session_cookie: string | null;
   daily_connection_limit: number;
   weekly_connection_limit: number;
   daily_message_limit: number;
@@ -38,6 +39,7 @@ function fromRow(row: ConnectionRow): Connection {
     createdAt: row.created_at,
     label: row.label,
     token: row.token,
+    sessionCookie: row.session_cookie,
     dailyConnectionLimit: row.daily_connection_limit,
     weeklyConnectionLimit: row.weekly_connection_limit,
     dailyMessageLimit: row.daily_message_limit,
@@ -87,6 +89,7 @@ export async function createConnection(input: ConnectionInput): Promise<Connecti
     createdAt: new Date().toISOString(),
     label: input.label,
     token: randomBytes(24).toString("base64url"),
+    sessionCookie: null,
     dailyConnectionLimit: input.dailyConnectionLimit,
     weeklyConnectionLimit: input.weeklyConnectionLimit,
     dailyMessageLimit: input.dailyMessageLimit,
@@ -100,6 +103,7 @@ export async function createConnection(input: ConnectionInput): Promise<Connecti
       created_at: connection.createdAt,
       label: connection.label,
       token: connection.token,
+      session_cookie: null,
       daily_connection_limit: connection.dailyConnectionLimit,
       weekly_connection_limit: connection.weeklyConnectionLimit,
       daily_message_limit: connection.dailyMessageLimit,
@@ -113,6 +117,30 @@ export async function createConnection(input: ConnectionInput): Promise<Connecti
   connections.push(connection);
   await writeLocalFile(connections);
   return connection;
+}
+
+export async function updateConnectionSessionCookie(
+  id: string,
+  sessionCookie: string
+): Promise<Connection | null> {
+  if (hasSupabaseConfig()) {
+    const supabase = createSupabaseServerClient();
+    const { data, error } = await supabase
+      .from("connections")
+      .update({ session_cookie: sessionCookie })
+      .eq("id", id)
+      .select("*")
+      .maybeSingle();
+    if (error) throw error;
+    return data ? fromRow(data as ConnectionRow) : null;
+  }
+
+  const connections = await readLocalFile();
+  const idx = connections.findIndex((c) => c.id === id);
+  if (idx === -1) return null;
+  connections[idx].sessionCookie = sessionCookie;
+  await writeLocalFile(connections);
+  return connections[idx];
 }
 
 export async function touchConnection(id: string): Promise<void> {

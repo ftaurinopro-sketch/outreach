@@ -1,0 +1,14 @@
+{
+  "name": "reachos-runner",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Cloud/session-based executor for ReachOS: polls the automation queue and drives a headless browser authenticated via a LinkedIn session cookie, instead of a browser extension.",
+  "scripts": {
+    "start": "node --env-file=.env index.js",
+    "postinstall": "playwright install chromium"
+  },
+  "dependencies": {
+    "playwright": "^1.48.0"
+  }
+}

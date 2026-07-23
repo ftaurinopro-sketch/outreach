@@ -3,6 +3,11 @@ export type Connection = {
   createdAt: string;
   label: string;
   token: string;
+  // LinkedIn's li_at session cookie value. Grants full access to the
+  // account it belongs to — handle it like a password. Used by the runner
+  // (see runner/) to authenticate a headless browser as "another device",
+  // not stored/used anywhere in the browser-extension flow.
+  sessionCookie: string | null;
   dailyConnectionLimit: number;
   weeklyConnectionLimit: number;
   dailyMessageLimit: number;

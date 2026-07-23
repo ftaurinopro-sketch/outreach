@@ -1,7 +1,9 @@
 import Papa from "papaparse";
 import type { Lead } from "./types";
 
-const HEADER_MAP: Record<string, keyof Lead> = {
+type CsvField = "linkedinUrl" | "firstName" | "lastName" | "headline" | "location" | "company" | "position" | "industry";
+
+const HEADER_MAP: Record<string, CsvField> = {
   "linkedin url": "linkedinUrl",
   "first name": "firstName",
   "last name": "lastName",

@@ -248,12 +248,28 @@
   },
   "LeadListDetail": {
     "summary": "{count} lead · importati il {date}",
+    "scoredCount": "{count} analizzati",
+    "colFit": "Fit",
     "colName": "Nome",
     "colHeadline": "Headline",
     "colCompany": "Azienda",
     "colPosition": "Posizione",
     "colLocation": "Località",
     "profileLink": "Profilo"
+  },
+  "FitBadge": {
+    "perfect_fit": "Perfect Fit",
+    "strong_fit": "Strong Fit",
+    "possible_fit": "Possible Fit",
+    "weak_fit": "Weak Fit",
+    "no_fit": "No Fit"
+  },
+  "ScoreListButton": {
+    "missingApiKey": "Imposta ANTHROPIC_API_KEY in .env.local per abilitare lo scoring AI.",
+    "needAgent": "Crea prima un AI Assistant per valutare i lead rispetto al suo ICP.",
+    "scoreError": "Errore durante l'analisi AI",
+    "scoring": "Analisi in corso...",
+    "scoreWithAi": "Analizza con AI"
   },
   "DeleteListButton": {
     "confirm": "Eliminare questa lista di lead? L'azione non è reversibile.",

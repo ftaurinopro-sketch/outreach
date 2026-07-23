@@ -1,22 +1,30 @@
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { getLeadList } from "@/lib/leads/store";
+import { listAgents } from "@/lib/agents/store";
+import { hasClaudeConfig } from "@/lib/claude";
 import DeleteListButton from "./DeleteListButton";
+import ScoreListButton from "./ScoreListButton";
+import FitBadge from "@/components/FitBadge";
 
 type Props = { params: Promise<{ id: string }> };
 
 export default async function LeadListPage({ params }: Props) {
   const { id } = await params;
-  const [list, t, locale] = await Promise.all([
+  const [list, agents, t, locale] = await Promise.all([
     getLeadList(id),
+    listAgents(),
     getTranslations("LeadListDetail"),
     getLocale(),
   ]);
   if (!list) notFound();
 
+  const leads = [...list.leads].sort((a, b) => (b.score ?? -1) - (a.score ?? -1));
+  const scoredCount = list.leads.filter((l) => l.fitCategory).length;
+
   return (
-    <div className="max-w-4xl px-8 py-10">
-      <div className="flex items-center justify-between">
+    <div className="max-w-5xl px-8 py-10">
+      <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-neutral-900">{list.name}</h1>
           <p className="mt-1 text-sm text-neutral-500">
@@ -24,15 +32,21 @@ export default async function LeadListPage({ params }: Props) {
               count: list.leads.length,
               date: new Date(list.createdAt).toLocaleDateString(locale),
             })}
+            {scoredCount > 0 && ` · ${t("scoredCount", { count: scoredCount })}`}
           </p>
         </div>
         <DeleteListButton listId={list.id} />
+      </div>
+
+      <div className="mt-4">
+        <ScoreListButton listId={list.id} agents={agents} hasClaudeConfig={hasClaudeConfig()} />
       </div>
 
       <div className="mt-6 overflow-x-auto rounded-lg border border-neutral-200 bg-white">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-neutral-200 text-xs text-neutral-400">
             <tr>
+              <th className="px-4 py-2.5">{t("colFit")}</th>
               <th className="px-4 py-2.5">{t("colName")}</th>
               <th className="px-4 py-2.5">{t("colHeadline")}</th>
               <th className="px-4 py-2.5">{t("colCompany")}</th>
@@ -42,8 +56,17 @@ export default async function LeadListPage({ params }: Props) {
             </tr>
           </thead>
           <tbody>
-            {list.leads.map((lead, i) => (
+            {leads.map((lead, i) => (
               <tr key={i} className="border-b border-neutral-100 last:border-0">
+                <td className="px-4 py-2.5">
+                  {lead.fitCategory ? (
+                    <div title={lead.scoreReasoning}>
+                      <FitBadge category={lead.fitCategory} score={lead.score} />
+                    </div>
+                  ) : (
+                    <span className="text-xs text-neutral-300">—</span>
+                  )}
+                </td>
                 <td className="px-4 py-2.5">
                   {lead.firstName} {lead.lastName}
                 </td>

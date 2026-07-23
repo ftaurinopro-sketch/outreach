@@ -4,6 +4,26 @@ export type LeadSourceType =
   | "sales_navigator_search"
   | "comment_scraper";
 
+export type FitCategory = "perfect_fit" | "strong_fit" | "possible_fit" | "weak_fit" | "no_fit";
+
+export const FIT_CATEGORIES: FitCategory[] = [
+  "perfect_fit",
+  "strong_fit",
+  "possible_fit",
+  "weak_fit",
+  "no_fit",
+];
+
+// Order matches the fit tiers from best to worst, used for default sorting
+// after scoring and for the badge color scale.
+export const FIT_CATEGORY_COLOR: Record<FitCategory, string> = {
+  perfect_fit: "bg-green-100 text-green-800",
+  strong_fit: "bg-emerald-100 text-emerald-700",
+  possible_fit: "bg-amber-100 text-amber-800",
+  weak_fit: "bg-orange-100 text-orange-800",
+  no_fit: "bg-red-100 text-red-700",
+};
+
 export type Lead = {
   linkedinUrl: string;
   firstName: string;
@@ -13,6 +33,15 @@ export type Lead = {
   company: string;
   position: string;
   industry: string;
+  // AI scoring (src/lib/leads/scoring.ts) — absent until the list has been
+  // analyzed at least once.
+  score?: number;
+  fitCategory?: FitCategory;
+  seniority?: string;
+  signals?: string;
+  scoreReasoning?: string;
+  scoredAt?: string;
+  scoredByAgentId?: string;
 };
 
 export type LeadList = {

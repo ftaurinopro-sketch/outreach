@@ -153,6 +153,27 @@ export async function createLeadListAsUser(
   return list;
 }
 
+export async function updateLeadListLeads(id: string, leads: Lead[]): Promise<LeadList | null> {
+  if (hasSupabaseAuthConfig()) {
+    const supabase = await createSupabaseUserClient();
+    const { data, error } = await supabase
+      .from("lead_lists")
+      .update({ leads })
+      .eq("id", id)
+      .select("*")
+      .maybeSingle();
+    if (error) throw error;
+    return data ? fromRow(data as LeadListRow) : null;
+  }
+
+  const lists = await readLocalFile();
+  const idx = lists.findIndex((l) => l.id === id);
+  if (idx === -1) return null;
+  lists[idx] = { ...lists[idx], leads };
+  await writeLocalFile(lists);
+  return lists[idx];
+}
+
 export async function deleteLeadList(id: string): Promise<void> {
   if (hasSupabaseAuthConfig()) {
     const supabase = await createSupabaseUserClient();

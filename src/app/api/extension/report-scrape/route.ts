@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { authenticateExtension } from "@/lib/connections/auth";
 import { completeScrapeJob, failScrapeJob, getScrapeJob } from "@/lib/scrape-jobs/store";
-import { createLeadList } from "@/lib/leads/store";
+import { createLeadListAsUser } from "@/lib/leads/store";
 import type { Lead } from "@/lib/leads/types";
 
 type ReportBody = {
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
-  const list = await createLeadList(job.listName, job.sourceType, leads);
+  const list = await createLeadListAsUser(job.userId, job.listName, job.sourceType, leads);
   await completeScrapeJob(job.id, { resultListId: list.id, resultCount: leads.length });
 
   return NextResponse.json({ ok: true });

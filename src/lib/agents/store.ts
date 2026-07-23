@@ -1,13 +1,14 @@
 import { randomUUID } from "crypto";
 import { promises as fs } from "fs";
 import path from "path";
-import { createSupabaseServerClient, hasSupabaseConfig } from "@/lib/supabase/server";
+import { createSupabaseUserClient, hasSupabaseAuthConfig } from "@/lib/supabase/user";
 import type { AgentConfig, AgentInput } from "./types";
 
 // Local dev fallback: zero-config JSON file store, used only when Supabase
-// env vars aren't set yet. Not suitable for production (Vercel's filesystem
-// isn't persistent) — set NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY
-// and run supabase/migrations/0001_agents.sql to switch to Supabase.
+// auth isn't configured yet (no NEXT_PUBLIC_SUPABASE_ANON_KEY). Single
+// implicit user, no login required — not suitable for production. Once
+// Supabase auth is wired up, every row is scoped to the logged-in user via
+// RLS (user_id defaults to auth.uid(), see supabase/migrations/0007_*.sql).
 const DATA_DIR = path.join(process.cwd(), ".data");
 const DATA_FILE = path.join(DATA_DIR, "agents.json");
 
@@ -45,7 +46,10 @@ function toConfig(agent: AgentConfig): AgentInput {
   return {
     name: agent.name,
     companyName: agent.companyName,
+    language: agent.language,
+    objective: agent.objective,
     valueProp: agent.valueProp,
+    products: agent.products,
     differentiation: agent.differentiation,
     icp: agent.icp,
     tone: agent.tone,
@@ -57,8 +61,8 @@ function toConfig(agent: AgentConfig): AgentInput {
 }
 
 export async function listAgents(): Promise<AgentConfig[]> {
-  if (hasSupabaseConfig()) {
-    const supabase = createSupabaseServerClient();
+  if (hasSupabaseAuthConfig()) {
+    const supabase = await createSupabaseUserClient();
     const { data, error } = await supabase
       .from("agents")
       .select("*")
@@ -71,8 +75,8 @@ export async function listAgents(): Promise<AgentConfig[]> {
 }
 
 export async function getAgent(id: string): Promise<AgentConfig | null> {
-  if (hasSupabaseConfig()) {
-    const supabase = createSupabaseServerClient();
+  if (hasSupabaseAuthConfig()) {
+    const supabase = await createSupabaseUserClient();
     const { data, error } = await supabase
       .from("agents")
       .select("*")
@@ -89,8 +93,8 @@ export async function createAgent(input: AgentInput): Promise<AgentConfig> {
   const now = new Date().toISOString();
   const agent: AgentConfig = { id: randomUUID(), createdAt: now, updatedAt: now, ...input };
 
-  if (hasSupabaseConfig()) {
-    const supabase = createSupabaseServerClient();
+  if (hasSupabaseAuthConfig()) {
+    const supabase = await createSupabaseUserClient();
     const { error } = await supabase.from("agents").insert({
       id: agent.id,
       created_at: agent.createdAt,
@@ -110,8 +114,8 @@ export async function createAgent(input: AgentInput): Promise<AgentConfig> {
 export async function updateAgent(id: string, input: AgentInput): Promise<AgentConfig> {
   const updatedAt = new Date().toISOString();
 
-  if (hasSupabaseConfig()) {
-    const supabase = createSupabaseServerClient();
+  if (hasSupabaseAuthConfig()) {
+    const supabase = await createSupabaseUserClient();
     const { data, error } = await supabase
       .from("agents")
       .update({ updated_at: updatedAt, config: input })
@@ -133,8 +137,8 @@ export async function updateAgent(id: string, input: AgentInput): Promise<AgentC
 }
 
 export async function deleteAgent(id: string): Promise<void> {
-  if (hasSupabaseConfig()) {
-    const supabase = createSupabaseServerClient();
+  if (hasSupabaseAuthConfig()) {
+    const supabase = await createSupabaseUserClient();
     const { error } = await supabase.from("agents").delete().eq("id", id);
     if (error) throw error;
     return;

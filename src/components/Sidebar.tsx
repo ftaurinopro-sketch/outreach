@@ -5,20 +5,28 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import LanguageSwitcher from "./LanguageSwitcher";
 
-const NAV_ITEMS = [
-  { href: "/", key: "getStarted" },
-  { href: "/campaigns", key: "campaigns" },
-  { href: "/inbox", key: "inbox" },
+const MAIN_NAV = [
+  { href: "/", key: "dashboard" },
   { href: "/lead-finder", key: "leadFinder" },
-  { href: "/connections", key: "connections" },
+  { href: "/campaigns", key: "campaigns" },
   { href: "/ai-assistants", key: "aiAssistants" },
+  { href: "/connections", key: "accounts" },
+  { href: "/reports", key: "analytics" },
+] as const;
+
+const TOOLS_NAV = [
+  { href: "/inbox", key: "inbox" },
   { href: "/sandbox", key: "sandbox" },
-  { href: "/reports", key: "reports" },
+  { href: "/settings", key: "settings" },
 ] as const;
 
 export default function Sidebar() {
   const pathname = usePathname();
   const t = useTranslations("Sidebar");
+
+  function isActive(href: string) {
+    return href === "/" ? pathname === "/" : pathname.startsWith(href);
+  }
 
   return (
     <aside className="w-60 shrink-0 border-r border-neutral-200 bg-white flex flex-col">
@@ -30,24 +38,45 @@ export default function Sidebar() {
           <div className="px-4 pb-1 text-[11px] font-medium uppercase tracking-wide text-neutral-400">
             {t("section")}
           </div>
-          {NAV_ITEMS.map((item) => {
-            const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`mx-2 mb-0.5 flex items-center rounded-md px-2.5 py-1.5 text-sm ${
-                  active ? "bg-neutral-900 text-white" : "text-neutral-600 hover:bg-neutral-100"
-                }`}
-              >
-                {t(item.key)}
-              </Link>
-            );
-          })}
+          {MAIN_NAV.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`mx-2 mb-0.5 flex items-center rounded-md px-2.5 py-1.5 text-sm ${
+                isActive(item.href) ? "bg-neutral-900 text-white" : "text-neutral-600 hover:bg-neutral-100"
+              }`}
+            >
+              {t(item.key)}
+            </Link>
+          ))}
+        </div>
+        <div>
+          <div className="px-4 pb-1 text-[11px] font-medium uppercase tracking-wide text-neutral-400">
+            {t("toolsSection")}
+          </div>
+          {TOOLS_NAV.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`mx-2 mb-0.5 flex items-center rounded-md px-2.5 py-1.5 text-sm ${
+                isActive(item.href) ? "bg-neutral-900 text-white" : "text-neutral-600 hover:bg-neutral-100"
+              }`}
+            >
+              {t(item.key)}
+            </Link>
+          ))}
         </div>
       </nav>
-      <div className="border-t border-neutral-200 p-3">
+      <div className="space-y-2 border-t border-neutral-200 p-3">
         <LanguageSwitcher />
+        <form action="/auth/signout" method="POST">
+          <button
+            type="submit"
+            className="w-full rounded-md border border-neutral-200 px-2 py-1.5 text-xs text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900"
+          >
+            {t("signOut")}
+          </button>
+        </form>
       </div>
     </aside>
   );

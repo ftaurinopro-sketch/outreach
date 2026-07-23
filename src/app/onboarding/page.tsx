@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
-import Sidebar from "@/components/Sidebar";
 import { createSupabaseUserClient, hasSupabaseAuthConfig } from "@/lib/supabase/user";
+import { listConnections } from "@/lib/connections/store";
+import OnboardingFlow from "./OnboardingFlow";
 
-export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function OnboardingPage() {
   if (hasSupabaseAuthConfig()) {
     const supabase = await createSupabaseUserClient();
     const {
@@ -14,16 +15,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
         .select("onboarding_completed")
         .eq("id", user.id)
         .maybeSingle();
-      if (!profile?.onboarding_completed) {
-        redirect("/onboarding");
+      if (profile?.onboarding_completed) {
+        redirect("/");
       }
     }
   }
 
-  return (
-    <div className="flex min-h-screen bg-neutral-50 text-neutral-900">
-      <Sidebar />
-      <main className="flex-1 overflow-y-auto">{children}</main>
-    </div>
-  );
+  const connections = await listConnections();
+
+  return <OnboardingFlow initialConnections={connections} />;
 }

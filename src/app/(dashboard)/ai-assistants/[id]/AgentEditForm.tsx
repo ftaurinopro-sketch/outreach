@@ -8,7 +8,10 @@ import type { AgentConfig, AgentInput } from "@/lib/agents/types";
 const FIELD_KEYS: { key: keyof AgentInput; multiline?: boolean }[] = [
   { key: "name" },
   { key: "companyName" },
+  { key: "language" },
+  { key: "objective" },
   { key: "valueProp", multiline: true },
+  { key: "products", multiline: true },
   { key: "differentiation", multiline: true },
   { key: "icp", multiline: true },
   { key: "tone" },
@@ -24,7 +27,10 @@ export default function AgentEditForm({ agent }: { agent: AgentConfig }) {
   const [values, setValues] = useState<AgentInput>({
     name: agent.name,
     companyName: agent.companyName,
+    language: agent.language,
+    objective: agent.objective,
     valueProp: agent.valueProp,
+    products: agent.products,
     differentiation: agent.differentiation,
     icp: agent.icp,
     tone: agent.tone,

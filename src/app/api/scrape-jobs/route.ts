@@ -2,9 +2,11 @@ import { NextResponse } from "next/server";
 import { createScrapeJob, listScrapeJobs } from "@/lib/scrape-jobs/store";
 import { detectSourceType } from "@/lib/scrape-jobs/types";
 import { getConnection } from "@/lib/connections/store";
+import { getCurrentUserId } from "@/lib/supabase/user";
 
 export async function GET() {
-  const jobs = await listScrapeJobs();
+  const userId = await getCurrentUserId();
+  const jobs = await listScrapeJobs(userId);
   return NextResponse.json({ jobs });
 }
 
@@ -29,7 +31,9 @@ export async function POST(request: Request) {
     );
   }
 
+  const userId = await getCurrentUserId();
   const job = await createScrapeJob({
+    userId,
     connectionId: body.connectionId,
     listName: body.listName,
     searchUrl: body.searchUrl,

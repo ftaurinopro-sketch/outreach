@@ -6,7 +6,7 @@ import {
   enqueueMessagesAfterAcceptance,
   MAX_ACCEPTANCE_CHECKS,
 } from "@/lib/automation/scheduler";
-import { getCampaign } from "@/lib/campaigns/store";
+import { getCampaignForExtension } from "@/lib/campaigns/store";
 
 type ReportBody = {
   actionId: string;
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
     case "check_acceptance": {
       if (body.accepted) {
         await updateAction(action.id, { status: "done" });
-        const campaign = await getCampaign(action.campaignId);
+        const campaign = await getCampaignForExtension(action.campaignId);
         if (campaign) {
           await enqueueMessagesAfterAcceptance({
             action,

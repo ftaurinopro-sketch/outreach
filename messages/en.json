@@ -1,15 +1,21 @@
 {
   "Sidebar": {
     "brand": "ReachOS",
-    "section": "Prospecting",
+    "section": "Workspace",
+    "toolsSection": "Tools",
+    "dashboard": "Dashboard",
     "getStarted": "Get Started",
     "campaigns": "Campaigns",
     "inbox": "Inbox",
     "leadFinder": "Lead Finder",
     "connections": "Connections",
+    "accounts": "Accounts",
+    "analytics": "Analytics",
     "aiAssistants": "AI Assistants",
     "sandbox": "Sandbox",
-    "reports": "Reports"
+    "reports": "Reports",
+    "settings": "Settings",
+    "signOut": "Sign out"
   },
   "ComingSoon": {
     "notBuiltYet": "Module not built yet — see the roadmap in the product plan."
@@ -86,6 +92,20 @@
         "placeholder": "Type a custom goal or pick one below",
         "quickReplies": ["Book a call", "Collect an email", "Qualify the lead"]
       },
+      "language": {
+        "question": "What language should the assistant write in?",
+        "placeholder": "Type a custom language or pick one below",
+        "quickReplies": ["English", "Italiano", "Español", "Deutsch"]
+      },
+      "objective": {
+        "question": "What's this agent's main objective?",
+        "placeholder": "Type a custom objective or pick one below",
+        "quickReplies": ["Lead Generation", "Partnership", "Recruiting", "Networking"]
+      },
+      "products": {
+        "question": "What products or services do you offer?",
+        "placeholder": "E.g. a monthly SEO retainer and one-off website audits..."
+      },
       "calendarLink": {
         "question": "Booking link (Calendly, HubSpot, Cal.com...) to send when the prospect is ready to schedule a call.",
         "placeholder": "https://calendly.com/yourname"
@@ -115,7 +135,10 @@
     "fields": {
       "name": "Agent name",
       "companyName": "Company / product",
+      "language": "Language",
+      "objective": "Objective",
       "valueProp": "Value proposition",
+      "products": "Products / services",
       "differentiation": "Differentiation",
       "icp": "Ideal customer (ICP)",
       "tone": "Tone",
@@ -371,5 +394,50 @@
     "setupCliStep2": "Copy <code>runner/.env.example</code> to <code>runner/.env</code> and set the site URL + token.",
     "setupCliStep3": "<code>npm start</code> — see <code>runner/README.md</code> for details and risk warnings.",
     "savedEverything": "I've saved everything"
+  },
+  "Auth": {
+    "loginTitle": "Welcome back",
+    "loginSubtitle": "Log in to your ReachOS account.",
+    "signupTitle": "Create your account",
+    "signupSubtitle": "Get started with ReachOS in a couple of minutes.",
+    "continueWithGoogle": "Continue with Google",
+    "orWithEmail": "or with email",
+    "email": "Email",
+    "password": "Password",
+    "loggingIn": "Logging in...",
+    "logIn": "Log in",
+    "signingUp": "Signing up...",
+    "signUp": "Sign up",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "checkEmail": "Check your inbox to confirm your email address, then log in."
+  },
+  "Settings": {
+    "title": "Settings",
+    "description": "Workspace, billing, and account preferences."
+  },
+  "Onboarding": {
+    "step1Title": "Connect your LinkedIn account",
+    "step1Description": "This is what lets ReachOS act on LinkedIn for you. You can also do this later from Connections.",
+    "step2Title": "Create your AI Assistant",
+    "step2Description": "Tell it about your company — it'll use this to qualify leads and write messages.",
+    "step3Title": "Create your first lead list",
+    "step3Description": "Paste a Sales Navigator search URL to import your first segment of prospects.",
+    "connectionAlreadyExists": "Connected: {label}",
+    "skipForNow": "Skip for now",
+    "continue": "Continue",
+    "defaultConnectionLabel": "My LinkedIn profile",
+    "connecting": "Connecting...",
+    "connectLinkedIn": "Connect LinkedIn",
+    "noReadyConnection": "You need a connection with a session cookie configured to import a search — you can come back to this from Lead Finder once it's set up.",
+    "searchQueued": "Search queued — the runner will pick it up shortly. You'll find the list in Lead Finder.",
+    "createError": "Error while creating the job",
+    "linkedinProfile": "LinkedIn profile",
+    "searchUrlLabel": "Sales Navigator search URL",
+    "listNameLabel": "List name",
+    "starting": "Starting...",
+    "startSearch": "Start search",
+    "skipAndFinish": "Skip and finish",
+    "finishing": "Finishing..."
   }
 }

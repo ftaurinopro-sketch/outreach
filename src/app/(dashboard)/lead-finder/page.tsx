@@ -2,11 +2,13 @@ import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import { listLeadLists } from "@/lib/leads/store";
 import { listScrapeJobs } from "@/lib/scrape-jobs/store";
+import { getCurrentUserId } from "@/lib/supabase/user";
 
 export default async function LeadFinderPage() {
+  const userId = await getCurrentUserId();
   const [lists, allJobs, t, locale] = await Promise.all([
     listLeadLists(),
-    listScrapeJobs(),
+    listScrapeJobs(userId),
     getTranslations("LeadFinder"),
     getLocale(),
   ]);

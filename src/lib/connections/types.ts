@@ -1,6 +1,7 @@
 export type Connection = {
   id: string;
   createdAt: string;
+  userId: string | null;
   label: string;
   token: string;
   // LinkedIn's li_at session cookie value. Grants full access to the
@@ -21,14 +22,15 @@ export type ConnectionInput = {
   dailyMessageLimit: number;
 };
 
-// Conservative defaults matching the plan's guardrails (§1.2): the platform
-// we modeled this on recommends 150-180 connection requests/week, leaving
-// room for manual ones — we start lower until this has been tested for real.
+// LinkedIn's own recommended ceiling is ~200 connection requests/week for a
+// healthy account — the platform spreads these across the week to simulate
+// human pacing rather than sending them all at once (see
+// src/lib/automation/scheduler.ts).
 export const DEFAULT_CONNECTION_LIMITS: ConnectionInput = {
   label: "",
-  dailyConnectionLimit: 15,
-  weeklyConnectionLimit: 80,
-  dailyMessageLimit: 30,
+  dailyConnectionLimit: 30,
+  weeklyConnectionLimit: 200,
+  dailyMessageLimit: 40,
 };
 
 export function isConnectionOnline(connection: Connection): boolean {

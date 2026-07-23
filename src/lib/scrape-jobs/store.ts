@@ -24,6 +24,7 @@ async function writeLocalFile(jobs: ScrapeJob[]) {
 type ScrapeJobRow = {
   id: string;
   created_at: string;
+  user_id: string;
   connection_id: string;
   list_name: string;
   search_url: string;
@@ -38,6 +39,7 @@ function fromRow(row: ScrapeJobRow): ScrapeJob {
   return {
     id: row.id,
     createdAt: row.created_at,
+    userId: row.user_id,
     connectionId: row.connection_id,
     listName: row.list_name,
     searchUrl: row.search_url,
@@ -49,12 +51,16 @@ function fromRow(row: ScrapeJobRow): ScrapeJob {
   };
 }
 
-export async function listScrapeJobs(): Promise<ScrapeJob[]> {
+// scrape_jobs has no RLS policy (see supabase/migrations/0007_*.sql), so
+// this always runs through the admin client — filtering by user_id has to
+// happen here in application code instead.
+export async function listScrapeJobs(userId: string): Promise<ScrapeJob[]> {
   if (hasSupabaseConfig()) {
     const supabase = createSupabaseServerClient();
     const { data, error } = await supabase
       .from("scrape_jobs")
       .select("*")
+      .eq("user_id", userId)
       .order("created_at", { ascending: false });
     if (error) throw error;
     return (data as ScrapeJobRow[]).map(fromRow);
@@ -75,6 +81,7 @@ export async function getScrapeJob(id: string): Promise<ScrapeJob | null> {
 }
 
 export async function createScrapeJob(input: {
+  userId: string;
   connectionId: string;
   listName: string;
   searchUrl: string;
@@ -83,6 +90,7 @@ export async function createScrapeJob(input: {
   const job: ScrapeJob = {
     id: randomUUID(),
     createdAt: new Date().toISOString(),
+    userId: input.userId,
     connectionId: input.connectionId,
     listName: input.listName,
     searchUrl: input.searchUrl,
@@ -98,6 +106,7 @@ export async function createScrapeJob(input: {
     const { error } = await supabase.from("scrape_jobs").insert({
       id: job.id,
       created_at: job.createdAt,
+      user_id: job.userId,
       connection_id: job.connectionId,
       list_name: job.listName,
       search_url: job.searchUrl,

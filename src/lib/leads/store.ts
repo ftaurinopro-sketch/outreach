@@ -1,12 +1,12 @@
 import { randomUUID } from "crypto";
 import { promises as fs } from "fs";
 import path from "path";
+import { createSupabaseUserClient, hasSupabaseAuthConfig } from "@/lib/supabase/user";
 import { createSupabaseServerClient, hasSupabaseConfig } from "@/lib/supabase/server";
 import type { Lead, LeadList, LeadListSummary, LeadSourceType } from "./types";
 
 // Same local-file-fallback pattern as src/lib/agents/store.ts — see that file
-// for why. Not suitable for production; switches to Supabase automatically
-// once NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY are set.
+// for why.
 const DATA_DIR = path.join(process.cwd(), ".data");
 const DATA_FILE = path.join(DATA_DIR, "lead-lists.json");
 
@@ -53,8 +53,8 @@ function toSummary(list: LeadList): LeadListSummary {
 }
 
 export async function listLeadLists(): Promise<LeadListSummary[]> {
-  if (hasSupabaseConfig()) {
-    const supabase = createSupabaseServerClient();
+  if (hasSupabaseAuthConfig()) {
+    const supabase = await createSupabaseUserClient();
     const { data, error } = await supabase
       .from("lead_lists")
       .select("*")
@@ -69,8 +69,8 @@ export async function listLeadLists(): Promise<LeadListSummary[]> {
 }
 
 export async function getLeadList(id: string): Promise<LeadList | null> {
-  if (hasSupabaseConfig()) {
-    const supabase = createSupabaseServerClient();
+  if (hasSupabaseAuthConfig()) {
+    const supabase = await createSupabaseUserClient();
     const { data, error } = await supabase
       .from("lead_lists")
       .select("*")
@@ -96,8 +96,8 @@ export async function createLeadList(
     leads,
   };
 
-  if (hasSupabaseConfig()) {
-    const supabase = createSupabaseServerClient();
+  if (hasSupabaseAuthConfig()) {
+    const supabase = await createSupabaseUserClient();
     const { error } = await supabase.from("lead_lists").insert({
       id: list.id,
       created_at: list.createdAt,
@@ -115,9 +115,47 @@ export async function createLeadList(
   return list;
 }
 
-export async function deleteLeadList(id: string): Promise<void> {
+// Used only by /api/extension/report-scrape: that request is authenticated
+// via the connection's bearer token, not a Supabase session, so there's no
+// auth.uid() for the user_id default to pick up — the caller must know
+// which user owns the connection (looked up separately) and pass it here.
+export async function createLeadListAsUser(
+  userId: string,
+  name: string,
+  sourceType: LeadSourceType,
+  leads: Lead[]
+): Promise<LeadList> {
+  const list: LeadList = {
+    id: randomUUID(),
+    createdAt: new Date().toISOString(),
+    name,
+    sourceType,
+    leads,
+  };
+
   if (hasSupabaseConfig()) {
     const supabase = createSupabaseServerClient();
+    const { error } = await supabase.from("lead_lists").insert({
+      id: list.id,
+      created_at: list.createdAt,
+      name: list.name,
+      source_type: list.sourceType,
+      leads: list.leads,
+      user_id: userId,
+    });
+    if (error) throw error;
+    return list;
+  }
+
+  const lists = await readLocalFile();
+  lists.push(list);
+  await writeLocalFile(lists);
+  return list;
+}
+
+export async function deleteLeadList(id: string): Promise<void> {
+  if (hasSupabaseAuthConfig()) {
+    const supabase = await createSupabaseUserClient();
     const { error } = await supabase.from("lead_lists").delete().eq("id", id);
     if (error) throw error;
     return;

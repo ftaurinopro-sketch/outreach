@@ -17,7 +17,10 @@ type StepConfig = {
 const STEP_ORDER: StepConfig[] = [
   { key: "name" },
   { key: "companyName" },
+  { key: "language", hasQuickReplies: true },
+  { key: "objective", hasQuickReplies: true },
   { key: "valueProp", multiline: true },
+  { key: "products", multiline: true },
   { key: "differentiation", multiline: true },
   { key: "icp", multiline: true },
   { key: "tone", hasQuickReplies: true },
@@ -29,7 +32,7 @@ const STEP_ORDER: StepConfig[] = [
 
 type LogEntry = { from: "bot" | "user"; text: string };
 
-export default function AgentWizard() {
+export default function AgentWizard({ onSaved }: { onSaved?: (agentId: string) => void }) {
   const router = useRouter();
   const t = useTranslations("AgentWizard");
   const tSteps = useTranslations("AgentWizard.steps");
@@ -87,7 +90,11 @@ export default function AgentWizard() {
         throw new Error(data.error || t("saveError"));
       }
       const { agent } = await res.json();
-      router.push(`/ai-assistants/${agent.id}`);
+      if (onSaved) {
+        onSaved(agent.id);
+      } else {
+        router.push(`/ai-assistants/${agent.id}`);
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : t("unexpectedError"));
       setSaving(false);

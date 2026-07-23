@@ -1,6 +1,7 @@
 import { randomUUID, randomBytes } from "crypto";
 import { promises as fs } from "fs";
 import path from "path";
+import { createSupabaseUserClient, hasSupabaseAuthConfig } from "@/lib/supabase/user";
 import { createSupabaseServerClient, hasSupabaseConfig } from "@/lib/supabase/server";
 import type { Connection, ConnectionInput } from "./types";
 
@@ -24,6 +25,7 @@ async function writeLocalFile(connections: Connection[]) {
 type ConnectionRow = {
   id: string;
   created_at: string;
+  user_id: string | null;
   label: string;
   token: string;
   session_cookie: string | null;
@@ -37,6 +39,7 @@ function fromRow(row: ConnectionRow): Connection {
   return {
     id: row.id,
     createdAt: row.created_at,
+    userId: row.user_id,
     label: row.label,
     token: row.token,
     sessionCookie: row.session_cookie,
@@ -48,8 +51,8 @@ function fromRow(row: ConnectionRow): Connection {
 }
 
 export async function listConnections(): Promise<Connection[]> {
-  if (hasSupabaseConfig()) {
-    const supabase = createSupabaseServerClient();
+  if (hasSupabaseAuthConfig()) {
+    const supabase = await createSupabaseUserClient();
     const { data, error } = await supabase
       .from("connections")
       .select("*")
@@ -62,8 +65,8 @@ export async function listConnections(): Promise<Connection[]> {
 }
 
 export async function getConnection(id: string): Promise<Connection | null> {
-  if (hasSupabaseConfig()) {
-    const supabase = createSupabaseServerClient();
+  if (hasSupabaseAuthConfig()) {
+    const supabase = await createSupabaseUserClient();
     const { data, error } = await supabase.from("connections").select("*").eq("id", id).maybeSingle();
     if (error) throw error;
     return data ? fromRow(data as ConnectionRow) : null;
@@ -72,6 +75,9 @@ export async function getConnection(id: string): Promise<Connection | null> {
   return connections.find((c) => c.id === id) ?? null;
 }
 
+// Extension/runner auth (bearer token, no Supabase session) — must use the
+// admin client since RLS on `connections` requires auth.uid(), which isn't
+// set for these requests.
 export async function getConnectionByToken(token: string): Promise<Connection | null> {
   if (hasSupabaseConfig()) {
     const supabase = createSupabaseServerClient();
@@ -87,6 +93,7 @@ export async function createConnection(input: ConnectionInput): Promise<Connecti
   const connection: Connection = {
     id: randomUUID(),
     createdAt: new Date().toISOString(),
+    userId: null,
     label: input.label,
     token: randomBytes(24).toString("base64url"),
     sessionCookie: null,
@@ -96,21 +103,25 @@ export async function createConnection(input: ConnectionInput): Promise<Connecti
     lastSeenAt: null,
   };
 
-  if (hasSupabaseConfig()) {
-    const supabase = createSupabaseServerClient();
-    const { error } = await supabase.from("connections").insert({
-      id: connection.id,
-      created_at: connection.createdAt,
-      label: connection.label,
-      token: connection.token,
-      session_cookie: null,
-      daily_connection_limit: connection.dailyConnectionLimit,
-      weekly_connection_limit: connection.weeklyConnectionLimit,
-      daily_message_limit: connection.dailyMessageLimit,
-      last_seen_at: null,
-    });
+  if (hasSupabaseAuthConfig()) {
+    const supabase = await createSupabaseUserClient();
+    const { data, error } = await supabase
+      .from("connections")
+      .insert({
+        id: connection.id,
+        created_at: connection.createdAt,
+        label: connection.label,
+        token: connection.token,
+        session_cookie: null,
+        daily_connection_limit: connection.dailyConnectionLimit,
+        weekly_connection_limit: connection.weeklyConnectionLimit,
+        daily_message_limit: connection.dailyMessageLimit,
+        last_seen_at: null,
+      })
+      .select("*")
+      .single();
     if (error) throw error;
-    return connection;
+    return fromRow(data as ConnectionRow);
   }
 
   const connections = await readLocalFile();
@@ -123,8 +134,8 @@ export async function updateConnectionSessionCookie(
   id: string,
   sessionCookie: string
 ): Promise<Connection | null> {
-  if (hasSupabaseConfig()) {
-    const supabase = createSupabaseServerClient();
+  if (hasSupabaseAuthConfig()) {
+    const supabase = await createSupabaseUserClient();
     const { data, error } = await supabase
       .from("connections")
       .update({ session_cookie: sessionCookie })
@@ -143,6 +154,7 @@ export async function updateConnectionSessionCookie(
   return connections[idx];
 }
 
+// Extension heartbeat (bearer token, no Supabase session) — admin client.
 export async function touchConnection(id: string): Promise<void> {
   const now = new Date().toISOString();
   if (hasSupabaseConfig()) {
@@ -160,8 +172,8 @@ export async function touchConnection(id: string): Promise<void> {
 }
 
 export async function deleteConnection(id: string): Promise<void> {
-  if (hasSupabaseConfig()) {
-    const supabase = createSupabaseServerClient();
+  if (hasSupabaseAuthConfig()) {
+    const supabase = await createSupabaseUserClient();
     const { error } = await supabase.from("connections").delete().eq("id", id);
     if (error) throw error;
     return;

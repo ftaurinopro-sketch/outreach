@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto";
 import { promises as fs } from "fs";
 import path from "path";
+import { createSupabaseUserClient, hasSupabaseAuthConfig } from "@/lib/supabase/user";
 import { createSupabaseServerClient, hasSupabaseConfig } from "@/lib/supabase/server";
 import type { Campaign, CampaignInput, CampaignStatus } from "./types";
 
@@ -46,8 +47,8 @@ function fromRow(row: CampaignRow): Campaign {
 }
 
 export async function listCampaigns(): Promise<Campaign[]> {
-  if (hasSupabaseConfig()) {
-    const supabase = createSupabaseServerClient();
+  if (hasSupabaseAuthConfig()) {
+    const supabase = await createSupabaseUserClient();
     const { data, error } = await supabase
       .from("campaigns")
       .select("*")
@@ -60,6 +61,26 @@ export async function listCampaigns(): Promise<Campaign[]> {
 }
 
 export async function getCampaign(id: string): Promise<Campaign | null> {
+  if (hasSupabaseAuthConfig()) {
+    const supabase = await createSupabaseUserClient();
+    const { data, error } = await supabase
+      .from("campaigns")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+    if (error) throw error;
+    return data ? fromRow(data as CampaignRow) : null;
+  }
+  const campaigns = await readLocalFile();
+  return campaigns.find((c) => c.id === id) ?? null;
+}
+
+// Used only by /api/extension/report route: authenticated via the
+// connection's bearer token (no Supabase session), so the user-scoped
+// client can't be used here. Read-only lookup of message templates to
+// build a reply — the campaignId comes from our own automation_actions
+// row, not user input, so this doesn't need an extra ownership check.
+export async function getCampaignForExtension(id: string): Promise<Campaign | null> {
   if (hasSupabaseConfig()) {
     const supabase = createSupabaseServerClient();
     const { data, error } = await supabase
@@ -86,8 +107,8 @@ export async function createCampaign(input: CampaignInput): Promise<Campaign> {
     ...input,
   };
 
-  if (hasSupabaseConfig()) {
-    const supabase = createSupabaseServerClient();
+  if (hasSupabaseAuthConfig()) {
+    const supabase = await createSupabaseUserClient();
     const { error } = await supabase.from("campaigns").insert({
       id: campaign.id,
       created_at: campaign.createdAt,
@@ -110,8 +131,8 @@ export async function createCampaign(input: CampaignInput): Promise<Campaign> {
 export async function activateCampaign(id: string, connectionId: string): Promise<Campaign> {
   const now = new Date().toISOString();
 
-  if (hasSupabaseConfig()) {
-    const supabase = createSupabaseServerClient();
+  if (hasSupabaseAuthConfig()) {
+    const supabase = await createSupabaseUserClient();
     const { data, error } = await supabase
       .from("campaigns")
       .update({ status: "active", connection_id: connectionId, activated_at: now, updated_at: now })
@@ -138,8 +159,8 @@ export async function activateCampaign(id: string, connectionId: string): Promis
 }
 
 export async function deleteCampaign(id: string): Promise<void> {
-  if (hasSupabaseConfig()) {
-    const supabase = createSupabaseServerClient();
+  if (hasSupabaseAuthConfig()) {
+    const supabase = await createSupabaseUserClient();
     const { error } = await supabase.from("campaigns").delete().eq("id", id);
     if (error) throw error;
     return;

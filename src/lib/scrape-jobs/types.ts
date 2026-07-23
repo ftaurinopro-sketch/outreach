@@ -4,6 +4,7 @@ export type ScrapeJobStatus = "pending" | "in_progress" | "done" | "failed";
 export type ScrapeJob = {
   id: string;
   createdAt: string;
+  userId: string;
   connectionId: string;
   listName: string;
   searchUrl: string;

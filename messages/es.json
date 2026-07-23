@@ -1,15 +1,21 @@
 {
   "Sidebar": {
     "brand": "ReachOS",
-    "section": "Prospección",
+    "section": "Workspace",
+    "toolsSection": "Herramientas",
+    "dashboard": "Dashboard",
     "getStarted": "Primeros pasos",
     "campaigns": "Campañas",
     "inbox": "Bandeja de entrada",
     "leadFinder": "Lead Finder",
     "connections": "Conexiones",
+    "accounts": "Cuentas",
+    "analytics": "Analytics",
     "aiAssistants": "AI Assistants",
     "sandbox": "Sandbox",
-    "reports": "Informes"
+    "reports": "Informes",
+    "settings": "Ajustes",
+    "signOut": "Cerrar sesión"
   },
   "ComingSoon": {
     "notBuiltYet": "Módulo aún no construido — consulta la hoja de ruta en el plan de producto."
@@ -86,6 +92,20 @@
         "placeholder": "Escribe un objetivo personalizado o elige uno abajo",
         "quickReplies": ["Agendar una llamada", "Recoger un email", "Cualificar el lead"]
       },
+      "language": {
+        "question": "¿En qué idioma debe escribir el assistant?",
+        "placeholder": "Escribe un idioma personalizado o elige uno abajo",
+        "quickReplies": ["English", "Italiano", "Español", "Deutsch"]
+      },
+      "objective": {
+        "question": "¿Cuál es el objetivo principal de este agente?",
+        "placeholder": "Escribe un objetivo personalizado o elige uno abajo",
+        "quickReplies": ["Lead Generation", "Partnership", "Recruiting", "Networking"]
+      },
+      "products": {
+        "question": "¿Qué productos o servicios ofreces?",
+        "placeholder": "Ej. una suscripción SEO mensual y auditorías web puntuales..."
+      },
       "calendarLink": {
         "question": "Enlace de reserva (Calendly, HubSpot, Cal.com...) para enviar cuando el prospecto esté listo para agendar una llamada.",
         "placeholder": "https://calendly.com/tunombre"
@@ -115,7 +135,10 @@
     "fields": {
       "name": "Nombre del agente",
       "companyName": "Empresa / producto",
+      "language": "Idioma",
+      "objective": "Objetivo",
       "valueProp": "Propuesta de valor",
+      "products": "Productos / servicios",
       "differentiation": "Diferenciación",
       "icp": "Cliente ideal (ICP)",
       "tone": "Tono",
@@ -371,5 +394,50 @@
     "setupCliStep2": "Copia <code>runner/.env.example</code> en <code>runner/.env</code> y define la URL del sitio + el token.",
     "setupCliStep3": "<code>npm start</code> — consulta <code>runner/README.md</code> para más detalles y avisos de riesgo.",
     "savedEverything": "Ya lo he guardado todo"
+  },
+  "Auth": {
+    "loginTitle": "Bienvenido de nuevo",
+    "loginSubtitle": "Inicia sesión en tu cuenta de ReachOS.",
+    "signupTitle": "Crea tu cuenta",
+    "signupSubtitle": "Empieza con ReachOS en un par de minutos.",
+    "continueWithGoogle": "Continuar con Google",
+    "orWithEmail": "o con email",
+    "email": "Email",
+    "password": "Contraseña",
+    "loggingIn": "Iniciando sesión...",
+    "logIn": "Iniciar sesión",
+    "signingUp": "Registrando...",
+    "signUp": "Registrarse",
+    "noAccount": "¿No tienes una cuenta?",
+    "haveAccount": "¿Ya tienes una cuenta?",
+    "checkEmail": "Revisa tu correo para confirmar tu dirección de email y luego inicia sesión."
+  },
+  "Settings": {
+    "title": "Ajustes",
+    "description": "Workspace, facturación y preferencias de la cuenta."
+  },
+  "Onboarding": {
+    "step1Title": "Conecta tu cuenta de LinkedIn",
+    "step1Description": "Esto es lo que permite a ReachOS actuar en LinkedIn por ti. También puedes hacerlo más tarde desde Connections.",
+    "step2Title": "Crea tu AI Assistant",
+    "step2Description": "Cuéntale sobre tu empresa — lo usará para cualificar leads y escribir mensajes.",
+    "step3Title": "Crea tu primera lista de leads",
+    "step3Description": "Pega la URL de una búsqueda de Sales Navigator para importar tu primer segmento de prospectos.",
+    "connectionAlreadyExists": "Conectado: {label}",
+    "skipForNow": "Omitir por ahora",
+    "continue": "Continuar",
+    "defaultConnectionLabel": "Mi perfil de LinkedIn",
+    "connecting": "Conectando...",
+    "connectLinkedIn": "Conectar LinkedIn",
+    "noReadyConnection": "Necesitas una conexión con un cookie de sesión configurado para importar una búsqueda — podrás volver a esto desde Lead Finder cuando esté lista.",
+    "searchQueued": "Búsqueda en cola — el runner la ejecutará en breve. Encontrarás la lista en Lead Finder.",
+    "createError": "Error al crear el job",
+    "linkedinProfile": "Perfil de LinkedIn",
+    "searchUrlLabel": "URL de la búsqueda de Sales Navigator",
+    "listNameLabel": "Nombre de la lista",
+    "starting": "Iniciando...",
+    "startSearch": "Iniciar búsqueda",
+    "skipAndFinish": "Omitir y terminar",
+    "finishing": "Terminando..."
   }
 }

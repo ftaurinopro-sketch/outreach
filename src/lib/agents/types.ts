@@ -4,7 +4,10 @@ export type AgentConfig = {
   updatedAt: string;
   name: string;
   companyName: string;
+  language: string;
+  objective: string;
   valueProp: string;
+  products: string;
   differentiation: string;
   icp: string;
   tone: string;
@@ -19,11 +22,14 @@ export type AgentInput = Omit<AgentConfig, "id" | "createdAt" | "updatedAt">;
 export const EMPTY_AGENT_INPUT: AgentInput = {
   name: "",
   companyName: "",
+  language: "English",
+  objective: "Lead Generation",
   valueProp: "",
+  products: "",
   differentiation: "",
   icp: "",
   tone: "Casual",
-  goal: "Prenotare una call",
+  goal: "Book a call",
   calendarLink: "",
   objections: "",
   guardrails: "",

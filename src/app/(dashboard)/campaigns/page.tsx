@@ -22,8 +22,11 @@ export default async function CampaignsPage() {
       </div>
 
       <div className="mt-4 rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-        Le campagne restano in <strong>bozza</strong>: l&apos;invio reale su LinkedIn richiede il modulo
-        Connections / motore di automazione, non ancora costruito.
+        Le campagne partono in <strong>bozza</strong>. Per attivarle serve una{" "}
+        <Link href="/connections" className="underline">
+          connessione LinkedIn
+        </Link>{" "}
+        (estensione Chrome) — vedi il dettaglio di ogni campagna.
       </div>
 
       {campaigns.length === 0 ? (

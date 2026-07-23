@@ -3,7 +3,11 @@ import Link from "next/link";
 import { getCampaign } from "@/lib/campaigns/store";
 import { getAgent } from "@/lib/agents/store";
 import { getLeadList } from "@/lib/leads/store";
+import { listConnections } from "@/lib/connections/store";
+import { listActionsForCampaign } from "@/lib/automation/store";
 import DeleteCampaignButton from "./DeleteCampaignButton";
+import ActivateCampaignPanel from "./ActivateCampaignPanel";
+import ActionsQueue from "./ActionsQueue";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -12,9 +16,11 @@ export default async function CampaignDetailPage({ params }: Props) {
   const campaign = await getCampaign(id);
   if (!campaign) notFound();
 
-  const [agent, leadList] = await Promise.all([
+  const [agent, leadList, connections, actions] = await Promise.all([
     getAgent(campaign.agentId),
     getLeadList(campaign.leadListId),
+    listConnections(),
+    campaign.status === "active" ? listActionsForCampaign(campaign.id) : Promise.resolve([]),
   ]);
 
   return (
@@ -22,17 +28,28 @@ export default async function CampaignDetailPage({ params }: Props) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-neutral-900">{campaign.name}</h1>
-          <span className="mt-1 inline-block rounded-full bg-neutral-100 px-2 py-0.5 text-xs text-neutral-500">
+          <span
+            className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs ${
+              campaign.status === "active"
+                ? "bg-green-100 text-green-700"
+                : "bg-neutral-100 text-neutral-500"
+            }`}
+          >
             {campaign.status}
           </span>
         </div>
         <DeleteCampaignButton campaignId={campaign.id} />
       </div>
 
-      <div className="mt-4 rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-        Bozza: l&apos;invio reale richiede il modulo Connections / motore di automazione, non ancora
-        costruito.
-      </div>
+      {campaign.status === "draft" ? (
+        <div className="mt-6">
+          <ActivateCampaignPanel campaignId={campaign.id} connections={connections} />
+        </div>
+      ) : (
+        <div className="mt-6">
+          <ActionsQueue actions={actions} />
+        </div>
+      )}
 
       <div className="mt-6 space-y-4 rounded-lg border border-neutral-200 bg-white p-5 text-sm">
         <Row label="Lista lead">
@@ -62,7 +79,8 @@ export default async function CampaignDetailPage({ params }: Props) {
             <>
               {campaign.followUpMessage}
               <span className="ml-1 text-neutral-400">
-                (dopo {campaign.followUpDelayDays} giorni se non risponde)
+                (dopo {campaign.followUpDelayDays} giorni, non ancora sensibile alle risposte — vedi limiti
+                nel README dell&apos;estensione)
               </span>
             </>
           ) : (

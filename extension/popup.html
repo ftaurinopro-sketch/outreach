@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        width: 280px;
+        padding: 12px;
+        color: #171717;
+      }
+      h1 {
+        font-size: 14px;
+        margin: 0 0 8px;
+      }
+      label {
+        display: block;
+        font-size: 11px;
+        color: #666;
+        margin-top: 8px;
+      }
+      input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 6px;
+        font-size: 12px;
+        margin-top: 2px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      button {
+        margin-top: 10px;
+        width: 100%;
+        padding: 8px;
+        font-size: 12px;
+        cursor: pointer;
+        border-radius: 4px;
+        border: 1px solid #171717;
+        background: #171717;
+        color: white;
+      }
+      button.secondary {
+        background: white;
+        color: #171717;
+      }
+      .status {
+        margin-top: 8px;
+        font-size: 11px;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>ReachOS</h1>
+    <label for="backendUrl">URL del sito ReachOS</label>
+    <input id="backendUrl" placeholder="http://localhost:3213" />
+    <label for="token">Token connessione</label>
+    <input id="token" placeholder="incolla il token da /connections" />
+    <button id="save">Salva</button>
+    <button id="pollNow" class="secondary">Controlla ora</button>
+    <div class="status" id="status"></div>
+    <script src="popup.js"></script>
+  </body>
+</html>

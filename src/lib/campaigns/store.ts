@@ -2,7 +2,7 @@ import { randomUUID } from "crypto";
 import { promises as fs } from "fs";
 import path from "path";
 import { createSupabaseServerClient, hasSupabaseConfig } from "@/lib/supabase/server";
-import type { Campaign, CampaignInput } from "./types";
+import type { Campaign, CampaignInput, CampaignStatus } from "./types";
 
 // Same local-file-fallback pattern as the agents/leads stores — see
 // src/lib/agents/store.ts for the rationale.
@@ -27,7 +27,9 @@ type CampaignRow = {
   id: string;
   created_at: string;
   updated_at: string;
-  status: "draft";
+  status: CampaignStatus;
+  connection_id: string | null;
+  activated_at: string | null;
   config: CampaignInput;
 };
 
@@ -37,6 +39,8 @@ function fromRow(row: CampaignRow): Campaign {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     status: row.status,
+    connectionId: row.connection_id,
+    activatedAt: row.activated_at,
     ...row.config,
   };
 }
@@ -77,6 +81,8 @@ export async function createCampaign(input: CampaignInput): Promise<Campaign> {
     createdAt: now,
     updatedAt: now,
     status: "draft",
+    connectionId: null,
+    activatedAt: null,
     ...input,
   };
 
@@ -87,6 +93,8 @@ export async function createCampaign(input: CampaignInput): Promise<Campaign> {
       created_at: campaign.createdAt,
       updated_at: campaign.updatedAt,
       status: campaign.status,
+      connection_id: null,
+      activated_at: null,
       config: input,
     });
     if (error) throw error;
@@ -97,6 +105,36 @@ export async function createCampaign(input: CampaignInput): Promise<Campaign> {
   campaigns.push(campaign);
   await writeLocalFile(campaigns);
   return campaign;
+}
+
+export async function activateCampaign(id: string, connectionId: string): Promise<Campaign> {
+  const now = new Date().toISOString();
+
+  if (hasSupabaseConfig()) {
+    const supabase = createSupabaseServerClient();
+    const { data, error } = await supabase
+      .from("campaigns")
+      .update({ status: "active", connection_id: connectionId, activated_at: now, updated_at: now })
+      .eq("id", id)
+      .select("*")
+      .maybeSingle();
+    if (error) throw error;
+    if (!data) throw new Error("Campagna non trovata");
+    return fromRow(data as CampaignRow);
+  }
+
+  const campaigns = await readLocalFile();
+  const idx = campaigns.findIndex((c) => c.id === id);
+  if (idx === -1) throw new Error("Campagna non trovata");
+  campaigns[idx] = {
+    ...campaigns[idx],
+    status: "active",
+    connectionId,
+    activatedAt: now,
+    updatedAt: now,
+  };
+  await writeLocalFile(campaigns);
+  return campaigns[idx];
 }
 
 export async function deleteCampaign(id: string): Promise<void> {

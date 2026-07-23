@@ -1,4 +1,5 @@
 export type ReplyMode = "review" | "autonomous";
+export type CampaignStatus = "draft" | "active";
 
 export type CampaignInput = {
   name: string;
@@ -15,7 +16,9 @@ export type Campaign = CampaignInput & {
   id: string;
   createdAt: string;
   updatedAt: string;
-  status: "draft";
+  status: CampaignStatus;
+  connectionId: string | null;
+  activatedAt: string | null;
 };
 
 export const EMPTY_CAMPAIGN_INPUT: CampaignInput = {

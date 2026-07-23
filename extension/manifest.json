@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "ReachOS LinkedIn Automation",
+  "version": "0.1.0",
+  "description": "Esegue in modo controllato le azioni di outreach configurate in ReachOS (richieste di connessione, verifica accettazione, messaggi) sul tuo profilo LinkedIn.",
+  "permissions": ["storage", "alarms", "tabs"],
+  "host_permissions": [
+    "https://www.linkedin.com/*",
+    "http://localhost:3213/*",
+    "http://localhost:3000/*",
+    "https://*.vercel.app/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "ReachOS"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.linkedin.com/*"],
+      "js": ["content-script.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

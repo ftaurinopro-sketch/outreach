@@ -2,16 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import type { Connection } from "@/lib/connections/types";
 import { detectSourceType } from "@/lib/scrape-jobs/types";
 
-const SOURCE_LABEL = {
-  linkedin_basic_search: "Basic LinkedIn Search",
-  sales_navigator_search: "Sales Navigator Search",
-};
-
 export default function SearchImportClient({ connections }: { connections: Connection[] }) {
   const router = useRouter();
+  const t = useTranslations("SearchImportClient");
   const [connectionId, setConnectionId] = useState(connections[0]?.id ?? "");
   const [searchUrl, setSearchUrl] = useState("");
   const [listName, setListName] = useState("");
@@ -19,6 +16,10 @@ export default function SearchImportClient({ connections }: { connections: Conne
   const [error, setError] = useState<string | null>(null);
 
   const detectedType = useMemo(() => (searchUrl.trim() ? detectSourceType(searchUrl.trim()) : null), [searchUrl]);
+  const sourceLabel = {
+    linkedin_basic_search: t("basicLinkedinSearch"),
+    sales_navigator_search: t("salesNavigatorSearch"),
+  };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -32,11 +33,11 @@ export default function SearchImportClient({ connections }: { connections: Conne
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Errore nella creazione del job");
+        throw new Error(data.error || t("createError"));
       }
       router.push("/lead-finder");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Errore inatteso");
+      setError(err instanceof Error ? err.message : t("unexpectedError"));
       setSubmitting(false);
     }
   }
@@ -44,7 +45,7 @@ export default function SearchImportClient({ connections }: { connections: Conne
   return (
     <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border border-neutral-200 bg-white p-5">
       <div>
-        <label className="mb-1 block text-xs font-medium text-neutral-500">Profilo LinkedIn (runner)</label>
+        <label className="mb-1 block text-xs font-medium text-neutral-500">{t("connectionLabel")}</label>
         <select
           value={connectionId}
           onChange={(e) => setConnectionId(e.target.value)}
@@ -59,36 +60,33 @@ export default function SearchImportClient({ connections }: { connections: Conne
       </div>
 
       <div>
-        <label className="mb-1 block text-xs font-medium text-neutral-500">URL della ricerca</label>
+        <label className="mb-1 block text-xs font-medium text-neutral-500">{t("searchUrlLabel")}</label>
         <input
           required
           value={searchUrl}
           onChange={(e) => setSearchUrl(e.target.value)}
-          placeholder="https://www.linkedin.com/search/results/people/?... oppure https://www.linkedin.com/sales/search/people?..."
+          placeholder={t("searchUrlPlaceholder")}
           className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
         />
         {detectedType && (
           <span className="mt-1.5 inline-block rounded-full bg-neutral-100 px-2 py-0.5 text-xs text-neutral-600">
-            Rilevato: {SOURCE_LABEL[detectedType]}
+            {t("detected")}: {sourceLabel[detectedType]}
           </span>
         )}
       </div>
 
       <div>
-        <label className="mb-1 block text-xs font-medium text-neutral-500">Nome della lista</label>
+        <label className="mb-1 block text-xs font-medium text-neutral-500">{t("listNameLabel")}</label>
         <input
           required
           value={listName}
           onChange={(e) => setListName(e.target.value)}
-          placeholder="Es. Marketing CEOs USA"
+          placeholder={t("listNamePlaceholder")}
           className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
         />
       </div>
 
-      <p className="text-xs text-neutral-400">
-        Il job parte in coda ed è eseguito dal runner al prossimo ciclo di polling (di norma entro pochi
-        minuti) — vedi lo stato in Lead Finder. Estrae i risultati della prima pagina.
-      </p>
+      <p className="text-xs text-neutral-400">{t("hint")}</p>
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 
@@ -97,7 +95,7 @@ export default function SearchImportClient({ connections }: { connections: Conne
         disabled={submitting}
         className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
       >
-        {submitting ? "Avvio..." : "Avvia ricerca"}
+        {submitting ? t("starting") : t("startSearch")}
       </button>
     </form>
   );

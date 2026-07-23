@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import type { AgentConfig } from "@/lib/agents/types";
 import { EMPTY_CAMPAIGN_INPUT, type CampaignInput } from "@/lib/campaigns/types";
 import type { LeadListSummary } from "@/lib/leads/types";
@@ -14,6 +15,7 @@ export default function CampaignForm({
   leadLists: LeadListSummary[];
 }) {
   const router = useRouter();
+  const t = useTranslations("CampaignForm");
   const [values, setValues] = useState<CampaignInput>({
     ...EMPTY_CAMPAIGN_INPUT,
     agentId: agents[0]?.id ?? "",
@@ -38,12 +40,12 @@ export default function CampaignForm({
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Errore nella creazione della campagna");
+        throw new Error(data.error || t("createError"));
       }
       const { campaign } = await res.json();
       router.push(`/campaigns/${campaign.id}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Errore inatteso");
+      setError(err instanceof Error ? err.message : t("unexpectedError"));
       setSaving(false);
     }
   }
@@ -51,19 +53,19 @@ export default function CampaignForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border border-neutral-200 bg-white p-5">
       <div>
-        <label className="mb-1 block text-xs font-medium text-neutral-500">Nome campagna</label>
+        <label className="mb-1 block text-xs font-medium text-neutral-500">{t("campaignName")}</label>
         <input
           required
           value={values.name}
           onChange={(e) => set("name", e.target.value)}
-          placeholder="Es. CEOs agenzie marketing USA"
+          placeholder={t("campaignNamePlaceholder")}
           className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="mb-1 block text-xs font-medium text-neutral-500">Lista lead</label>
+          <label className="mb-1 block text-xs font-medium text-neutral-500">{t("leadList")}</label>
           <select
             value={values.leadListId}
             onChange={(e) => set("leadListId", e.target.value)}
@@ -77,7 +79,7 @@ export default function CampaignForm({
           </select>
         </div>
         <div>
-          <label className="mb-1 block text-xs font-medium text-neutral-500">AI Assistant</label>
+          <label className="mb-1 block text-xs font-medium text-neutral-500">{t("aiAssistant")}</label>
           <select
             value={values.agentId}
             onChange={(e) => set("agentId", e.target.value)}
@@ -93,46 +95,40 @@ export default function CampaignForm({
       </div>
 
       <div>
-        <label className="mb-1 block text-xs font-medium text-neutral-500">
-          Nota alla richiesta di connessione (opzionale)
-        </label>
+        <label className="mb-1 block text-xs font-medium text-neutral-500">{t("connectionNote")}</label>
         <textarea
           value={values.connectionNote}
           onChange={(e) => set("connectionNote", e.target.value)}
           rows={2}
-          placeholder="Ciao {{firstName}}, ho visto che..."
+          placeholder={t("connectionNotePlaceholder")}
           className="w-full resize-none rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
         />
       </div>
 
       <div>
-        <label className="mb-1 block text-xs font-medium text-neutral-500">
-          Messaggio 1 (inviato dopo l&apos;accettazione)
-        </label>
+        <label className="mb-1 block text-xs font-medium text-neutral-500">{t("message1")}</label>
         <textarea
           required
           value={values.message1}
           onChange={(e) => set("message1", e.target.value)}
           rows={3}
-          placeholder="Ciao {{firstName}}, grazie per il collegamento..."
+          placeholder={t("message1Placeholder")}
           className="w-full resize-none rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
         />
       </div>
 
       <div>
-        <label className="mb-1 block text-xs font-medium text-neutral-500">
-          Follow-up (opzionale, inviato se non risponde)
-        </label>
+        <label className="mb-1 block text-xs font-medium text-neutral-500">{t("followUp")}</label>
         <div className="flex gap-2">
           <textarea
             value={values.followUpMessage}
             onChange={(e) => set("followUpMessage", e.target.value)}
             rows={2}
-            placeholder="Volevo solo assicurarmi che il messaggio precedente..."
+            placeholder={t("followUpPlaceholder")}
             className="flex-1 resize-none rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
           />
           <div className="w-28 shrink-0">
-            <label className="mb-1 block text-xs text-neutral-400">Dopo (giorni)</label>
+            <label className="mb-1 block text-xs text-neutral-400">{t("afterDays")}</label>
             <input
               type="number"
               min={1}
@@ -145,7 +141,7 @@ export default function CampaignForm({
       </div>
 
       <div>
-        <label className="mb-1 block text-xs font-medium text-neutral-500">Reply mode</label>
+        <label className="mb-1 block text-xs font-medium text-neutral-500">{t("replyMode")}</label>
         <div className="flex gap-2">
           <button
             type="button"
@@ -156,8 +152,8 @@ export default function CampaignForm({
                 : "border-neutral-300 text-neutral-500"
             }`}
           >
-            <div className="font-medium text-neutral-900">Review Before Sending</div>
-            <div className="text-xs text-neutral-400">Consigliata per iniziare</div>
+            <div className="font-medium text-neutral-900">{t("reviewBeforeSending")}</div>
+            <div className="text-xs text-neutral-400">{t("recommendedToStart")}</div>
           </button>
           <button
             type="button"
@@ -168,8 +164,8 @@ export default function CampaignForm({
                 : "border-neutral-300 text-neutral-500"
             }`}
           >
-            <div className="font-medium text-neutral-900">Fully Autonomous</div>
-            <div className="text-xs text-neutral-400">Risposte inviate in automatico</div>
+            <div className="font-medium text-neutral-900">{t("fullyAutonomous")}</div>
+            <div className="text-xs text-neutral-400">{t("repliesSentAutomatically")}</div>
           </button>
         </div>
       </div>
@@ -181,7 +177,7 @@ export default function CampaignForm({
         disabled={saving}
         className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
       >
-        {saving ? "Creazione..." : "Crea campagna"}
+        {saving ? t("creating") : t("createCampaign")}
       </button>
     </form>
   );

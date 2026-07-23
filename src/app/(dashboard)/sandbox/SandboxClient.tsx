@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import type { AgentConfig } from "@/lib/agents/types";
 import type { ChatMessage } from "@/lib/claude";
 
@@ -22,6 +23,7 @@ export default function SandboxClient({
   agents: AgentConfig[];
   initialAgentId?: string;
 }) {
+  const t = useTranslations("Sandbox");
   const [agentId, setAgentId] = useState(initialAgentId || agents[0]?.id);
   const [prospect, setProspect] = useState<Prospect>(EMPTY_PROSPECT);
   const [openingMessage, setOpeningMessage] = useState("");
@@ -57,10 +59,10 @@ export default function SandboxClient({
         body: JSON.stringify({ agentId, prospect, history: nextMessages, openingMessage }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Errore nella risposta dell'agent");
+      if (!res.ok) throw new Error(data.error || t("replyError"));
       setMessages([...nextMessages, { role: "assistant", content: data.reply }]);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Errore inatteso");
+      setError(e instanceof Error ? e.message : t("unexpectedError"));
     } finally {
       setSending(false);
     }
@@ -70,7 +72,7 @@ export default function SandboxClient({
     <div className="grid gap-5 lg:grid-cols-[320px_1fr]">
       <div className="rounded-lg border border-neutral-200 bg-white p-4">
         <div className="mb-3">
-          <label className="mb-1 block text-xs font-medium text-neutral-500">AI Assistant</label>
+          <label className="mb-1 block text-xs font-medium text-neutral-500">{t("aiAssistant")}</label>
           <select
             value={agentId}
             onChange={(e) => {
@@ -88,16 +90,16 @@ export default function SandboxClient({
         </div>
 
         <div className="mb-2 flex items-center justify-between">
-          <h3 className="text-sm font-medium text-neutral-900">Prospect Settings</h3>
+          <h3 className="text-sm font-medium text-neutral-900">{t("prospectSettings")}</h3>
           <div className="flex gap-2">
             <button onClick={randomize} className="text-xs text-neutral-500 hover:text-neutral-900">
-              Randomize
+              {t("randomize")}
             </button>
             <button
               onClick={() => setProspect(EMPTY_PROSPECT)}
               className="text-xs text-neutral-500 hover:text-neutral-900"
             >
-              Clear
+              {t("clear")}
             </button>
           </div>
         </div>
@@ -105,40 +107,38 @@ export default function SandboxClient({
         <div className="space-y-2.5">
           <div className="grid grid-cols-2 gap-2">
             <Field
-              label="First Name"
+              label={t("firstName")}
               value={prospect.firstName}
               onChange={(v) => setProspect((p) => ({ ...p, firstName: v }))}
             />
             <Field
-              label="Last Name"
+              label={t("lastName")}
               value={prospect.lastName}
               onChange={(v) => setProspect((p) => ({ ...p, lastName: v }))}
             />
           </div>
           <Field
-            label="Company"
+            label={t("company")}
             value={prospect.company}
             onChange={(v) => setProspect((p) => ({ ...p, company: v }))}
           />
           <Field
-            label="Job Title"
+            label={t("jobTitle")}
             value={prospect.jobTitle}
             onChange={(v) => setProspect((p) => ({ ...p, jobTitle: v }))}
           />
           <Field
-            label="Location"
+            label={t("location")}
             value={prospect.location}
             onChange={(v) => setProspect((p) => ({ ...p, location: v }))}
           />
           <div>
-            <label className="mb-1 block text-xs font-medium text-neutral-500">
-              AI&apos;s Opening Message (optional)
-            </label>
+            <label className="mb-1 block text-xs font-medium text-neutral-500">{t("openingMessage")}</label>
             <textarea
               value={openingMessage}
               onChange={(e) => setOpeningMessage(e.target.value)}
               rows={2}
-              placeholder="Il primo messaggio dell'agent, per simulare l'outreach reale..."
+              placeholder={t("openingMessagePlaceholder")}
               className="w-full resize-none rounded-md border border-neutral-300 px-2.5 py-1.5 text-sm"
             />
           </div>
@@ -147,20 +147,16 @@ export default function SandboxClient({
 
       <div className="flex flex-col rounded-lg border border-neutral-200 bg-white">
         <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-2.5">
-          <h3 className="text-sm font-medium text-neutral-900">Conversation</h3>
+          <h3 className="text-sm font-medium text-neutral-900">{t("conversation")}</h3>
           <button onClick={clearConversation} className="text-xs text-neutral-500 hover:text-neutral-900">
-            Clear
+            {t("clear")}
           </button>
         </div>
 
         <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4" style={{ minHeight: 360 }}>
-          {openingMessage && (
-            <Bubble from="assistant">{openingMessage}</Bubble>
-          )}
+          {openingMessage && <Bubble from="assistant">{openingMessage}</Bubble>}
           {messages.length === 0 && !openingMessage && (
-            <p className="text-sm text-neutral-400">
-              Scrivi qui sotto &quot;come se fossi il prospect&quot; per iniziare la conversazione.
-            </p>
+            <p className="text-sm text-neutral-400">{t("emptyHint")}</p>
           )}
           {messages.map((m, i) => (
             <Bubble key={i} from={m.role}>
@@ -182,7 +178,7 @@ export default function SandboxClient({
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Type as the prospect..."
+            placeholder={t("typeAsProspect")}
             rows={1}
             className="flex-1 resize-none rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
             onKeyDown={(e) => {
@@ -197,7 +193,7 @@ export default function SandboxClient({
             disabled={sending}
             className="shrink-0 rounded-md bg-neutral-900 px-3.5 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
           >
-            Send
+            {t("send")}
           </button>
         </form>
       </div>

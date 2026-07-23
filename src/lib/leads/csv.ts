@@ -12,9 +12,14 @@ const HEADER_MAP: Record<string, keyof Lead> = {
   industry: "industry",
 };
 
+export type ParseError =
+  | { type: "papaparse"; row: number | null; message: string }
+  | { type: "missingLinkedinUrlColumn" }
+  | { type: "missingLinkedinUrlRow"; row: number };
+
 export type ParseResult = {
   leads: Lead[];
-  errors: string[];
+  errors: ParseError[];
 };
 
 export function parseLeadsCsv(csvText: string): ParseResult {
@@ -24,12 +29,18 @@ export function parseLeadsCsv(csvText: string): ParseResult {
     transformHeader: (h) => h.trim().toLowerCase(),
   });
 
-  const parseErrors = errors.map((e) => `Riga ${e.row ?? "?"}: ${e.message}`);
+  const parseErrors: ParseError[] = errors.map((e) => ({
+    type: "papaparse",
+    row: e.row ?? null,
+    message: e.message,
+  }));
 
   const knownHeaders = new Set(Object.keys(HEADER_MAP));
-  const missingLinkedinUrl = !(meta.fields ?? []).some((f) => knownHeaders.has(f.trim().toLowerCase()) && HEADER_MAP[f.trim().toLowerCase()] === "linkedinUrl");
+  const missingLinkedinUrl = !(meta.fields ?? []).some(
+    (f) => knownHeaders.has(f.trim().toLowerCase()) && HEADER_MAP[f.trim().toLowerCase()] === "linkedinUrl"
+  );
   if (missingLinkedinUrl) {
-    parseErrors.unshift('Colonna "LinkedIn URL" mancante: è l\'unico campo obbligatorio.');
+    parseErrors.unshift({ type: "missingLinkedinUrlColumn" });
   }
 
   const leads: Lead[] = [];
@@ -49,7 +60,7 @@ export function parseLeadsCsv(csvText: string): ParseResult {
       if (key) lead[key] = (value ?? "").trim();
     }
     if (!lead.linkedinUrl) {
-      parseErrors.push(`Riga ${i + 2}: manca il LinkedIn URL, riga saltata.`);
+      parseErrors.push({ type: "missingLinkedinUrlRow", row: i + 2 });
       return;
     }
     leads.push(lead);

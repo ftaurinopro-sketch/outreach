@@ -2,13 +2,15 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 export default function DeleteListButton({ listId }: { listId: string }) {
   const router = useRouter();
+  const t = useTranslations("DeleteListButton");
   const [deleting, setDeleting] = useState(false);
 
   async function handleDelete() {
-    if (!confirm("Eliminare questa lista di lead? L'azione non è reversibile.")) return;
+    if (!confirm(t("confirm"))) return;
     setDeleting(true);
     try {
       await fetch(`/api/lead-lists/${listId}`, { method: "DELETE" });
@@ -25,7 +27,7 @@ export default function DeleteListButton({ listId }: { listId: string }) {
       disabled={deleting}
       className="text-sm text-red-600 hover:underline disabled:opacity-50"
     >
-      {deleting ? "Eliminazione..." : "Elimina lista"}
+      {deleting ? t("deleting") : t("deleteList")}
     </button>
   );
 }

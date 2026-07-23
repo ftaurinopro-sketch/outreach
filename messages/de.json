@@ -1,0 +1,375 @@
+{
+  "Sidebar": {
+    "brand": "ReachOS",
+    "section": "Prospecting",
+    "getStarted": "Erste Schritte",
+    "campaigns": "Kampagnen",
+    "inbox": "Posteingang",
+    "leadFinder": "Lead Finder",
+    "connections": "Verbindungen",
+    "aiAssistants": "AI Assistants",
+    "sandbox": "Sandbox",
+    "reports": "Berichte"
+  },
+  "ComingSoon": {
+    "notBuiltYet": "Modul noch nicht gebaut — siehe die Roadmap im Produktplan."
+  },
+  "Inbox": {
+    "title": "Posteingang",
+    "description": "Kanalübergreifende Unterhaltungen an einem Ort, mit Freigabe-Warteschlange, wenn der Reply-Modus einer Kampagne auf 'Review Before Sending' steht."
+  },
+  "Reports": {
+    "title": "Berichte",
+    "description": "Annahmequote, Antwortquote und gebuchte Termine pro Kampagne und Kanal."
+  },
+  "GetStarted": {
+    "title": "Erste Schritte",
+    "intro": "Willkommen bei ReachOS. Starte mit dem AI Assistant Builder: Erstelle einen Agenten und teste ihn danach in der Sandbox. Lead Finder und Campaigns sind ebenfalls bereit — Inbox und Reports folgen als Nächstes auf der Roadmap.",
+    "step1Title": "1. Einen AI Assistant erstellen",
+    "step1Description": "Geführter Assistent: Unternehmen, Value Proposition, Tonalität, Kalender-Link.",
+    "step2Title": "2. In der Sandbox testen",
+    "step2Description": "Simuliere ein Gespräch mit einem fiktiven Prospect, bevor du live gehst.",
+    "yourAgents": "Deine AI Assistants",
+    "seeAll": "Alle anzeigen",
+    "noAgentsYet": "Du hast noch keinen Agenten erstellt.",
+    "unnamed": "(unbenannt)"
+  },
+  "AiAssistantsList": {
+    "title": "AI Assistants",
+    "description": "Erstelle für jeden Use Case einen eigenen Agenten. Jeder hat seinen eigenen Ton, sein Ziel und seinen Unternehmenskontext.",
+    "newAssistant": "+ Neuer Assistant",
+    "empty": "Noch keine Agenten vorhanden. Erstelle einen, um loszulegen.",
+    "unnamed": "(unbenannt)",
+    "tone": "Tonalität"
+  },
+  "NewAgent": {
+    "title": "Neuer AI Assistant",
+    "description": "Beantworte die Fragen: Je detaillierter du bist, desto besser funktioniert der Agent in echten Gesprächen."
+  },
+  "AgentWizard": {
+    "skippedLabel": "(übersprungen)",
+    "saveError": "Fehler beim Speichern",
+    "unexpectedError": "Unerwarteter Fehler",
+    "reviewIntro": "Fertig! Prüfe die Zusammenfassung unten und speichere, um den Agenten zu erstellen.",
+    "saving": "Wird gespeichert...",
+    "saveAssistant": "Assistant speichern",
+    "send": "Senden",
+    "skip": "Überspringen",
+    "steps": {
+      "name": {
+        "question": "Wie soll dieser Agent heißen? So erkennst du ihn später unter deinen Assistants (z. B. \"Outreach für Marketingagenturen\").",
+        "placeholder": "Outreach für Marketingagenturen"
+      },
+      "companyName": {
+        "question": "Wie heißt dein Unternehmen oder das Produkt, das dieser Agent vertritt?",
+        "placeholder": "Z. B. Acme Studio"
+      },
+      "valueProp": {
+        "question": "Was macht ihr, in einem Satz? (eure Value Proposition)",
+        "placeholder": "Wir helfen Marketingagenturen dabei, ..."
+      },
+      "differentiation": {
+        "question": "Warum sollte sich ein Prospect für euch und nicht für die Konkurrenz entscheiden?",
+        "placeholder": "Was uns unterscheidet, ist ..."
+      },
+      "icp": {
+        "question": "Wer ist euer idealer Kunde? (Rolle, Branche, Unternehmensgröße)",
+        "placeholder": "Z. B. Gründer oder Head of Growth bei B2B-Agenturen mit 5-50 Mitarbeitenden"
+      },
+      "tone": {
+        "question": "Welchen Ton soll der Assistant verwenden?",
+        "placeholder": "Eigenen Ton eingeben oder unten auswählen",
+        "quickReplies": ["Casual", "Professionell", "Direkt", "Beratend"]
+      },
+      "goal": {
+        "question": "Was ist das Ziel des Gesprächs?",
+        "placeholder": "Eigenes Ziel eingeben oder unten auswählen",
+        "quickReplies": ["Anruf buchen", "E-Mail sammeln", "Lead qualifizieren"]
+      },
+      "calendarLink": {
+        "question": "Buchungslink (Calendly, HubSpot, Cal.com...), der gesendet wird, wenn der Prospect bereit ist, einen Termin zu vereinbaren.",
+        "placeholder": "https://calendly.com/deinname"
+      },
+      "objections": {
+        "question": "Gibt es häufige Einwände, mit denen der Agent umgehen können sollte? Je mehr Details du gibst, desto besser antwortet er.",
+        "placeholder": "Z. B. \"Zu teuer\" → antworte mit dem durchschnittlichen ROI der Kunden..."
+      },
+      "guardrails": {
+        "question": "Gibt es etwas, das der Agent niemals sagen oder tun soll?",
+        "placeholder": "Z. B. nie über den Preis sprechen, nie Rabatte versprechen..."
+      }
+    }
+  },
+  "AgentDetail": {
+    "testInSandbox": "In Sandbox testen"
+  },
+  "AgentEditForm": {
+    "saveError": "Fehler beim Speichern",
+    "unexpectedError": "Unerwarteter Fehler",
+    "deleteConfirm": "Agent \"{name}\" löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "saving": "Wird gespeichert...",
+    "saveChanges": "Änderungen speichern",
+    "saved": "Gespeichert",
+    "deleting": "Wird gelöscht...",
+    "deleteAgent": "Agent löschen",
+    "fields": {
+      "name": "Agentenname",
+      "companyName": "Unternehmen / Produkt",
+      "valueProp": "Value Proposition",
+      "differentiation": "Differenzierung",
+      "icp": "Idealer Kunde (ICP)",
+      "tone": "Tonalität",
+      "goal": "Gesprächsziel",
+      "calendarLink": "Kalender-Link",
+      "objections": "Einwandbehandlung",
+      "guardrails": "Was der Agent nie tun/sagen soll"
+    }
+  },
+  "SandboxPage": {
+    "title": "Sandbox",
+    "description": "Simuliere ein Gespräch mit einem fiktiven Prospect, um zu testen, wie ein Agent antwortet, bevor du ihn in einer echten Kampagne einsetzt.",
+    "missingApiKey": "<key>ANTHROPIC_API_KEY</key> fehlt in <env>.env.local</env>. Füge sie hinzu, um hier in der Sandbox mit dem Agenten zu chatten.",
+    "noAgents": "Erstelle zuerst einen AI Assistant, um ihn hier zu testen."
+  },
+  "Sandbox": {
+    "replyError": "Fehler bei der Antwort des Agenten",
+    "unexpectedError": "Unerwarteter Fehler",
+    "aiAssistant": "AI Assistant",
+    "prospectSettings": "Prospect Settings",
+    "randomize": "Randomize",
+    "clear": "Clear",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "company": "Company",
+    "jobTitle": "Job Title",
+    "location": "Location",
+    "openingMessage": "Erste Nachricht der KI (optional)",
+    "openingMessagePlaceholder": "Die erste Nachricht des Agenten, um echtes Outreach zu simulieren...",
+    "conversation": "Conversation",
+    "emptyHint": "Schreib unten \"als wärst du der Prospect\", um das Gespräch zu starten.",
+    "typeAsProspect": "Type as the prospect...",
+    "send": "Send"
+  },
+  "LeadFinder": {
+    "title": "Lead Finder",
+    "description": "Importiere Leads und speichere sie als wiederverwendbare Listen für deine Kampagnen.",
+    "importFromSearch": "+ Aus Suche importieren",
+    "importCsv": "+ CSV importieren",
+    "basicSearchTitle": "Basic LinkedIn Search",
+    "basicSearchDescription": "Füge die URL einer normalen LinkedIn-Suche ein.",
+    "salesNavigatorTitle": "Sales Navigator Search",
+    "salesNavigatorDescription": "Füge die URL einer Sales-Navigator-Suche ein.",
+    "commentScraperTitle": "Comment Scraper",
+    "notBuiltYet": "Noch nicht gebaut.",
+    "searchesInProgress": "Laufende Suchen",
+    "yourLists": "Deine Listen",
+    "empty": "Noch keine Listen vorhanden. Importiere ein CSV oder eine Suche, um loszulegen.",
+    "leadsCount": "Leads",
+    "source": {
+      "csv": "CSV",
+      "linkedinBasicSearch": "LinkedIn Search",
+      "salesNavigatorSearch": "Sales Navigator",
+      "commentScraper": "Comment Scraper"
+    },
+    "jobStatus": {
+      "pending": "In Warteschlange",
+      "inProgress": "Läuft",
+      "failed": "Fehlgeschlagen"
+    }
+  },
+  "ImportCsv": {
+    "title": "Leads aus CSV importieren",
+    "expectedColumns": "Erwartete Spalten:",
+    "onlyRequired": "Nur LinkedIn URL ist erforderlich.",
+    "downloadTemplate": "Vorlage herunterladen"
+  },
+  "CsvImportClient": {
+    "importError": "Fehler beim Importieren",
+    "unexpectedError": "Unerwarteter Fehler",
+    "uploadFile": ".csv-Datei hochladen",
+    "orPasteBelow": "oder Inhalt unten einfügen",
+    "leadsFound": "{count} Leads gefunden",
+    "errorMissingColumn": "Spalte \"LinkedIn URL\" fehlt: sie ist das einzige Pflichtfeld.",
+    "errorMissingUrlRow": "Zeile {row}: LinkedIn URL fehlt, Zeile übersprungen.",
+    "errorParse": "Zeile {row}: {message}",
+    "colName": "Name",
+    "colCompany": "Unternehmen",
+    "colPosition": "Position",
+    "andMore": "...und {count} weitere.",
+    "listName": "Listenname",
+    "listNamePlaceholder": "Z. B. Marketing CEOs USA",
+    "importing": "Wird importiert...",
+    "importButton": "{count} Leads importieren",
+    "colHeadline": "Headline",
+    "colLocation": "Standort"
+  },
+  "ImportSearch": {
+    "title": "Aus LinkedIn-Suche importieren",
+    "description": "Gehe zu LinkedIn oder Sales Navigator, führe deine Suche aus, kopiere die URL aus der Adressleiste und füge sie unten ein — der Typ wird automatisch erkannt. Der Runner (mit der von dir gewählten Verbindung) öffnet die Seite und extrahiert die Ergebnisse.",
+    "needConnection": "Du benötigst zuerst eine <link>Verbindung mit konfiguriertem Sitzungscookie</link>."
+  },
+  "SearchImportClient": {
+    "basicLinkedinSearch": "Basic LinkedIn Search",
+    "salesNavigatorSearch": "Sales Navigator Search",
+    "createError": "Fehler beim Erstellen des Jobs",
+    "unexpectedError": "Unerwarteter Fehler",
+    "connectionLabel": "LinkedIn-Profil (Runner)",
+    "searchUrlLabel": "Such-URL",
+    "searchUrlPlaceholder": "https://www.linkedin.com/search/results/people/?... oder https://www.linkedin.com/sales/search/people?...",
+    "detected": "Erkannt",
+    "listNameLabel": "Listenname",
+    "listNamePlaceholder": "Z. B. Marketing CEOs USA",
+    "hint": "Der Job startet in der Warteschlange und läuft beim nächsten Polling-Zyklus des Runners (meist innerhalb weniger Minuten) — den Status siehst du in Lead Finder. Extrahiert die Ergebnisse der ersten Seite.",
+    "starting": "Wird gestartet...",
+    "startSearch": "Suche starten"
+  },
+  "LeadListDetail": {
+    "summary": "{count} Leads · importiert am {date}",
+    "colName": "Name",
+    "colHeadline": "Headline",
+    "colCompany": "Unternehmen",
+    "colPosition": "Position",
+    "colLocation": "Standort",
+    "profileLink": "Profil"
+  },
+  "DeleteListButton": {
+    "confirm": "Diese Lead-Liste löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleting": "Wird gelöscht...",
+    "deleteList": "Liste löschen"
+  },
+  "Campaigns": {
+    "title": "Campaigns",
+    "description": "Verknüpfe eine Lead-Liste mit einem AI Assistant und lege die Nachrichtensequenz fest.",
+    "newCampaign": "+ Neue Kampagne",
+    "draftNotice": "Kampagnen starten als <strong>Entwurf</strong>. Zum Aktivieren brauchst du eine <link>LinkedIn-Verbindung</link> — siehe die Detailseite jeder Kampagne.",
+    "empty": "Noch keine Kampagnen vorhanden. Stelle sicher, dass mindestens eine Lead-Liste (Lead Finder) und ein AI Assistant vorhanden sind, bevor du eine erstellst."
+  },
+  "NewCampaign": {
+    "title": "Neue Kampagne",
+    "prerequisitesIntro": "Bevor du eine Kampagne erstellst, benötigst du:",
+    "needAgent": "mindestens einen <strong>AI Assistant</strong>",
+    "present": "✓ vorhanden",
+    "createOne": "einen erstellen",
+    "needLeadList": "mindestens eine <strong>Lead-Liste</strong>",
+    "importOne": "eine importieren",
+    "description": "Feste Sequenz für den MVP: Verbindungsnotiz (optional) → Nachricht 1 nach der Annahme → ein Follow-up, falls keine Antwort kommt."
+  },
+  "CampaignForm": {
+    "createError": "Fehler beim Erstellen der Kampagne",
+    "unexpectedError": "Unerwarteter Fehler",
+    "campaignName": "Kampagnenname",
+    "campaignNamePlaceholder": "Z. B. Marketingagentur-CEOs USA",
+    "leadList": "Lead-Liste",
+    "aiAssistant": "AI Assistant",
+    "connectionNote": "Notiz zur Kontaktanfrage (optional)",
+    "connectionNotePlaceholder": "Hallo [Vorname], ich habe gesehen, dass...",
+    "message1": "Nachricht 1 (gesendet nach der Annahme)",
+    "message1Placeholder": "Hallo [Vorname], danke für die Vernetzung...",
+    "followUp": "Follow-up (optional, gesendet bei keiner Antwort)",
+    "followUpPlaceholder": "Ich wollte nur sichergehen, dass meine letzte Nachricht...",
+    "afterDays": "Nach (Tagen)",
+    "replyMode": "Reply mode",
+    "reviewBeforeSending": "Review Before Sending",
+    "recommendedToStart": "Empfohlen für den Start",
+    "fullyAutonomous": "Fully Autonomous",
+    "repliesSentAutomatically": "Antworten werden automatisch gesendet",
+    "creating": "Wird erstellt...",
+    "createCampaign": "Kampagne erstellen"
+  },
+  "CampaignDetail": {
+    "leadList": "Lead-Liste",
+    "leads": "Leads",
+    "listDeleted": "Liste gelöscht",
+    "aiAssistant": "AI Assistant",
+    "agentDeleted": "Agent gelöscht",
+    "connectionNote": "Verbindungsnotiz",
+    "message1": "Nachricht 1",
+    "followUp": "Follow-up",
+    "followUpNote": "(nach {days} Tagen, reagiert noch nicht auf Antworten — siehe die Grenzen im README des Runners)",
+    "replyMode": "Reply mode",
+    "fullyAutonomous": "Fully Autonomous",
+    "reviewBeforeSending": "Review Before Sending"
+  },
+  "ActivateCampaignPanel": {
+    "needConnection": "Um diese Kampagne zu aktivieren, brauchst du zuerst eine <link>LinkedIn-Verbindung</link>.",
+    "activateError": "Fehler bei der Aktivierung",
+    "unexpectedError": "Unerwarteter Fehler",
+    "title": "Kampagne aktivieren",
+    "linkedinProfile": "LinkedIn-Profil",
+    "online": "online",
+    "offline": "offline",
+    "offlineWarning": "Diese Verbindung ist offline: Runner/Erweiterung hat sich noch nicht gemeldet. Die Aktionen bleiben in der Warteschlange, bis sie online ist.",
+    "riskAcknowledgement": "Mir ist klar, dass ab jetzt echte Kontaktanfragen im ausgewählten LinkedIn-Profil gesendet werden, innerhalb der konfigurierten Limits.",
+    "activating": "Wird aktiviert...",
+    "activateCampaign": "Kampagne aktivieren"
+  },
+  "ActionsQueue": {
+    "title": "Aktions-Warteschlange",
+    "empty": "Keine Aktionen in der Warteschlange.",
+    "colLead": "Lead",
+    "colAction": "Aktion",
+    "colStatus": "Status",
+    "colScheduled": "Geplant",
+    "status": {
+      "pending": "In Warteschlange",
+      "inProgress": "Läuft",
+      "done": "Erledigt",
+      "failed": "Fehlgeschlagen",
+      "expired": "Abgelaufen"
+    },
+    "type": {
+      "sendConnectionRequest": "Kontaktanfrage",
+      "checkAcceptance": "Annahme prüfen",
+      "sendMessage": "Nachricht"
+    }
+  },
+  "DeleteCampaignButton": {
+    "confirm": "Diese Kampagne löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleting": "Wird gelöscht...",
+    "deleteCampaign": "Kampagne löschen"
+  },
+  "Connections": {
+    "title": "Connections",
+    "description": "Verbinde ein LinkedIn-Profil über den <strong>Cloud-Runner</strong> (in <code>runner/</code>): Ein LinkedIn-Sitzungscookie authentifiziert einen Headless-Browser, als würdest du dich von einem anderen Gerät aus anmelden — Chrome muss nicht geöffnet bleiben.",
+    "warning": "Der Runner führt echte Aktionen in deinem LinkedIn-Konto aus (Kontaktanfragen, Nachrichten). LinkedIn kann die Anmeldung als \"neues Gerät\" einstufen und beim ersten Mal eine Verifizierung verlangen. Teste zuerst mit einem Zweitkonto und niedrigen Limits — siehe <code>runner/README.md</code> im Repo. (Die Chrome-Erweiterung in <code>extension/</code> ist weiterhin als Alternative verfügbar.)"
+  },
+  "ConnectionsClient": {
+    "createError": "Fehler beim Erstellen",
+    "unexpectedError": "Unerwarteter Fehler",
+    "deleteConfirm": "Diese Verbindung löschen? Verknüpfte Kampagnen bleiben aktiv, aber ohne Ausführenden.",
+    "yourConnections": "Deine Verbindungen",
+    "newConnection": "+ Neue Verbindung",
+    "labelField": "Bezeichnung",
+    "labelPlaceholder": "Z. B. Mein LinkedIn-Profil",
+    "connectionsPerDay": "Kontaktanfragen/Tag",
+    "connectionsPerWeek": "Kontaktanfragen/Woche",
+    "messagesPerDay": "Nachrichten/Tag",
+    "creating": "Wird erstellt...",
+    "createConnection": "Verbindung erstellen",
+    "cancel": "Abbrechen",
+    "empty": "Noch keine Verbindungen vorhanden.",
+    "online": "online",
+    "offline": "offline",
+    "cookieConfigured": "Cookie konfiguriert",
+    "cookieMissing": "Cookie fehlt",
+    "limitsSummary": "{daily}/Tag · {weekly}/Woche Kontaktanfragen · {messages}/Tag Nachrichten",
+    "updateCookie": "Cookie aktualisieren",
+    "addCookie": "Cookie hinzufügen",
+    "delete": "Löschen",
+    "sessionCookieLabel": "Sitzungscookie (li_at)",
+    "cookiePlaceholder": "Füge hier den Wert des li_at-Cookies ein",
+    "saving": "Wird gespeichert...",
+    "saveCookie": "Cookie speichern",
+    "setupTitle": "Verbindung \"{label}\" erstellt — Runner einrichten",
+    "setupStep1": "1. <strong>Token</strong> (wird nur einmal angezeigt) — kommt in <code>runner/.env</code> als <code>REACHOS_TOKEN</code>:",
+    "copy": "Kopieren",
+    "setupStep2": "2. <strong>LinkedIn-Sitzungscookie (li_at)</strong> — er ist wie ein Passwort: Wer ihn hat, kann auf LinkedIn als du auftreten. So findest du ihn: gehe angemeldet auf linkedin.com → öffne DevTools (F12) → Application (oder Storage) → Cookies → linkedin.com → kopiere den Wert des Cookies <code>li_at</code>.",
+    "save": "Speichern",
+    "cookieSaved": "Cookie gespeichert.",
+    "skipHint": "Du kannst diesen Schritt auch jetzt überspringen und ihn später aus der Verbindungsliste unten hinzufügen.",
+    "setupCliStep1": "Im Repo:",
+    "setupCliStep2": "Kopiere <code>runner/.env.example</code> nach <code>runner/.env</code> und setze URL der Seite + Token.",
+    "setupCliStep3": "<code>npm start</code> — Details und Risikohinweise siehe <code>runner/README.md</code>.",
+    "savedEverything": "Ich habe alles gespeichert"
+  }
+}

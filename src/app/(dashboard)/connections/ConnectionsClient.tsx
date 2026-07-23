@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import type { Connection } from "@/lib/connections/types";
 import { DEFAULT_CONNECTION_LIMITS } from "@/lib/connections/types";
 
@@ -13,6 +14,7 @@ export default function ConnectionsClient({
   initialConnections: ConnectionWithStatus[];
 }) {
   const router = useRouter();
+  const t = useTranslations("ConnectionsClient");
   const [connections, setConnections] = useState(initialConnections);
   const [showForm, setShowForm] = useState(connections.length === 0);
   const [label, setLabel] = useState("");
@@ -33,21 +35,21 @@ export default function ConnectionsClient({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...limits, label }),
       });
-      if (!res.ok) throw new Error("Errore nella creazione");
+      if (!res.ok) throw new Error(t("createError"));
       const { connection } = await res.json();
       setConnections((prev) => [{ ...connection, online: false }, ...prev]);
       setNewConnection({ id: connection.id, label: connection.label, token: connection.token });
       setShowForm(false);
       setLabel("");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Errore inatteso");
+      setError(err instanceof Error ? err.message : t("unexpectedError"));
     } finally {
       setCreating(false);
     }
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Eliminare questa connessione? Le campagne collegate resteranno attive ma senza esecutore.")) return;
+    if (!confirm(t("deleteConfirm"))) return;
     await fetch(`/api/connections/${id}`, { method: "DELETE" });
     setConnections((prev) => prev.filter((c) => c.id !== id));
     router.refresh();
@@ -60,13 +62,13 @@ export default function ConnectionsClient({
       )}
 
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-medium text-neutral-900">Le tue connessioni</h2>
+        <h2 className="text-sm font-medium text-neutral-900">{t("yourConnections")}</h2>
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
             className="rounded-md bg-neutral-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-neutral-800"
           >
-            + Nuova connessione
+            {t("newConnection")}
           </button>
         )}
       </div>
@@ -74,28 +76,28 @@ export default function ConnectionsClient({
       {showForm && (
         <form onSubmit={handleCreate} className="space-y-3 rounded-lg border border-neutral-200 bg-white p-5">
           <div>
-            <label className="mb-1 block text-xs font-medium text-neutral-500">Etichetta</label>
+            <label className="mb-1 block text-xs font-medium text-neutral-500">{t("labelField")}</label>
             <input
               required
               value={label}
               onChange={(e) => setLabel(e.target.value)}
-              placeholder="Es. Il mio profilo LinkedIn"
+              placeholder={t("labelPlaceholder")}
               className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
             />
           </div>
           <div className="grid grid-cols-3 gap-3">
             <NumberField
-              label="Connessioni/giorno"
+              label={t("connectionsPerDay")}
               value={limits.dailyConnectionLimit}
               onChange={(v) => setLimits((l) => ({ ...l, dailyConnectionLimit: v }))}
             />
             <NumberField
-              label="Connessioni/settimana"
+              label={t("connectionsPerWeek")}
               value={limits.weeklyConnectionLimit}
               onChange={(v) => setLimits((l) => ({ ...l, weeklyConnectionLimit: v }))}
             />
             <NumberField
-              label="Messaggi/giorno"
+              label={t("messagesPerDay")}
               value={limits.dailyMessageLimit}
               onChange={(v) => setLimits((l) => ({ ...l, dailyMessageLimit: v }))}
             />
@@ -107,7 +109,7 @@ export default function ConnectionsClient({
               disabled={creating}
               className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
             >
-              {creating ? "Creazione..." : "Crea connessione"}
+              {creating ? t("creating") : t("createConnection")}
             </button>
             {connections.length > 0 && (
               <button
@@ -115,7 +117,7 @@ export default function ConnectionsClient({
                 onClick={() => setShowForm(false)}
                 className="rounded-md px-4 py-2 text-sm text-neutral-500 hover:text-neutral-900"
               >
-                Annulla
+                {t("cancel")}
               </button>
             )}
           </div>
@@ -124,7 +126,7 @@ export default function ConnectionsClient({
 
       {connections.length === 0 ? (
         <div className="rounded-lg border border-dashed border-neutral-300 bg-white px-5 py-10 text-center text-sm text-neutral-500">
-          Nessuna connessione ancora.
+          {t("empty")}
         </div>
       ) : (
         <ul className="divide-y divide-neutral-200 rounded-lg border border-neutral-200 bg-white">
@@ -145,6 +147,7 @@ function ConnectionRow({
   onDelete: () => void;
 }) {
   const router = useRouter();
+  const t = useTranslations("ConnectionsClient");
   const [editingCookie, setEditingCookie] = useState(false);
   const [cookieValue, setCookieValue] = useState("");
   const [saving, setSaving] = useState(false);
@@ -173,18 +176,21 @@ function ConnectionRow({
           <div className="flex items-center gap-2">
             <span className={`h-2 w-2 rounded-full ${connection.online ? "bg-green-500" : "bg-neutral-300"}`} />
             <span className="font-medium text-neutral-900">{connection.label}</span>
-            <span className="text-xs text-neutral-400">{connection.online ? "online" : "offline"}</span>
+            <span className="text-xs text-neutral-400">{connection.online ? t("online") : t("offline")}</span>
             <span
               className={`rounded-full px-2 py-0.5 text-xs ${
                 connection.sessionCookie ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"
               }`}
             >
-              {connection.sessionCookie ? "cookie configurato" : "cookie mancante"}
+              {connection.sessionCookie ? t("cookieConfigured") : t("cookieMissing")}
             </span>
           </div>
           <div className="mt-0.5 text-xs text-neutral-400">
-            {connection.dailyConnectionLimit}/giorno · {connection.weeklyConnectionLimit}/settimana connessioni ·{" "}
-            {connection.dailyMessageLimit}/giorno messaggi
+            {t("limitsSummary", {
+              daily: connection.dailyConnectionLimit,
+              weekly: connection.weeklyConnectionLimit,
+              messages: connection.dailyMessageLimit,
+            })}
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -192,21 +198,21 @@ function ConnectionRow({
             onClick={() => setEditingCookie((v) => !v)}
             className="text-xs text-neutral-600 hover:text-neutral-900"
           >
-            {connection.sessionCookie ? "Aggiorna cookie" : "Aggiungi cookie"}
+            {connection.sessionCookie ? t("updateCookie") : t("addCookie")}
           </button>
           <button onClick={onDelete} className="text-xs text-red-600 hover:underline">
-            Elimina
+            {t("delete")}
           </button>
         </div>
       </div>
 
       {editingCookie && (
         <div className="mt-3 rounded-md border border-neutral-200 bg-neutral-50 p-3">
-          <label className="mb-1 block text-xs font-medium text-neutral-500">Cookie di sessione (li_at)</label>
+          <label className="mb-1 block text-xs font-medium text-neutral-500">{t("sessionCookieLabel")}</label>
           <input
             value={cookieValue}
             onChange={(e) => setCookieValue(e.target.value)}
-            placeholder="Incolla qui il valore del cookie li_at"
+            placeholder={t("cookiePlaceholder")}
             className="w-full rounded-md border border-neutral-300 px-2.5 py-1.5 font-mono text-xs"
           />
           <button
@@ -214,7 +220,7 @@ function ConnectionRow({
             disabled={saving || !cookieValue.trim()}
             className="mt-2 rounded-md bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
           >
-            {saving ? "Salvataggio..." : "Salva cookie"}
+            {saving ? t("saving") : t("saveCookie")}
           </button>
         </div>
       )}
@@ -231,6 +237,7 @@ function SetupPanel({
   onDone: () => void;
   onSaved: () => void;
 }) {
+  const t = useTranslations("ConnectionsClient");
   const [cookieValue, setCookieValue] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -253,14 +260,14 @@ function SetupPanel({
 
   return (
     <div className="rounded-lg border border-neutral-900 bg-neutral-50 p-5">
-      <h3 className="text-sm font-medium text-neutral-900">
-        Connessione &quot;{connection.label}&quot; creata — configura il runner
-      </h3>
+      <h3 className="text-sm font-medium text-neutral-900">{t("setupTitle", { label: connection.label })}</h3>
 
       <div className="mt-3">
         <p className="text-xs text-neutral-500">
-          1. <strong>Token</strong> (mostrato una sola volta) — va in <code className="font-mono">runner/.env</code>{" "}
-          come <code className="font-mono">REACHOS_TOKEN</code>:
+          {t.rich("setupStep1", {
+            strong: (chunks) => <strong>{chunks}</strong>,
+            code: (chunks) => <code className="font-mono">{chunks}</code>,
+          })}
         </p>
         <div className="mt-1 flex items-center gap-2">
           <code className="flex-1 truncate rounded-md border border-neutral-300 bg-white px-3 py-2 text-xs">
@@ -270,23 +277,23 @@ function SetupPanel({
             onClick={() => navigator.clipboard.writeText(connection.token)}
             className="shrink-0 rounded-md border border-neutral-300 px-3 py-2 text-xs hover:border-neutral-900"
           >
-            Copia
+            {t("copy")}
           </button>
         </div>
       </div>
 
       <div className="mt-4">
         <p className="text-xs text-neutral-500">
-          2. <strong>Cookie di sessione LinkedIn (li_at)</strong> — è come una password: chi lo ha può agire
-          come te su LinkedIn. Per trovarlo: vai su linkedin.com già loggato → apri DevTools (F12) →
-          Application (o Storage) → Cookies → linkedin.com → copia il valore del cookie{" "}
-          <code className="font-mono">li_at</code>.
+          {t.rich("setupStep2", {
+            strong: (chunks) => <strong>{chunks}</strong>,
+            code: (chunks) => <code className="font-mono">{chunks}</code>,
+          })}
         </p>
         <div className="mt-1 flex items-center gap-2">
           <input
             value={cookieValue}
             onChange={(e) => setCookieValue(e.target.value)}
-            placeholder="Incolla qui il valore del cookie li_at"
+            placeholder={t("cookiePlaceholder")}
             className="flex-1 rounded-md border border-neutral-300 px-3 py-2 font-mono text-xs"
           />
           <button
@@ -294,31 +301,28 @@ function SetupPanel({
             disabled={saving || !cookieValue.trim()}
             className="shrink-0 rounded-md bg-neutral-900 px-3 py-2 text-xs font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
           >
-            {saving ? "Salvataggio..." : "Salva"}
+            {saving ? t("saving") : t("save")}
           </button>
         </div>
-        {saved && <p className="mt-1 text-xs text-green-700">Cookie salvato.</p>}
-        <p className="mt-2 text-xs text-neutral-500">
-          Puoi anche saltare questo passaggio ora e aggiungerlo dopo dalla lista connessioni qui sotto.
-        </p>
+        {saved && <p className="mt-1 text-xs text-green-700">{t("cookieSaved")}</p>}
+        <p className="mt-2 text-xs text-neutral-500">{t("skipHint")}</p>
       </div>
 
       <ol className="mt-4 list-decimal space-y-1 pl-5 text-xs text-neutral-500">
         <li>
-          Nel repo: <code className="font-mono">cd runner && npm install && npx playwright install chromium</code>
+          {t("setupCliStep1")}{" "}
+          <code className="font-mono">cd runner && npm install && npx playwright install chromium</code>
         </li>
         <li>
-          Copia <code className="font-mono">runner/.env.example</code> in{" "}
-          <code className="font-mono">runner/.env</code> e imposta URL del sito + token.
+          {t.rich("setupCliStep2", { code: (chunks) => <code className="font-mono">{chunks}</code> })}
         </li>
         <li>
-          <code className="font-mono">npm start</code> — vedi <code className="font-mono">runner/README.md</code>{" "}
-          per i dettagli e gli avvisi sul rischio.
+          {t.rich("setupCliStep3", { code: (chunks) => <code className="font-mono">{chunks}</code> })}
         </li>
       </ol>
 
       <button onClick={onDone} className="mt-3 text-xs text-neutral-400 hover:text-neutral-700">
-        Ho salvato tutto
+        {t("savedEverything")}
       </button>
     </div>
   );

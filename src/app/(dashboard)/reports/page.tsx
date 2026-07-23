@@ -1,10 +1,7 @@
+import { getTranslations } from "next-intl/server";
 import ComingSoon from "@/components/ComingSoon";
 
-export default function ReportsPage() {
-  return (
-    <ComingSoon
-      title="Reports"
-      description="Acceptance rate, response rate e meeting prenotati per campagna e per canale."
-    />
-  );
+export default async function ReportsPage() {
+  const t = await getTranslations("Reports");
+  return <ComingSoon title={t("title")} description={t("description")} />;
 }

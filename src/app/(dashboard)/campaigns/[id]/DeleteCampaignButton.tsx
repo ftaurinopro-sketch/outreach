@@ -2,13 +2,15 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 export default function DeleteCampaignButton({ campaignId }: { campaignId: string }) {
   const router = useRouter();
+  const t = useTranslations("DeleteCampaignButton");
   const [deleting, setDeleting] = useState(false);
 
   async function handleDelete() {
-    if (!confirm("Eliminare questa campagna? L'azione non è reversibile.")) return;
+    if (!confirm(t("confirm"))) return;
     setDeleting(true);
     try {
       await fetch(`/api/campaigns/${campaignId}`, { method: "DELETE" });
@@ -25,7 +27,7 @@ export default function DeleteCampaignButton({ campaignId }: { campaignId: strin
       disabled={deleting}
       className="text-sm text-red-600 hover:underline disabled:opacity-50"
     >
-      {deleting ? "Eliminazione..." : "Elimina campagna"}
+      {deleting ? t("deleting") : t("deleteCampaign")}
     </button>
   );
 }

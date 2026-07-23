@@ -2,103 +2,57 @@
 
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import type { AgentInput } from "@/lib/agents/types";
 
 type StepKey = keyof AgentInput;
 
-type Step = {
+type StepConfig = {
   key: StepKey;
-  question: (answers: Partial<AgentInput>) => string;
-  placeholder: string;
   multiline?: boolean;
-  quickReplies?: string[];
+  hasQuickReplies?: boolean;
   optional?: boolean;
 };
 
-const STEPS: Step[] = [
-  {
-    key: "name",
-    question: () =>
-      'Come vuoi chiamare questo agent? È il nome con cui lo riconoscerai tra i tuoi assistant (es. "Outreach agenzie marketing").',
-    placeholder: "Outreach agenzie marketing",
-  },
-  {
-    key: "companyName",
-    question: () => "Qual è il nome della tua azienda o del prodotto che questo agent rappresenta?",
-    placeholder: "Es. Acme Studio",
-  },
-  {
-    key: "valueProp",
-    question: () => "Cosa fai, in una frase? (la tua value proposition)",
-    placeholder: "Aiutiamo le agenzie di marketing a...",
-    multiline: true,
-  },
-  {
-    key: "differentiation",
-    question: () => "Perché un prospect dovrebbe scegliere te e non i competitor?",
-    placeholder: "Quello che ci rende diversi è...",
-    multiline: true,
-  },
-  {
-    key: "icp",
-    question: () => "Chi è il tuo cliente ideale? (ruolo, settore, dimensione azienda)",
-    placeholder: "Es. founder o head of growth in agenzie B2B da 5-50 persone",
-    multiline: true,
-  },
-  {
-    key: "tone",
-    question: () => "Che tono deve usare l'assistant?",
-    placeholder: "Scrivi un tono personalizzato oppure scegli qui sotto",
-    quickReplies: ["Casual", "Professionale", "Diretto", "Consulenziale"],
-  },
-  {
-    key: "goal",
-    question: () => "Qual è l'obiettivo finale della conversazione?",
-    placeholder: "Scrivi un obiettivo personalizzato oppure scegli qui sotto",
-    quickReplies: ["Prenotare una call", "Raccogliere l'email", "Qualificare il lead"],
-  },
-  {
-    key: "calendarLink",
-    question: () =>
-      "Link di prenotazione (Calendly, HubSpot, Cal.com...) da mandare quando il prospect è pronto a fissare una call.",
-    placeholder: "https://calendly.com/tuonome",
-    optional: true,
-  },
-  {
-    key: "objections",
-    question: () =>
-      "Ci sono obiezioni comuni che l'agent dovrebbe saper gestire? Più dettagli fornisci, meglio risponderà.",
-    placeholder: "Es. \"Costa troppo\" → rispondi spiegando il ROI medio dei clienti...",
-    multiline: true,
-    optional: true,
-  },
-  {
-    key: "guardrails",
-    question: () => "C'è qualcosa che l'agent non deve mai dire o fare?",
-    placeholder: "Es. non parlare mai di prezzo, non promettere sconti...",
-    multiline: true,
-    optional: true,
-  },
+const STEP_ORDER: StepConfig[] = [
+  { key: "name" },
+  { key: "companyName" },
+  { key: "valueProp", multiline: true },
+  { key: "differentiation", multiline: true },
+  { key: "icp", multiline: true },
+  { key: "tone", hasQuickReplies: true },
+  { key: "goal", hasQuickReplies: true },
+  { key: "calendarLink", optional: true },
+  { key: "objections", multiline: true, optional: true },
+  { key: "guardrails", multiline: true, optional: true },
 ];
 
 type LogEntry = { from: "bot" | "user"; text: string };
 
 export default function AgentWizard() {
   const router = useRouter();
+  const t = useTranslations("AgentWizard");
+  const tSteps = useTranslations("AgentWizard.steps");
+
+  const question = (key: StepKey) => tSteps(`${key}.question`);
+  const placeholder = (key: StepKey) => tSteps(`${key}.placeholder`);
+  const quickReplies = (key: StepKey): string[] => {
+    try {
+      return tSteps.raw(`${key}.quickReplies`) as string[];
+    } catch {
+      return [];
+    }
+  };
+
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<Partial<AgentInput>>({});
-  const [log, setLog] = useState<LogEntry[]>([
-    { from: "bot", text: STEPS[0].question({}) },
-  ]);
+  const [log, setLog] = useState<LogEntry[]>([{ from: "bot", text: question(STEP_ORDER[0].key) }]);
   const [inputValue, setInputValue] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const step = stepIndex < STEPS.length ? STEPS[stepIndex] : null;
-  const progress = useMemo(
-    () => Math.round((stepIndex / STEPS.length) * 100),
-    [stepIndex]
-  );
+  const step = stepIndex < STEP_ORDER.length ? STEP_ORDER[stepIndex] : null;
+  const progress = useMemo(() => Math.round((stepIndex / STEP_ORDER.length) * 100), [stepIndex]);
 
   function advance(value: string) {
     if (!step) return;
@@ -108,11 +62,11 @@ export default function AgentWizard() {
     const nextAnswers = { ...answers, [step.key]: trimmed };
     setAnswers(nextAnswers);
 
-    const nextLog: LogEntry[] = [...log, { from: "user", text: trimmed || "(saltato)" }];
+    const nextLog: LogEntry[] = [...log, { from: "user", text: trimmed || t("skippedLabel") }];
 
     const nextIndex = stepIndex + 1;
-    if (nextIndex < STEPS.length) {
-      nextLog.push({ from: "bot", text: STEPS[nextIndex].question(nextAnswers) });
+    if (nextIndex < STEP_ORDER.length) {
+      nextLog.push({ from: "bot", text: question(STEP_ORDER[nextIndex].key) });
     }
     setLog(nextLog);
     setStepIndex(nextIndex);
@@ -130,17 +84,17 @@ export default function AgentWizard() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Errore nel salvataggio");
+        throw new Error(data.error || t("saveError"));
       }
       const { agent } = await res.json();
       router.push(`/ai-assistants/${agent.id}`);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Errore inatteso");
+      setError(e instanceof Error ? e.message : t("unexpectedError"));
       setSaving(false);
     }
   }
 
-  const isReview = stepIndex >= STEPS.length;
+  const isReview = stepIndex >= STEP_ORDER.length;
 
   return (
     <div className="rounded-lg border border-neutral-200 bg-white">
@@ -153,15 +107,10 @@ export default function AgentWizard() {
 
       <div className="max-h-[420px] space-y-3 overflow-y-auto px-5 py-5">
         {log.map((entry, i) => (
-          <div
-            key={i}
-            className={`flex ${entry.from === "user" ? "justify-end" : "justify-start"}`}
-          >
+          <div key={i} className={`flex ${entry.from === "user" ? "justify-end" : "justify-start"}`}>
             <div
               className={`max-w-[85%] rounded-lg px-3.5 py-2 text-sm ${
-                entry.from === "user"
-                  ? "bg-neutral-900 text-white"
-                  : "bg-neutral-100 text-neutral-800"
+                entry.from === "user" ? "bg-neutral-900 text-white" : "bg-neutral-100 text-neutral-800"
               }`}
             >
               {entry.text}
@@ -173,11 +122,9 @@ export default function AgentWizard() {
       <div className="border-t border-neutral-200 p-4">
         {isReview ? (
           <div>
-            <p className="text-sm text-neutral-600">
-              Fatto! Rivedi il riepilogo qui sotto e salva per creare l&apos;agent.
-            </p>
+            <p className="text-sm text-neutral-600">{t("reviewIntro")}</p>
             <dl className="mt-3 space-y-1.5 text-sm">
-              {STEPS.map((s) => (
+              {STEP_ORDER.map((s) => (
                 <div key={s.key} className="flex gap-2">
                   <dt className="w-32 shrink-0 text-neutral-400">{s.key}</dt>
                   <dd className="text-neutral-800">{answers[s.key] || "—"}</dd>
@@ -190,14 +137,14 @@ export default function AgentWizard() {
               disabled={saving}
               className="mt-4 rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
             >
-              {saving ? "Salvataggio..." : "Salva Assistant"}
+              {saving ? t("saving") : t("saveAssistant")}
             </button>
           </div>
         ) : (
           <div>
-            {step?.quickReplies && (
+            {step?.hasQuickReplies && (
               <div className="mb-2 flex flex-wrap gap-1.5">
-                {step.quickReplies.map((option) => (
+                {quickReplies(step.key).map((option) => (
                   <button
                     key={option}
                     onClick={() => advance(option)}
@@ -219,7 +166,7 @@ export default function AgentWizard() {
                 <textarea
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  placeholder={step.placeholder}
+                  placeholder={step ? placeholder(step.key) : ""}
                   rows={2}
                   className="flex-1 resize-none rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
                   onKeyDown={(e) => {
@@ -233,7 +180,7 @@ export default function AgentWizard() {
                 <input
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  placeholder={step?.placeholder}
+                  placeholder={step ? placeholder(step.key) : ""}
                   className="flex-1 rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
                 />
               )}
@@ -241,7 +188,7 @@ export default function AgentWizard() {
                 type="submit"
                 className="shrink-0 rounded-md bg-neutral-900 px-3.5 py-2 text-sm font-medium text-white hover:bg-neutral-800"
               >
-                Invia
+                {t("send")}
               </button>
               {step?.optional && (
                 <button
@@ -249,7 +196,7 @@ export default function AgentWizard() {
                   onClick={() => advance("")}
                   className="shrink-0 rounded-md px-2 py-2 text-sm text-neutral-400 hover:text-neutral-700"
                 >
-                  Salta
+                  {t("skip")}
                 </button>
               )}
             </form>

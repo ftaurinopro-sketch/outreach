@@ -2,15 +2,28 @@
 
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-import { parseLeadsCsv } from "@/lib/leads/csv";
+import { useTranslations } from "next-intl";
+import { parseLeadsCsv, type ParseError } from "@/lib/leads/csv";
 import type { Lead } from "@/lib/leads/types";
+
+function formatError(t: ReturnType<typeof useTranslations>, error: ParseError): string {
+  switch (error.type) {
+    case "missingLinkedinUrlColumn":
+      return t("errorMissingColumn");
+    case "missingLinkedinUrlRow":
+      return t("errorMissingUrlRow", { row: error.row });
+    case "papaparse":
+      return t("errorParse", { row: error.row ?? "?", message: error.message });
+  }
+}
 
 export default function CsvImportClient() {
   const router = useRouter();
+  const t = useTranslations("CsvImportClient");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [csvText, setCsvText] = useState("");
   const [leads, setLeads] = useState<Lead[] | null>(null);
-  const [parseErrors, setParseErrors] = useState<string[]>([]);
+  const [parseErrors, setParseErrors] = useState<ParseError[]>([]);
   const [listName, setListName] = useState("");
   const [importing, setImporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,12 +55,12 @@ export default function CsvImportClient() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Errore nell'importazione");
+        throw new Error(data.error || t("importError"));
       }
       const { list } = await res.json();
       router.push(`/lead-finder/${list.id}`);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Errore inatteso");
+      setError(e instanceof Error ? e.message : t("unexpectedError"));
       setImporting(false);
     }
   }
@@ -60,7 +73,7 @@ export default function CsvImportClient() {
             onClick={() => fileInputRef.current?.click()}
             className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm hover:border-neutral-900"
           >
-            Carica file .csv
+            {t("uploadFile")}
           </button>
           <input
             ref={fileInputRef}
@@ -69,7 +82,7 @@ export default function CsvImportClient() {
             className="hidden"
             onChange={handleFileChange}
           />
-          <span className="text-xs text-neutral-400">oppure incolla il contenuto qui sotto</span>
+          <span className="text-xs text-neutral-400">{t("orPasteBelow")}</span>
         </div>
         <textarea
           value={csvText}
@@ -83,15 +96,13 @@ export default function CsvImportClient() {
       {leads !== null && (
         <div className="rounded-lg border border-neutral-200 bg-white p-5">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium text-neutral-900">
-              {leads.length} lead trovati
-            </h3>
+            <h3 className="text-sm font-medium text-neutral-900">{t("leadsFound", { count: leads.length })}</h3>
           </div>
 
           {parseErrors.length > 0 && (
             <ul className="mt-2 space-y-0.5 text-xs text-amber-700">
               {parseErrors.map((err, i) => (
-                <li key={i}>{err}</li>
+                <li key={i}>{formatError(t, err)}</li>
               ))}
             </ul>
           )}
@@ -101,9 +112,9 @@ export default function CsvImportClient() {
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="text-neutral-400">
-                    <th className="pb-1 pr-3">Nome</th>
-                    <th className="pb-1 pr-3">Azienda</th>
-                    <th className="pb-1 pr-3">Posizione</th>
+                    <th className="pb-1 pr-3">{t("colName")}</th>
+                    <th className="pb-1 pr-3">{t("colCompany")}</th>
+                    <th className="pb-1 pr-3">{t("colPosition")}</th>
                     <th className="pb-1">LinkedIn</th>
                   </tr>
                 </thead>
@@ -123,23 +134,19 @@ export default function CsvImportClient() {
                 </tbody>
               </table>
               {leads.length > 5 && (
-                <p className="mt-1 text-xs text-neutral-400">
-                  ...e altri {leads.length - 5}.
-                </p>
+                <p className="mt-1 text-xs text-neutral-400">{t("andMore", { count: leads.length - 5 })}</p>
               )}
             </div>
           )}
 
           {leads.length > 0 && (
             <div className="mt-4 border-t border-neutral-200 pt-4">
-              <label className="mb-1 block text-xs font-medium text-neutral-500">
-                Nome della lista
-              </label>
+              <label className="mb-1 block text-xs font-medium text-neutral-500">{t("listName")}</label>
               <div className="flex gap-2">
                 <input
                   value={listName}
                   onChange={(e) => setListName(e.target.value)}
-                  placeholder="Es. Marketing CEOs USA"
+                  placeholder={t("listNamePlaceholder")}
                   className="flex-1 rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
                 />
                 <button
@@ -147,7 +154,7 @@ export default function CsvImportClient() {
                   disabled={importing || !listName.trim()}
                   className="shrink-0 rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
                 >
-                  {importing ? "Importazione..." : `Importa ${leads.length} lead`}
+                  {importing ? t("importing") : t("importButton", { count: leads.length })}
                 </button>
               </div>
               {error && <p className="mt-2 text-sm text-red-600">{error}</p>}

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { getLocale, getTranslations } from "next-intl/server";
 import { getLeadList } from "@/lib/leads/store";
 import DeleteListButton from "./DeleteListButton";
 
@@ -6,7 +7,11 @@ type Props = { params: Promise<{ id: string }> };
 
 export default async function LeadListPage({ params }: Props) {
   const { id } = await params;
-  const list = await getLeadList(id);
+  const [list, t, locale] = await Promise.all([
+    getLeadList(id),
+    getTranslations("LeadListDetail"),
+    getLocale(),
+  ]);
   if (!list) notFound();
 
   return (
@@ -15,8 +20,10 @@ export default async function LeadListPage({ params }: Props) {
         <div>
           <h1 className="text-2xl font-semibold text-neutral-900">{list.name}</h1>
           <p className="mt-1 text-sm text-neutral-500">
-            {list.leads.length} lead · importati il{" "}
-            {new Date(list.createdAt).toLocaleDateString("it-IT")}
+            {t("summary", {
+              count: list.leads.length,
+              date: new Date(list.createdAt).toLocaleDateString(locale),
+            })}
           </p>
         </div>
         <DeleteListButton listId={list.id} />
@@ -26,11 +33,11 @@ export default async function LeadListPage({ params }: Props) {
         <table className="w-full text-left text-sm">
           <thead className="border-b border-neutral-200 text-xs text-neutral-400">
             <tr>
-              <th className="px-4 py-2.5">Nome</th>
-              <th className="px-4 py-2.5">Headline</th>
-              <th className="px-4 py-2.5">Azienda</th>
-              <th className="px-4 py-2.5">Posizione</th>
-              <th className="px-4 py-2.5">Località</th>
+              <th className="px-4 py-2.5">{t("colName")}</th>
+              <th className="px-4 py-2.5">{t("colHeadline")}</th>
+              <th className="px-4 py-2.5">{t("colCompany")}</th>
+              <th className="px-4 py-2.5">{t("colPosition")}</th>
+              <th className="px-4 py-2.5">{t("colLocation")}</th>
               <th className="px-4 py-2.5">LinkedIn</th>
             </tr>
           </thead>
@@ -53,7 +60,7 @@ export default async function LeadListPage({ params }: Props) {
                     rel="noreferrer"
                     className="text-neutral-500 hover:text-neutral-900 hover:underline"
                   >
-                    Profilo →
+                    {t("profileLink")} →
                   </a>
                 </td>
               </tr>

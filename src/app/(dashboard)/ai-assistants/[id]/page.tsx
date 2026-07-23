@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { getAgent } from "@/lib/agents/store";
 import AgentEditForm from "./AgentEditForm";
 
@@ -7,7 +8,7 @@ type Props = { params: Promise<{ id: string }> };
 
 export default async function AgentDetailPage({ params }: Props) {
   const { id } = await params;
-  const agent = await getAgent(id);
+  const [agent, t] = await Promise.all([getAgent(id), getTranslations("AgentDetail")]);
   if (!agent) notFound();
 
   return (
@@ -18,7 +19,7 @@ export default async function AgentDetailPage({ params }: Props) {
           href={`/sandbox?agent=${agent.id}`}
           className="rounded-md bg-neutral-900 px-3.5 py-2 text-sm font-medium text-white hover:bg-neutral-800"
         >
-          Testa in Sandbox →
+          {t("testInSandbox")} →
         </Link>
       </div>
       <p className="mt-1 text-sm text-neutral-500">{agent.companyName}</p>

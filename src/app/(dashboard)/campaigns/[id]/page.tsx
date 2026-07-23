@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { getCampaign } from "@/lib/campaigns/store";
 import { getAgent } from "@/lib/agents/store";
 import { getLeadList } from "@/lib/leads/store";
@@ -16,11 +17,12 @@ export default async function CampaignDetailPage({ params }: Props) {
   const campaign = await getCampaign(id);
   if (!campaign) notFound();
 
-  const [agent, leadList, connections, actions] = await Promise.all([
+  const [agent, leadList, connections, actions, t] = await Promise.all([
     getAgent(campaign.agentId),
     getLeadList(campaign.leadListId),
     listConnections(),
     campaign.status === "active" ? listActionsForCampaign(campaign.id) : Promise.resolve([]),
+    getTranslations("CampaignDetail"),
   ]);
 
   return (
@@ -52,43 +54,42 @@ export default async function CampaignDetailPage({ params }: Props) {
       )}
 
       <div className="mt-6 space-y-4 rounded-lg border border-neutral-200 bg-white p-5 text-sm">
-        <Row label="Lista lead">
+        <Row label={t("leadList")}>
           {leadList ? (
             <Link href={`/lead-finder/${leadList.id}`} className="text-neutral-900 hover:underline">
-              {leadList.name} ({leadList.leads.length} lead)
+              {leadList.name} ({leadList.leads.length} {t("leads")})
             </Link>
           ) : (
-            <span className="text-red-600">lista eliminata</span>
+            <span className="text-red-600">{t("listDeleted")}</span>
           )}
         </Row>
-        <Row label="AI Assistant">
+        <Row label={t("aiAssistant")}>
           {agent ? (
             <Link href={`/ai-assistants/${agent.id}`} className="text-neutral-900 hover:underline">
               {agent.name}
             </Link>
           ) : (
-            <span className="text-red-600">agent eliminato</span>
+            <span className="text-red-600">{t("agentDeleted")}</span>
           )}
         </Row>
-        <Row label="Nota di connessione">
+        <Row label={t("connectionNote")}>
           {campaign.connectionNote || <span className="text-neutral-400">—</span>}
         </Row>
-        <Row label="Messaggio 1">{campaign.message1}</Row>
-        <Row label="Follow-up">
+        <Row label={t("message1")}>{campaign.message1}</Row>
+        <Row label={t("followUp")}>
           {campaign.followUpMessage ? (
             <>
               {campaign.followUpMessage}
               <span className="ml-1 text-neutral-400">
-                (dopo {campaign.followUpDelayDays} giorni, non ancora sensibile alle risposte — vedi limiti
-                nel README dell&apos;estensione)
+                {t("followUpNote", { days: campaign.followUpDelayDays })}
               </span>
             </>
           ) : (
             <span className="text-neutral-400">—</span>
           )}
         </Row>
-        <Row label="Reply mode">
-          {campaign.replyMode === "autonomous" ? "Fully Autonomous" : "Review Before Sending"}
+        <Row label={t("replyMode")}>
+          {campaign.replyMode === "autonomous" ? t("fullyAutonomous") : t("reviewBeforeSending")}
         </Row>
       </div>
     </div>

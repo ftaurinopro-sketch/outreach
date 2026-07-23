@@ -2,23 +2,25 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import type { AgentConfig, AgentInput } from "@/lib/agents/types";
 
-const FIELDS: { key: keyof AgentInput; label: string; multiline?: boolean }[] = [
-  { key: "name", label: "Nome agent" },
-  { key: "companyName", label: "Azienda / prodotto" },
-  { key: "valueProp", label: "Value proposition", multiline: true },
-  { key: "differentiation", label: "Differenziazione", multiline: true },
-  { key: "icp", label: "Cliente ideale (ICP)", multiline: true },
-  { key: "tone", label: "Tono" },
-  { key: "goal", label: "Obiettivo conversazione" },
-  { key: "calendarLink", label: "Link calendario" },
-  { key: "objections", label: "Gestione obiezioni", multiline: true },
-  { key: "guardrails", label: "Cosa non deve mai fare/dire", multiline: true },
+const FIELD_KEYS: { key: keyof AgentInput; multiline?: boolean }[] = [
+  { key: "name" },
+  { key: "companyName" },
+  { key: "valueProp", multiline: true },
+  { key: "differentiation", multiline: true },
+  { key: "icp", multiline: true },
+  { key: "tone" },
+  { key: "goal" },
+  { key: "calendarLink" },
+  { key: "objections", multiline: true },
+  { key: "guardrails", multiline: true },
 ];
 
 export default function AgentEditForm({ agent }: { agent: AgentConfig }) {
   const router = useRouter();
+  const t = useTranslations("AgentEditForm");
   const [values, setValues] = useState<AgentInput>({
     name: agent.name,
     companyName: agent.companyName,
@@ -45,18 +47,18 @@ export default function AgentEditForm({ agent }: { agent: AgentConfig }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
-      if (!res.ok) throw new Error("Errore nel salvataggio");
+      if (!res.ok) throw new Error(t("saveError"));
       setSavedAt(Date.now());
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Errore inatteso");
+      setError(e instanceof Error ? e.message : t("unexpectedError"));
     } finally {
       setSaving(false);
     }
   }
 
   async function handleDelete() {
-    if (!confirm(`Eliminare l'agent "${agent.name}"? L'azione non è reversibile.`)) return;
+    if (!confirm(t("deleteConfirm", { name: agent.name }))) return;
     setDeleting(true);
     try {
       await fetch(`/api/agents/${agent.id}`, { method: "DELETE" });
@@ -69,9 +71,11 @@ export default function AgentEditForm({ agent }: { agent: AgentConfig }) {
 
   return (
     <div className="space-y-4 rounded-lg border border-neutral-200 bg-white p-5">
-      {FIELDS.map((field) => (
+      {FIELD_KEYS.map((field) => (
         <div key={field.key}>
-          <label className="mb-1 block text-xs font-medium text-neutral-500">{field.label}</label>
+          <label className="mb-1 block text-xs font-medium text-neutral-500">
+            {t(`fields.${field.key}`)}
+          </label>
           {field.multiline ? (
             <textarea
               value={values[field.key]}
@@ -98,16 +102,16 @@ export default function AgentEditForm({ agent }: { agent: AgentConfig }) {
             disabled={saving}
             className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
           >
-            {saving ? "Salvataggio..." : "Salva modifiche"}
+            {saving ? t("saving") : t("saveChanges")}
           </button>
-          {savedAt && <span className="text-xs text-neutral-400">Salvato</span>}
+          {savedAt && <span className="text-xs text-neutral-400">{t("saved")}</span>}
         </div>
         <button
           onClick={handleDelete}
           disabled={deleting}
           className="text-sm text-red-600 hover:underline disabled:opacity-50"
         >
-          {deleting ? "Eliminazione..." : "Elimina agent"}
+          {deleting ? t("deleting") : t("deleteAgent")}
         </button>
       </div>
     </div>

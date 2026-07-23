@@ -1,5 +1,5 @@
 export type ReplyMode = "review" | "autonomous";
-export type CampaignStatus = "draft" | "active";
+export type CampaignStatus = "draft" | "active" | "paused";
 
 export type CampaignInput = {
   name: string;

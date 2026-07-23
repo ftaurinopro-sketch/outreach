@@ -9,6 +9,7 @@ import { listActionsForCampaign } from "@/lib/automation/store";
 import DeleteCampaignButton from "./DeleteCampaignButton";
 import ActivateCampaignPanel from "./ActivateCampaignPanel";
 import ActionsQueue from "./ActionsQueue";
+import PauseResumeCampaignButton from "./PauseResumeCampaignButton";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -21,7 +22,7 @@ export default async function CampaignDetailPage({ params }: Props) {
     getAgent(campaign.agentId),
     getLeadList(campaign.leadListId),
     listConnections(),
-    campaign.status === "active" ? listActionsForCampaign(campaign.id) : Promise.resolve([]),
+    campaign.status !== "draft" ? listActionsForCampaign(campaign.id) : Promise.resolve([]),
     getTranslations("CampaignDetail"),
   ]);
 
@@ -34,13 +35,18 @@ export default async function CampaignDetailPage({ params }: Props) {
             className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs ${
               campaign.status === "active"
                 ? "bg-green-100 text-green-700"
-                : "bg-neutral-100 text-neutral-500"
+                : campaign.status === "paused"
+                  ? "bg-amber-100 text-amber-700"
+                  : "bg-neutral-100 text-neutral-500"
             }`}
           >
             {campaign.status}
           </span>
         </div>
-        <DeleteCampaignButton campaignId={campaign.id} />
+        <div className="flex items-center gap-2">
+          <PauseResumeCampaignButton campaignId={campaign.id} status={campaign.status} />
+          <DeleteCampaignButton campaignId={campaign.id} />
+        </div>
       </div>
 
       {campaign.status === "draft" ? (

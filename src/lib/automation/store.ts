@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import { promises as fs } from "fs";
 import path from "path";
 import { createSupabaseServerClient, hasSupabaseConfig } from "@/lib/supabase/server";
+import { listPausedCampaignIdsForConnection } from "@/lib/campaigns/store";
 import type { ActionStatus, AutomationAction } from "./types";
 
 const DATA_DIR = path.join(process.cwd(), ".data");
@@ -144,9 +145,12 @@ export function newAction(
 // extension instance polling a personal account.
 export async function claimNextAction(connectionId: string): Promise<AutomationAction | null> {
   const now = new Date().toISOString();
+  const pausedCampaignIds = await listPausedCampaignIdsForConnection(connectionId);
 
   if (hasSupabaseConfig()) {
     const supabase = createSupabaseServerClient();
+    // Fetch a small batch of due candidates rather than just one, since the
+    // single earliest-due action might belong to a paused campaign.
     const { data, error } = await supabase
       .from("automation_actions")
       .select("*")
@@ -154,15 +158,15 @@ export async function claimNextAction(connectionId: string): Promise<AutomationA
       .eq("status", "pending")
       .lte("scheduled_at", now)
       .order("scheduled_at", { ascending: true })
-      .limit(1)
-      .maybeSingle();
+      .limit(20);
     if (error) throw error;
-    if (!data) return null;
+    const candidate = (data as ActionRow[]).find((a) => !pausedCampaignIds.has(a.campaign_id));
+    if (!candidate) return null;
 
     const { data: updated, error: updateError } = await supabase
       .from("automation_actions")
-      .update({ status: "in_progress", attempts: (data as ActionRow).attempts + 1 })
-      .eq("id", (data as ActionRow).id)
+      .update({ status: "in_progress", attempts: candidate.attempts + 1 })
+      .eq("id", candidate.id)
       .eq("status", "pending")
       .select("*")
       .maybeSingle();
@@ -172,7 +176,13 @@ export async function claimNextAction(connectionId: string): Promise<AutomationA
 
   const actions = await readLocalFile();
   const due = actions
-    .filter((a) => a.connectionId === connectionId && a.status === "pending" && a.scheduledAt <= now)
+    .filter(
+      (a) =>
+        a.connectionId === connectionId &&
+        a.status === "pending" &&
+        a.scheduledAt <= now &&
+        !pausedCampaignIds.has(a.campaignId)
+    )
     .sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt));
   const next = due[0];
   if (!next) return null;

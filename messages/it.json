@@ -28,17 +28,85 @@
     "title": "Report",
     "description": "Acceptance rate, response rate e meeting prenotati per campagna e per canale."
   },
-  "GetStarted": {
-    "title": "Inizia",
-    "intro": "Benvenuto in ReachOS. Parti dall'AI Assistant Builder: crea un agent, poi testalo nella Sandbox. Anche Lead Finder e Campaigns sono pronti — Inbox e Reports sono i prossimi passi della roadmap.",
-    "step1Title": "1. Crea un AI Assistant",
-    "step1Description": "Wizard guidato: azienda, value proposition, tono, link calendario.",
-    "step2Title": "2. Testalo in Sandbox",
-    "step2Description": "Simula una conversazione con un prospect finto prima di andare live.",
-    "yourAgents": "I tuoi AI Assistants",
-    "seeAll": "Vedi tutti",
-    "noAgentsYet": "Non hai ancora creato nessun agent.",
-    "unnamed": "(senza nome)"
+  "Dashboard": {
+    "title": "Home",
+    "subtitle": "Una fotografia in tempo reale del tuo outreach — campagne, prospect e cosa richiede attenzione.",
+    "notTrackedYet": "in arrivo",
+    "quickActions": {
+      "newCampaign": "Nuova Campagna",
+      "importFromSalesNav": "Importa da Sales Navigator",
+      "createLeadList": "Crea Lead List",
+      "configureAgent": "Configura AI Assistant",
+      "connectAccount": "Collega un account LinkedIn"
+    },
+    "emptyState": {
+      "welcome": "Benvenuto! Configura la tua prima campagna per iniziare ad automatizzare il tuo outreach su LinkedIn.",
+      "subtitle": "Segui la checklist qui sotto per arrivare dalla configurazione iniziale alla tua prima campagna automatizzata.",
+      "checklist": {
+        "connectLinkedin": "Collega il tuo account LinkedIn",
+        "configureAgent": "Configura il tuo AI Assistant",
+        "importLeadList": "Importa una Lead List",
+        "createCampaign": "Crea la tua prima campagna",
+        "startAutomation": "Avvia l'automazione"
+      }
+    },
+    "kpi": {
+      "activeCampaigns": "Campagne attive",
+      "pausedCampaigns": "Campagne in pausa",
+      "totalProspects": "Prospect totali",
+      "engagedProspects": "Prospect ingaggiati",
+      "connectionsSent": "Richieste di connessione inviate",
+      "connectionsAccepted": "Richieste di connessione accettate",
+      "acceptanceRate": "Acceptance Rate",
+      "messagesSent": "Messaggi inviati",
+      "replyRate": "Reply Rate",
+      "positiveReplies": "Positive Replies",
+      "meetings": "Meeting ottenuti",
+      "avgAiScore": "AI Score medio dei lead contattati"
+    },
+    "activeCampaignsSection": {
+      "title": "Campagne Attive",
+      "seeAll": "Vedi tutte",
+      "empty": "Nessuna campagna in esecuzione — attiva una campagna in bozza per vederla qui."
+    },
+    "campaignCard": {
+      "status": {
+        "active": "Attiva",
+        "paused": "In pausa",
+        "completed": "Completata",
+        "draft": "Bozza"
+      },
+      "progress": "{contacted}/{total} lead contattati",
+      "connectionsSent": "Connessioni inviate",
+      "connectionsAccepted": "Connessioni accettate",
+      "acceptanceRate": "Acceptance Rate",
+      "messagesSent": "Messaggi inviati",
+      "remaining": "Da contattare",
+      "velocity": "Lead/giorno",
+      "lastActivity": "Ultima attività"
+    },
+    "funnel": {
+      "title": "Funnel di Conversione",
+      "totalLeads": "Lead Totali",
+      "connectionsSent": "Richieste di connessione inviate",
+      "connectionsAccepted": "Connessioni accettate",
+      "firstMessageSent": "Primo messaggio inviato",
+      "repliesReceived": "Risposte ricevute",
+      "positiveReplies": "Conversazioni positive",
+      "meetingsBooked": "Meeting fissati",
+      "customersAcquired": "Clienti acquisiti",
+      "comingSoon": "in arrivo"
+    },
+    "activity": {
+      "title": "Attività Recenti",
+      "empty": "Ancora nessuna attività.",
+      "connectionSent": "Richiesta di connessione inviata a {name}",
+      "connectionAccepted": "{name} ha accettato la richiesta di connessione",
+      "messageSent": "Messaggio inviato a {name}",
+      "campaignStarted": "Campagna “{name}” avviata",
+      "leadListImported": "Nuova Lead List importata: {name}",
+      "leadsScored": "AI ha classificato {count} nuovi lead in {name}"
+    }
   },
   "AiAssistantsList": {
     "title": "AI Assistants",
@@ -366,6 +434,12 @@
     "confirm": "Eliminare questa campagna? L'azione non è reversibile.",
     "deleting": "Eliminazione...",
     "deleteCampaign": "Elimina campagna"
+  },
+  "PauseResumeCampaignButton": {
+    "pause": "Pausa",
+    "pausing": "Messa in pausa...",
+    "resume": "Riprendi",
+    "resuming": "Ripresa in corso..."
   },
   "Connections": {
     "title": "Connections",

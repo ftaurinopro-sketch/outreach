@@ -47,7 +47,15 @@ export default async function CampaignsPage() {
                 <Link href={`/campaigns/${c.id}`} className="font-medium text-neutral-900 hover:underline">
                   {c.name}
                 </Link>
-                <span className="ml-2 rounded-full bg-neutral-100 px-2 py-0.5 text-xs text-neutral-500">
+                <span
+                  className={`ml-2 rounded-full px-2 py-0.5 text-xs ${
+                    c.status === "active"
+                      ? "bg-green-100 text-green-700"
+                      : c.status === "paused"
+                        ? "bg-amber-100 text-amber-700"
+                        : "bg-neutral-100 text-neutral-500"
+                  }`}
+                >
                   {c.status}
                 </span>
               </div>

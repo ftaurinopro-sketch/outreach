@@ -28,17 +28,85 @@
     "title": "Reports",
     "description": "Acceptance rate, response rate, and booked meetings per campaign and per channel."
   },
-  "GetStarted": {
-    "title": "Get Started",
-    "intro": "Welcome to ReachOS. Start with the AI Assistant Builder: create an agent, then test it in the Sandbox. Lead Finder and Campaigns are ready too — Inbox and Reports are next on the roadmap.",
-    "step1Title": "1. Create an AI Assistant",
-    "step1Description": "Guided wizard: company, value proposition, tone, calendar link.",
-    "step2Title": "2. Test it in Sandbox",
-    "step2Description": "Simulate a conversation with a fake prospect before going live.",
-    "yourAgents": "Your AI Assistants",
-    "seeAll": "See all",
-    "noAgentsYet": "You haven't created any agent yet.",
-    "unnamed": "(unnamed)"
+  "Dashboard": {
+    "title": "Home",
+    "subtitle": "A live snapshot of your outreach — campaigns, prospects, and what needs attention.",
+    "notTrackedYet": "coming soon",
+    "quickActions": {
+      "newCampaign": "New Campaign",
+      "importFromSalesNav": "Import from Sales Navigator",
+      "createLeadList": "Create Lead List",
+      "configureAgent": "Configure AI Assistant",
+      "connectAccount": "Connect a LinkedIn account"
+    },
+    "emptyState": {
+      "welcome": "Welcome! Set up your first campaign to start automating your LinkedIn outreach.",
+      "subtitle": "Work through the checklist below to get from zero to your first automated campaign.",
+      "checklist": {
+        "connectLinkedin": "Connect your LinkedIn account",
+        "configureAgent": "Configure your AI Assistant",
+        "importLeadList": "Import a lead list",
+        "createCampaign": "Create your first campaign",
+        "startAutomation": "Start the automation"
+      }
+    },
+    "kpi": {
+      "activeCampaigns": "Active campaigns",
+      "pausedCampaigns": "Paused campaigns",
+      "totalProspects": "Total prospects",
+      "engagedProspects": "Engaged prospects",
+      "connectionsSent": "Connection requests sent",
+      "connectionsAccepted": "Connection requests accepted",
+      "acceptanceRate": "Acceptance rate",
+      "messagesSent": "Messages sent",
+      "replyRate": "Reply rate",
+      "positiveReplies": "Positive replies",
+      "meetings": "Meetings booked",
+      "avgAiScore": "Avg. AI score of contacted leads"
+    },
+    "activeCampaignsSection": {
+      "title": "Active Campaigns",
+      "seeAll": "See all",
+      "empty": "No campaign is running yet — activate a draft campaign to see it here."
+    },
+    "campaignCard": {
+      "status": {
+        "active": "Active",
+        "paused": "Paused",
+        "completed": "Completed",
+        "draft": "Draft"
+      },
+      "progress": "{contacted}/{total} leads contacted",
+      "connectionsSent": "Connections sent",
+      "connectionsAccepted": "Connections accepted",
+      "acceptanceRate": "Acceptance rate",
+      "messagesSent": "Messages sent",
+      "remaining": "Remaining",
+      "velocity": "Leads/day",
+      "lastActivity": "Last activity"
+    },
+    "funnel": {
+      "title": "Conversion Funnel",
+      "totalLeads": "Total leads",
+      "connectionsSent": "Connection requests sent",
+      "connectionsAccepted": "Connections accepted",
+      "firstMessageSent": "First message sent",
+      "repliesReceived": "Replies received",
+      "positiveReplies": "Positive conversations",
+      "meetingsBooked": "Meetings booked",
+      "customersAcquired": "Customers acquired",
+      "comingSoon": "coming soon"
+    },
+    "activity": {
+      "title": "Recent Activity",
+      "empty": "No activity yet.",
+      "connectionSent": "Connection request sent to {name}",
+      "connectionAccepted": "{name} accepted the connection request",
+      "messageSent": "Message sent to {name}",
+      "campaignStarted": "Campaign “{name}” started",
+      "leadListImported": "New lead list imported: {name}",
+      "leadsScored": "AI classified {count} new leads in {name}"
+    }
   },
   "AiAssistantsList": {
     "title": "AI Assistants",
@@ -366,6 +434,12 @@
     "confirm": "Delete this campaign? This action cannot be undone.",
     "deleting": "Deleting...",
     "deleteCampaign": "Delete campaign"
+  },
+  "PauseResumeCampaignButton": {
+    "pause": "Pause",
+    "pausing": "Pausing...",
+    "resume": "Resume",
+    "resuming": "Resuming..."
   },
   "Connections": {
     "title": "Connections",

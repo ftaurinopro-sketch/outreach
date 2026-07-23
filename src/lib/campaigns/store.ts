@@ -158,6 +158,58 @@ export async function activateCampaign(id: string, connectionId: string): Promis
   return campaigns[idx];
 }
 
+async function setCampaignStatus(id: string, status: "active" | "paused"): Promise<Campaign> {
+  const now = new Date().toISOString();
+
+  if (hasSupabaseAuthConfig()) {
+    const supabase = await createSupabaseUserClient();
+    const { data, error } = await supabase
+      .from("campaigns")
+      .update({ status, updated_at: now })
+      .eq("id", id)
+      .select("*")
+      .maybeSingle();
+    if (error) throw error;
+    if (!data) throw new Error("Campagna non trovata");
+    return fromRow(data as CampaignRow);
+  }
+
+  const campaigns = await readLocalFile();
+  const idx = campaigns.findIndex((c) => c.id === id);
+  if (idx === -1) throw new Error("Campagna non trovata");
+  campaigns[idx] = { ...campaigns[idx], status, updatedAt: now };
+  await writeLocalFile(campaigns);
+  return campaigns[idx];
+}
+
+export async function pauseCampaign(id: string): Promise<Campaign> {
+  return setCampaignStatus(id, "paused");
+}
+
+export async function resumeCampaign(id: string): Promise<Campaign> {
+  return setCampaignStatus(id, "active");
+}
+
+// Used only by the extension's next-action polling route (bearer-token
+// auth, no Supabase session): finds which of a connection's campaigns are
+// currently paused so claimNextAction can skip their queued actions.
+export async function listPausedCampaignIdsForConnection(connectionId: string): Promise<Set<string>> {
+  if (hasSupabaseConfig()) {
+    const supabase = createSupabaseServerClient();
+    const { data, error } = await supabase
+      .from("campaigns")
+      .select("id")
+      .eq("connection_id", connectionId)
+      .eq("status", "paused");
+    if (error) throw error;
+    return new Set((data as { id: string }[]).map((r) => r.id));
+  }
+  const campaigns = await readLocalFile();
+  return new Set(
+    campaigns.filter((c) => c.connectionId === connectionId && c.status === "paused").map((c) => c.id)
+  );
+}
+
 export async function deleteCampaign(id: string): Promise<void> {
   if (hasSupabaseAuthConfig()) {
     const supabase = await createSupabaseUserClient();

@@ -3,9 +3,26 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { Plus, Trash2 } from "lucide-react";
 import type { AgentConfig } from "@/lib/agents/types";
-import { EMPTY_CAMPAIGN_INPUT, type CampaignInput } from "@/lib/campaigns/types";
+import {
+  EMPTY_CAMPAIGN_INPUT,
+  MAX_SEQUENCE_MESSAGES,
+  newMessageStep,
+  type CampaignAutomationSettings,
+  type CampaignInput,
+} from "@/lib/campaigns/types";
 import type { LeadListSummary } from "@/lib/leads/types";
+
+const WEEKDAYS = [
+  { value: 1, key: "mon" },
+  { value: 2, key: "tue" },
+  { value: 3, key: "wed" },
+  { value: 4, key: "thu" },
+  { value: 5, key: "fri" },
+  { value: 6, key: "sat" },
+  { value: 0, key: "sun" },
+] as const;
 
 export default function CampaignForm({
   agents,
@@ -20,12 +37,43 @@ export default function CampaignForm({
     ...EMPTY_CAMPAIGN_INPUT,
     agentId: agents[0]?.id ?? "",
     leadListId: leadLists[0]?.id ?? "",
+    messages: [newMessageStep()],
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   function set<K extends keyof CampaignInput>(key: K, value: CampaignInput[K]) {
     setValues((v) => ({ ...v, [key]: value }));
+  }
+
+  function setSettings<K extends keyof CampaignAutomationSettings>(key: K, value: CampaignAutomationSettings[K]) {
+    setValues((v) => ({ ...v, automationSettings: { ...v.automationSettings, [key]: value } }));
+  }
+
+  function updateMessage(index: number, patch: Partial<CampaignInput["messages"][number]>) {
+    setValues((v) => ({
+      ...v,
+      messages: v.messages.map((m, i) => (i === index ? { ...m, ...patch } : m)),
+    }));
+  }
+
+  function addMessage() {
+    if (values.messages.length >= MAX_SEQUENCE_MESSAGES) return;
+    setValues((v) => ({ ...v, messages: [...v.messages, newMessageStep()] }));
+  }
+
+  function removeMessage(index: number) {
+    if (values.messages.length <= 1) return;
+    setValues((v) => ({ ...v, messages: v.messages.filter((_, i) => i !== index) }));
+  }
+
+  function toggleWorkingDay(day: number) {
+    setValues((v) => {
+      const days = v.automationSettings.workingDays.includes(day)
+        ? v.automationSettings.workingDays.filter((d) => d !== day)
+        : [...v.automationSettings.workingDays, day];
+      return { ...v, automationSettings: { ...v.automationSettings, workingDays: days } };
+    });
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -106,37 +154,59 @@ export default function CampaignForm({
       </div>
 
       <div>
-        <label className="mb-1 block text-xs font-medium text-neutral-500">{t("message1")}</label>
-        <textarea
-          required
-          value={values.message1}
-          onChange={(e) => set("message1", e.target.value)}
-          rows={3}
-          placeholder={t("message1Placeholder")}
-          className="w-full resize-none rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
-        />
-      </div>
-
-      <div>
-        <label className="mb-1 block text-xs font-medium text-neutral-500">{t("followUp")}</label>
-        <div className="flex gap-2">
-          <textarea
-            value={values.followUpMessage}
-            onChange={(e) => set("followUpMessage", e.target.value)}
-            rows={2}
-            placeholder={t("followUpPlaceholder")}
-            className="flex-1 resize-none rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
-          />
-          <div className="w-28 shrink-0">
-            <label className="mb-1 block text-xs text-neutral-400">{t("afterDays")}</label>
-            <input
-              type="number"
-              min={1}
-              value={values.followUpDelayDays}
-              onChange={(e) => set("followUpDelayDays", Number(e.target.value) || 1)}
-              className="w-full rounded-md border border-neutral-300 px-2.5 py-2 text-sm"
-            />
-          </div>
+        <div className="mb-1 flex items-center justify-between">
+          <label className="block text-xs font-medium text-neutral-500">{t("messageSequence")}</label>
+          <button
+            type="button"
+            onClick={addMessage}
+            disabled={values.messages.length >= MAX_SEQUENCE_MESSAGES}
+            className="flex items-center gap-1 text-xs text-neutral-500 hover:text-neutral-900 disabled:opacity-40"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            {t("addMessage")}
+          </button>
+        </div>
+        <div className="space-y-3">
+          {values.messages.map((step, i) => (
+            <div key={step.id} className="rounded-md border border-neutral-200 p-3">
+              <div className="mb-1.5 flex items-center justify-between">
+                <span className="text-xs font-medium text-neutral-400">
+                  {i === 0 ? t("firstMessageLabel") : t("messageLabel", { index: i + 1 })}
+                </span>
+                {values.messages.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeMessage(i)}
+                    className="text-neutral-400 hover:text-red-600"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <textarea
+                  required={i === 0}
+                  value={step.text}
+                  onChange={(e) => updateMessage(i, { text: e.target.value })}
+                  rows={i === 0 ? 3 : 2}
+                  placeholder={i === 0 ? t("message1Placeholder") : t("followUpPlaceholder")}
+                  className="flex-1 resize-none rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
+                />
+                {i > 0 && (
+                  <div className="w-28 shrink-0">
+                    <label className="mb-1 block text-xs text-neutral-400">{t("afterDays")}</label>
+                    <input
+                      type="number"
+                      min={1}
+                      value={step.delayDays}
+                      onChange={(e) => updateMessage(i, { delayDays: Number(e.target.value) || 1 })}
+                      className="w-full rounded-md border border-neutral-300 px-2.5 py-2 text-sm"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -167,6 +237,90 @@ export default function CampaignForm({
             <div className="font-medium text-neutral-900">{t("fullyAutonomous")}</div>
             <div className="text-xs text-neutral-400">{t("repliesSentAutomatically")}</div>
           </button>
+        </div>
+      </div>
+
+      <div className="rounded-md border border-neutral-200 p-3">
+        <div className="mb-2 text-xs font-medium text-neutral-500">{t("automationSettings")}</div>
+
+        <div className="mb-3">
+          <label className="mb-1 block text-xs text-neutral-400">{t("workingDays")}</label>
+          <div className="flex flex-wrap gap-1.5">
+            {WEEKDAYS.map(({ value, key }) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => toggleWorkingDay(value)}
+                className={`rounded-full border px-2.5 py-1 text-xs ${
+                  values.automationSettings.workingDays.includes(value)
+                    ? "border-neutral-900 bg-neutral-900 text-white"
+                    : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-400"
+                }`}
+              >
+                {t(`weekday.${key}`)}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div>
+            <label className="mb-1 block text-xs text-neutral-400">{t("sendHourStart")}</label>
+            <input
+              type="number"
+              min={0}
+              max={23}
+              value={values.automationSettings.sendHourStart}
+              onChange={(e) => setSettings("sendHourStart", Number(e.target.value) || 0)}
+              className="w-full rounded-md border border-neutral-300 px-2.5 py-2 text-sm"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs text-neutral-400">{t("sendHourEnd")}</label>
+            <input
+              type="number"
+              min={1}
+              max={24}
+              value={values.automationSettings.sendHourEnd}
+              onChange={(e) => setSettings("sendHourEnd", Number(e.target.value) || 1)}
+              className="w-full rounded-md border border-neutral-300 px-2.5 py-2 text-sm"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs text-neutral-400">{t("randomDelay")}</label>
+            <input
+              type="number"
+              min={0}
+              value={values.automationSettings.randomDelayMinutes}
+              onChange={(e) => setSettings("randomDelayMinutes", Number(e.target.value) || 0)}
+              className="w-full rounded-md border border-neutral-300 px-2.5 py-2 text-sm"
+            />
+          </div>
+        </div>
+
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          <div>
+            <label className="mb-1 block text-xs text-neutral-400">{t("dailyCap")}</label>
+            <input
+              type="number"
+              min={1}
+              placeholder={t("useAccountLimit")}
+              value={values.automationSettings.dailyConnectionCap ?? ""}
+              onChange={(e) => setSettings("dailyConnectionCap", e.target.value ? Number(e.target.value) : null)}
+              className="w-full rounded-md border border-neutral-300 px-2.5 py-2 text-sm"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs text-neutral-400">{t("weeklyCap")}</label>
+            <input
+              type="number"
+              min={1}
+              placeholder={t("useAccountLimit")}
+              value={values.automationSettings.weeklyConnectionCap ?? ""}
+              onChange={(e) => setSettings("weeklyConnectionCap", e.target.value ? Number(e.target.value) : null)}
+              className="w-full rounded-md border border-neutral-300 px-2.5 py-2 text-sm"
+            />
+          </div>
         </div>
       </div>
 

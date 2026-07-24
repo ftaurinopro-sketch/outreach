@@ -37,7 +37,9 @@ export async function POST(request: Request, { params }: Params) {
     connectionId: connection.id,
     connectionNote: campaign.connectionNote,
     leads: leadList.leads,
-    dailyConnectionLimit: connection.dailyConnectionLimit,
+    settings: campaign.automationSettings,
+    connectionDailyLimit: connection.dailyConnectionLimit,
+    connectionWeeklyLimit: connection.weeklyConnectionLimit,
   });
 
   const updated = await activateCampaign(campaign.id, connection.id);

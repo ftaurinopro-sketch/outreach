@@ -81,25 +81,58 @@ export default async function CampaignDetailPage({ params }: Props) {
         <Row label={t("connectionNote")}>
           {campaign.connectionNote || <span className="text-neutral-400">—</span>}
         </Row>
-        <Row label={t("message1")}>{campaign.message1}</Row>
-        <Row label={t("followUp")}>
-          {campaign.followUpMessage ? (
-            <>
-              {campaign.followUpMessage}
-              <span className="ml-1 text-neutral-400">
-                {t("followUpNote", { days: campaign.followUpDelayDays })}
-              </span>
-            </>
-          ) : (
-            <span className="text-neutral-400">—</span>
-          )}
+        <Row label={t("messageSequence")}>
+          <ol className="space-y-2">
+            {campaign.messages.map((step, i) => (
+              <li key={step.id} className="rounded-md border border-neutral-100 bg-neutral-50 p-2.5">
+                <div className="text-xs font-medium text-neutral-500">
+                  {i === 0 ? t("messageStepFirst") : t("messageStepDelayed", { index: i + 1, days: step.delayDays })}
+                </div>
+                <div className="mt-1 text-neutral-800">{step.text}</div>
+              </li>
+            ))}
+          </ol>
         </Row>
         <Row label={t("replyMode")}>
           {campaign.replyMode === "autonomous" ? t("fullyAutonomous") : t("reviewBeforeSending")}
         </Row>
+        <Row label={t("automationSettings")}>
+          <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
+            <span className="text-neutral-500">
+              {t("workingDays")}: <span className="text-neutral-800">{formatWorkingDays(campaign.automationSettings.workingDays, t)}</span>
+            </span>
+            <span className="text-neutral-500">
+              {t("sendHours")}:{" "}
+              <span className="text-neutral-800">
+                {campaign.automationSettings.sendHourStart}:00–{campaign.automationSettings.sendHourEnd}:00
+              </span>
+            </span>
+            <span className="text-neutral-500">
+              {t("randomDelay")}: <span className="text-neutral-800">{campaign.automationSettings.randomDelayMinutes} min</span>
+            </span>
+            <span className="text-neutral-500">
+              {t("dailyCap")}:{" "}
+              <span className="text-neutral-800">{campaign.automationSettings.dailyConnectionCap ?? t("useAccountLimit")}</span>
+            </span>
+            <span className="text-neutral-500">
+              {t("weeklyCap")}:{" "}
+              <span className="text-neutral-800">{campaign.automationSettings.weeklyConnectionCap ?? t("useAccountLimit")}</span>
+            </span>
+          </div>
+        </Row>
       </div>
     </div>
   );
+}
+
+const WEEKDAY_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
+
+function formatWorkingDays(days: number[], t: (key: string) => string): string {
+  if (days.length === 7) return t("everyDay");
+  return [...days]
+    .sort((a, b) => a - b)
+    .map((d) => t(`weekday.${WEEKDAY_KEYS[d]}`))
+    .join(", ");
 }
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {

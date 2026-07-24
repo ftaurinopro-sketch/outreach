@@ -60,9 +60,8 @@ export async function POST(request: Request) {
         if (campaign) {
           await enqueueMessagesAfterAcceptance({
             action,
-            message1: campaign.message1,
-            followUpMessage: campaign.followUpMessage,
-            followUpDelayDays: campaign.followUpDelayDays,
+            messages: campaign.messages,
+            settings: campaign.automationSettings,
           });
         }
       } else {

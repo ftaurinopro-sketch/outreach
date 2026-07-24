@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { listConnections } from "@/lib/connections/store";
+import { toPublicConnection } from "@/lib/connections/types";
 import SearchImportClient from "./SearchImportClient";
 
 export default async function ImportSearchPage() {
   const [connections, t] = await Promise.all([listConnections(), getTranslations("ImportSearch")]);
-  const ready = connections.filter((c) => c.sessionCookie);
+  const ready = connections.filter((c) => c.sessionCookie).map(toPublicConnection);
 
   return (
     <div className="max-w-2xl px-8 py-10">

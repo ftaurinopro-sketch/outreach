@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import LinkedInLoginFlow from "./LinkedInLoginFlow";
 
 export default function ConnectionSetupPanel({
   connection,
@@ -13,9 +14,10 @@ export default function ConnectionSetupPanel({
   onSaved?: () => void;
 }) {
   const t = useTranslations("ConnectionsClient");
+  const [showManualCookie, setShowManualCookie] = useState(false);
   const [cookieValue, setCookieValue] = useState("");
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [cookieSaved, setCookieSaved] = useState(false);
 
   async function saveCookie() {
     if (!cookieValue.trim()) return;
@@ -26,7 +28,7 @@ export default function ConnectionSetupPanel({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionCookie: cookieValue.trim() }),
       });
-      setSaved(true);
+      setCookieSaved(true);
       onSaved?.();
     } finally {
       setSaving(false);
@@ -58,28 +60,45 @@ export default function ConnectionSetupPanel({
       </div>
 
       <div className="mt-4">
-        <p className="text-xs text-neutral-500">
-          {t.rich("setupStep2", {
-            strong: (chunks) => <strong>{chunks}</strong>,
-            code: (chunks) => <code className="font-mono">{chunks}</code>,
-          })}
-        </p>
-        <div className="mt-1 flex items-center gap-2">
-          <input
-            value={cookieValue}
-            onChange={(e) => setCookieValue(e.target.value)}
-            placeholder={t("cookiePlaceholder")}
-            className="flex-1 rounded-md border border-neutral-300 px-3 py-2 font-mono text-xs"
-          />
-          <button
-            onClick={saveCookie}
-            disabled={saving || !cookieValue.trim()}
-            className="shrink-0 rounded-md bg-neutral-900 px-3 py-2 text-xs font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
-          >
-            {saving ? t("saving") : t("save")}
-          </button>
+        <p className="text-xs font-medium text-neutral-700">{t("loginSectionTitle")}</p>
+        <p className="mt-0.5 text-xs text-neutral-500">{t("loginSectionDescription")}</p>
+        <div className="mt-2">
+          <LinkedInLoginFlow connectionId={connection.id} onSuccess={onSaved} />
         </div>
-        {saved && <p className="mt-1 text-xs text-green-700">{t("cookieSaved")}</p>}
+
+        {!showManualCookie ? (
+          <button
+            onClick={() => setShowManualCookie(true)}
+            className="mt-3 text-xs text-neutral-400 hover:text-neutral-700"
+          >
+            {t("preferManualCookie")}
+          </button>
+        ) : (
+          <div className="mt-3 border-t border-neutral-200 pt-3">
+            <p className="text-xs text-neutral-500">
+              {t.rich("setupStep2", {
+                strong: (chunks) => <strong>{chunks}</strong>,
+                code: (chunks) => <code className="font-mono">{chunks}</code>,
+              })}
+            </p>
+            <div className="mt-1 flex items-center gap-2">
+              <input
+                value={cookieValue}
+                onChange={(e) => setCookieValue(e.target.value)}
+                placeholder={t("cookiePlaceholder")}
+                className="flex-1 rounded-md border border-neutral-300 px-3 py-2 font-mono text-xs"
+              />
+              <button
+                onClick={saveCookie}
+                disabled={saving || !cookieValue.trim()}
+                className="shrink-0 rounded-md bg-neutral-900 px-3 py-2 text-xs font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
+              >
+                {saving ? t("saving") : t("save")}
+              </button>
+            </div>
+            {cookieSaved && <p className="mt-1 text-xs text-green-700">{t("cookieSaved")}</p>}
+          </div>
+        )}
         <p className="mt-2 text-xs text-neutral-500">{t("skipHint")}</p>
       </div>
 

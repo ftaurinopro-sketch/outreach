@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { deleteConnection, updateConnectionSessionCookie } from "@/lib/connections/store";
+import { toPublicConnection } from "@/lib/connections/types";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -15,7 +16,7 @@ export async function PUT(request: Request, { params }: Params) {
   if (!connection) {
     return NextResponse.json({ error: "Connessione non trovata" }, { status: 404 });
   }
-  return NextResponse.json({ connection });
+  return NextResponse.json({ connection: toPublicConnection(connection) });
 }
 
 export async function DELETE(_request: Request, { params }: Params) {

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createSupabaseUserClient, hasSupabaseAuthConfig } from "@/lib/supabase/user";
 import { listConnections } from "@/lib/connections/store";
+import { toPublicConnection } from "@/lib/connections/types";
 import OnboardingFlow from "./OnboardingFlow";
 
 export default async function OnboardingPage() {
@@ -23,5 +24,5 @@ export default async function OnboardingPage() {
 
   const connections = await listConnections();
 
-  return <OnboardingFlow initialConnections={connections} />;
+  return <OnboardingFlow initialConnections={connections.map(toPublicConnection)} />;
 }

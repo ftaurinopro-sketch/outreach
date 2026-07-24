@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import type { Connection } from "@/lib/connections/types";
+import type { PublicConnection } from "@/lib/connections/types";
 import { DEFAULT_CONNECTION_LIMITS } from "@/lib/connections/types";
 import ConnectionSetupPanel from "@/components/ConnectionSetupPanel";
 import AgentWizard from "@/app/(dashboard)/ai-assistants/new/AgentWizard";
@@ -11,7 +11,7 @@ import { detectSourceType } from "@/lib/scrape-jobs/types";
 
 const STEPS = [1, 2, 3] as const;
 
-export default function OnboardingFlow({ initialConnections }: { initialConnections: Connection[] }) {
+export default function OnboardingFlow({ initialConnections }: { initialConnections: PublicConnection[] }) {
   const t = useTranslations("Onboarding");
   const router = useRouter();
   const [step, setStep] = useState(1);
@@ -61,7 +61,18 @@ export default function OnboardingFlow({ initialConnections }: { initialConnecti
               <CreateConnectionButton
                 onCreated={(c) => {
                   setNewConnection(c);
-                  setConnections((prev) => [{ ...c, ...DEFAULT_CONNECTION_LIMITS, userId: null, sessionCookie: null, createdAt: new Date().toISOString(), lastSeenAt: null }, ...prev]);
+                  setConnections((prev) => [
+                    {
+                      ...c,
+                      ...DEFAULT_CONNECTION_LIMITS,
+                      userId: null,
+                      linkedinEmail: null,
+                      hasSessionCookie: false,
+                      createdAt: new Date().toISOString(),
+                      lastSeenAt: null,
+                    },
+                    ...prev,
+                  ]);
                 }}
               />
             )}
@@ -103,7 +114,7 @@ export default function OnboardingFlow({ initialConnections }: { initialConnecti
 
           <div className="mt-6">
             <OnboardingLeadListForm
-              connections={connections.filter((c) => c.sessionCookie)}
+              connections={connections.filter((c) => c.hasSessionCookie)}
               onDone={finish}
             />
           </div>
@@ -150,7 +161,7 @@ function OnboardingLeadListForm({
   connections,
   onDone,
 }: {
-  connections: Connection[];
+  connections: PublicConnection[];
   onDone: () => void;
 }) {
   const t = useTranslations("Onboarding");

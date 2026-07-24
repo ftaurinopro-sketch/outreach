@@ -3,11 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import type { Connection } from "@/lib/connections/types";
+import type { PublicConnection } from "@/lib/connections/types";
 import { DEFAULT_CONNECTION_LIMITS } from "@/lib/connections/types";
 import ConnectionSetupPanel from "@/components/ConnectionSetupPanel";
+import LinkedInLoginFlow from "@/components/LinkedInLoginFlow";
 
-type ConnectionWithStatus = Connection & { online: boolean };
+type ConnectionWithStatus = PublicConnection & { online: boolean };
 
 export default function ConnectionsClient({
   initialConnections,
@@ -36,9 +37,27 @@ export default function ConnectionsClient({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...limits, label }),
       });
-      if (!res.ok) throw new Error(t("createError"));
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || t("createError"));
+      }
       const { connection } = await res.json();
-      setConnections((prev) => [{ ...connection, online: false }, ...prev]);
+      setConnections((prev) => [
+        {
+          id: connection.id,
+          createdAt: connection.createdAt,
+          userId: connection.userId,
+          label: connection.label,
+          linkedinEmail: connection.linkedinEmail,
+          hasSessionCookie: Boolean(connection.sessionCookie),
+          dailyConnectionLimit: connection.dailyConnectionLimit,
+          weeklyConnectionLimit: connection.weeklyConnectionLimit,
+          dailyMessageLimit: connection.dailyMessageLimit,
+          lastSeenAt: connection.lastSeenAt,
+          online: false,
+        },
+        ...prev,
+      ]);
       setNewConnection({ id: connection.id, label: connection.label, token: connection.token });
       setShowForm(false);
       setLabel("");
@@ -156,6 +175,7 @@ function ConnectionRow({
   const [editingCookie, setEditingCookie] = useState(false);
   const [cookieValue, setCookieValue] = useState("");
   const [saving, setSaving] = useState(false);
+  const [loggingIn, setLoggingIn] = useState(false);
 
   async function saveCookie() {
     if (!cookieValue.trim()) return;
@@ -184,10 +204,10 @@ function ConnectionRow({
             <span className="text-xs text-neutral-400">{connection.online ? t("online") : t("offline")}</span>
             <span
               className={`rounded-full px-2 py-0.5 text-xs ${
-                connection.sessionCookie ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"
+                connection.hasSessionCookie ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"
               }`}
             >
-              {connection.sessionCookie ? t("cookieConfigured") : t("cookieMissing")}
+              {connection.hasSessionCookie ? t("cookieConfigured") : t("cookieMissing")}
             </span>
           </div>
           <div className="mt-0.5 text-xs text-neutral-400">
@@ -200,16 +220,41 @@ function ConnectionRow({
         </div>
         <div className="flex items-center gap-3">
           <button
-            onClick={() => setEditingCookie((v) => !v)}
+            onClick={() => {
+              setLoggingIn((v) => !v);
+              setEditingCookie(false);
+            }}
             className="text-xs text-neutral-600 hover:text-neutral-900"
           >
-            {connection.sessionCookie ? t("updateCookie") : t("addCookie")}
+            {connection.hasSessionCookie ? t("reloginLinkedin") : t("loginWithLinkedin")}
+          </button>
+          <button
+            onClick={() => {
+              setEditingCookie((v) => !v);
+              setLoggingIn(false);
+            }}
+            className="text-xs text-neutral-600 hover:text-neutral-900"
+          >
+            {connection.hasSessionCookie ? t("updateCookie") : t("addCookie")}
           </button>
           <button onClick={onDelete} className="text-xs text-red-600 hover:underline">
             {t("delete")}
           </button>
         </div>
       </div>
+
+      {loggingIn && (
+        <div className="mt-3 rounded-md border border-neutral-200 bg-neutral-50 p-3">
+          <LinkedInLoginFlow
+            connectionId={connection.id}
+            defaultEmail={connection.linkedinEmail ?? undefined}
+            onSuccess={() => {
+              setLoggingIn(false);
+              router.refresh();
+            }}
+          />
+        </div>
+      )}
 
       {editingCookie && (
         <div className="mt-3 rounded-md border border-neutral-200 bg-neutral-50 p-3">

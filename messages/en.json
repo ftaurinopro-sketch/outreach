@@ -535,7 +535,21 @@
     "setupCliStep1": "In the repo:",
     "setupCliStep2": "Copy <code>runner/.env.example</code> to <code>runner/.env</code> and set the site URL + token.",
     "setupCliStep3": "<code>npm start</code> — see <code>runner/README.md</code> for details and risk warnings.",
-    "savedEverything": "I've saved everything"
+    "savedEverything": "I've saved everything",
+    "loginSectionTitle": "Log in with LinkedIn",
+    "loginSectionDescription": "Enter your LinkedIn email and password — the runner will log in for you and hand back a session, no DevTools needed.",
+    "linkedinEmailPlaceholder": "LinkedIn email",
+    "linkedinPasswordPlaceholder": "LinkedIn password",
+    "loginWithLinkedin": "Log in with LinkedIn",
+    "reloginLinkedin": "Log in again",
+    "loggingIn": "Logging in...",
+    "loginInProgress": "Logging in — this runs in the runner, it can take a moment...",
+    "loginSuccess": "Connected! You can start using this account.",
+    "loginError": "Error while logging in",
+    "verificationNeeded": "LinkedIn is asking for a verification code — check your email/phone.",
+    "verificationCodePlaceholder": "Verification code",
+    "confirmCode": "Confirm",
+    "preferManualCookie": "Prefer to paste the session cookie manually?"
   },
   "Auth": {
     "loginTitle": "Welcome back",

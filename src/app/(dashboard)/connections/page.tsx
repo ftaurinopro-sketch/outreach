@@ -1,11 +1,14 @@
 import { getTranslations } from "next-intl/server";
 import { listConnections } from "@/lib/connections/store";
-import { isConnectionOnline } from "@/lib/connections/types";
+import { isConnectionOnline, toPublicConnection } from "@/lib/connections/types";
 import ConnectionsClient from "./ConnectionsClient";
 
 export default async function ConnectionsPage() {
   const [connections, t] = await Promise.all([listConnections(), getTranslations("Connections")]);
-  const withStatus = connections.map((c) => ({ ...c, online: isConnectionOnline(c) }));
+  // Never pass the full Connection (bearer token, li_at cookie) to a client
+  // component — it would land verbatim in the RSC payload sent to the
+  // browser. Only the sanitized shape crosses that boundary.
+  const withStatus = connections.map((c) => ({ ...toPublicConnection(c), online: isConnectionOnline(c) }));
 
   return (
     <div className="max-w-3xl px-8 py-10">

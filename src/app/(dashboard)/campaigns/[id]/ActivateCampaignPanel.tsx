@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import type { Connection } from "@/lib/connections/types";
+import type { PublicConnection } from "@/lib/connections/types";
 import { isConnectionOnline } from "@/lib/connections/types";
 
 export default function ActivateCampaignPanel({
@@ -12,7 +12,7 @@ export default function ActivateCampaignPanel({
   connections,
 }: {
   campaignId: string;
-  connections: Connection[];
+  connections: PublicConnection[];
 }) {
   const router = useRouter();
   const t = useTranslations("ActivateCampaignPanel");

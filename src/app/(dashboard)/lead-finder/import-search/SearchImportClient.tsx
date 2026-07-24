@@ -3,10 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import type { Connection } from "@/lib/connections/types";
+import type { PublicConnection } from "@/lib/connections/types";
 import { detectSourceType } from "@/lib/scrape-jobs/types";
 
-export default function SearchImportClient({ connections }: { connections: Connection[] }) {
+export default function SearchImportClient({ connections }: { connections: PublicConnection[] }) {
   const router = useRouter();
   const t = useTranslations("SearchImportClient");
   const [connectionId, setConnectionId] = useState(connections[0]?.id ?? "");

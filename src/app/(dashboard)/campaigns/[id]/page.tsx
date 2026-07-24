@@ -5,6 +5,7 @@ import { getCampaign } from "@/lib/campaigns/store";
 import { getAgent } from "@/lib/agents/store";
 import { getLeadList } from "@/lib/leads/store";
 import { listConnections } from "@/lib/connections/store";
+import { toPublicConnection } from "@/lib/connections/types";
 import { listActionsForCampaign } from "@/lib/automation/store";
 import DeleteCampaignButton from "./DeleteCampaignButton";
 import ActivateCampaignPanel from "./ActivateCampaignPanel";
@@ -51,7 +52,7 @@ export default async function CampaignDetailPage({ params }: Props) {
 
       {campaign.status === "draft" ? (
         <div className="mt-6">
-          <ActivateCampaignPanel campaignId={campaign.id} connections={connections} />
+          <ActivateCampaignPanel campaignId={campaign.id} connections={connections.map(toPublicConnection)} />
         </div>
       ) : (
         <div className="mt-6">

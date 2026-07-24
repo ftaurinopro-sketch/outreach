@@ -1,11 +1,16 @@
 import { NextResponse } from "next/server";
 import { createConnection, listConnections } from "@/lib/connections/store";
-import { DEFAULT_CONNECTION_LIMITS, isConnectionOnline, type ConnectionInput } from "@/lib/connections/types";
+import {
+  DEFAULT_CONNECTION_LIMITS,
+  isConnectionOnline,
+  toPublicConnection,
+  type ConnectionInput,
+} from "@/lib/connections/types";
 
 export async function GET() {
   const connections = await listConnections();
   return NextResponse.json({
-    connections: connections.map((c) => ({ ...c, online: isConnectionOnline(c) })),
+    connections: connections.map((c) => ({ ...toPublicConnection(c), online: isConnectionOnline(c) })),
   });
 }
 

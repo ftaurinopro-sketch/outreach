@@ -21,7 +21,7 @@ export default async function MonitoringPanel({
   const t = await getTranslations("MonitoringPanel");
 
   return (
-    <div className="rounded-lg border border-neutral-200 bg-white p-5">
+    <div className="rounded-xl border border-neutral-200 bg-white shadow-sm p-5">
       <h3 className="text-sm font-medium text-neutral-900">{t("title")}</h3>
 
       <div className="mt-3 flex flex-wrap gap-1.5">

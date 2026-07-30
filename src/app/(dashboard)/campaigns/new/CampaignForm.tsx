@@ -99,7 +99,7 @@ export default function CampaignForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border border-neutral-200 bg-white p-5">
+    <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-neutral-200 bg-white shadow-sm p-5">
       <div>
         <label className="mb-1 block text-xs font-medium text-neutral-500">{t("campaignName")}</label>
         <input
@@ -107,7 +107,7 @@ export default function CampaignForm({
           value={values.name}
           onChange={(e) => set("name", e.target.value)}
           placeholder={t("campaignNamePlaceholder")}
-          className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
+          className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-indigo-600 focus:outline-none"
         />
       </div>
 
@@ -149,7 +149,7 @@ export default function CampaignForm({
           onChange={(e) => set("connectionNote", e.target.value)}
           rows={2}
           placeholder={t("connectionNotePlaceholder")}
-          className="w-full resize-none rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
+          className="w-full resize-none rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-indigo-600 focus:outline-none"
         />
       </div>
 
@@ -190,7 +190,7 @@ export default function CampaignForm({
                   onChange={(e) => updateMessage(i, { text: e.target.value })}
                   rows={i === 0 ? 3 : 2}
                   placeholder={i === 0 ? t("message1Placeholder") : t("followUpPlaceholder")}
-                  className="flex-1 resize-none rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
+                  className="flex-1 resize-none rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-indigo-600 focus:outline-none"
                 />
                 {i > 0 && (
                   <div className="w-28 shrink-0">
@@ -218,7 +218,7 @@ export default function CampaignForm({
             onClick={() => set("replyMode", "review")}
             className={`flex-1 rounded-md border px-3 py-2 text-left text-sm ${
               values.replyMode === "review"
-                ? "border-neutral-900 bg-neutral-50"
+                ? "border-indigo-600 bg-neutral-50"
                 : "border-neutral-300 text-neutral-500"
             }`}
           >
@@ -230,7 +230,7 @@ export default function CampaignForm({
             onClick={() => set("replyMode", "autonomous")}
             className={`flex-1 rounded-md border px-3 py-2 text-left text-sm ${
               values.replyMode === "autonomous"
-                ? "border-neutral-900 bg-neutral-50"
+                ? "border-indigo-600 bg-neutral-50"
                 : "border-neutral-300 text-neutral-500"
             }`}
           >
@@ -253,7 +253,7 @@ export default function CampaignForm({
                 onClick={() => toggleWorkingDay(value)}
                 className={`rounded-full border px-2.5 py-1 text-xs ${
                   values.automationSettings.workingDays.includes(value)
-                    ? "border-neutral-900 bg-neutral-900 text-white"
+                    ? "border-indigo-600 bg-indigo-600 text-white"
                     : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-400"
                 }`}
               >
@@ -329,7 +329,7 @@ export default function CampaignForm({
       <button
         type="submit"
         disabled={saving}
-        className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
+        className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
       >
         {saving ? t("creating") : t("createCampaign")}
       </button>

@@ -104,10 +104,10 @@ export default function AgentWizard({ onSaved }: { onSaved?: (agentId: string) =
   const isReview = stepIndex >= STEP_ORDER.length;
 
   return (
-    <div className="rounded-lg border border-neutral-200 bg-white">
+    <div className="rounded-xl border border-neutral-200 bg-white shadow-sm">
       <div className="h-1.5 w-full rounded-t-lg bg-neutral-100">
         <div
-          className="h-1.5 rounded-t-lg bg-neutral-900 transition-all"
+          className="h-1.5 rounded-t-lg bg-indigo-600 transition-all"
           style={{ width: `${isReview ? 100 : progress}%` }}
         />
       </div>
@@ -117,7 +117,7 @@ export default function AgentWizard({ onSaved }: { onSaved?: (agentId: string) =
           <div key={i} className={`flex ${entry.from === "user" ? "justify-end" : "justify-start"}`}>
             <div
               className={`max-w-[85%] rounded-lg px-3.5 py-2 text-sm ${
-                entry.from === "user" ? "bg-neutral-900 text-white" : "bg-neutral-100 text-neutral-800"
+                entry.from === "user" ? "bg-indigo-600 text-white" : "bg-neutral-100 text-neutral-800"
               }`}
             >
               {entry.text}
@@ -142,7 +142,7 @@ export default function AgentWizard({ onSaved }: { onSaved?: (agentId: string) =
             <button
               onClick={handleSave}
               disabled={saving}
-              className="mt-4 rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
+              className="mt-4 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
             >
               {saving ? t("saving") : t("saveAssistant")}
             </button>
@@ -155,7 +155,7 @@ export default function AgentWizard({ onSaved }: { onSaved?: (agentId: string) =
                   <button
                     key={option}
                     onClick={() => advance(option)}
-                    className="rounded-full border border-neutral-300 px-3 py-1 text-xs text-neutral-700 hover:border-neutral-900 hover:bg-neutral-50"
+                    className="rounded-full border border-neutral-300 px-3 py-1 text-xs text-neutral-700 hover:border-indigo-600 hover:bg-neutral-50"
                   >
                     {option}
                   </button>
@@ -175,7 +175,7 @@ export default function AgentWizard({ onSaved }: { onSaved?: (agentId: string) =
                   onChange={(e) => setInputValue(e.target.value)}
                   placeholder={step ? placeholder(step.key) : ""}
                   rows={2}
-                  className="flex-1 resize-none rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
+                  className="flex-1 resize-none rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-indigo-600 focus:outline-none"
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) {
                       e.preventDefault();
@@ -188,12 +188,12 @@ export default function AgentWizard({ onSaved }: { onSaved?: (agentId: string) =
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   placeholder={step ? placeholder(step.key) : ""}
-                  className="flex-1 rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
+                  className="flex-1 rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-indigo-600 focus:outline-none"
                 />
               )}
               <button
                 type="submit"
-                className="shrink-0 rounded-md bg-neutral-900 px-3.5 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+                className="shrink-0 rounded-md bg-indigo-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-indigo-700"
               >
                 {t("send")}
               </button>

@@ -90,7 +90,7 @@ export default function ConnectionsClient({
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
-            className="rounded-md bg-neutral-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-neutral-800"
+            className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700"
           >
             {t("newConnection")}
           </button>
@@ -98,7 +98,7 @@ export default function ConnectionsClient({
       </div>
 
       {showForm && (
-        <form onSubmit={handleCreate} className="space-y-3 rounded-lg border border-neutral-200 bg-white p-5">
+        <form onSubmit={handleCreate} className="space-y-3 rounded-xl border border-neutral-200 bg-white shadow-sm p-5">
           <div>
             <label className="mb-1 block text-xs font-medium text-neutral-500">{t("labelField")}</label>
             <input
@@ -106,7 +106,7 @@ export default function ConnectionsClient({
               value={label}
               onChange={(e) => setLabel(e.target.value)}
               placeholder={t("labelPlaceholder")}
-              className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
+              className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-indigo-600 focus:outline-none"
             />
           </div>
           <div className="grid grid-cols-3 gap-3">
@@ -131,7 +131,7 @@ export default function ConnectionsClient({
             <button
               type="submit"
               disabled={creating}
-              className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
+              className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
             >
               {creating ? t("creating") : t("createConnection")}
             </button>
@@ -153,7 +153,7 @@ export default function ConnectionsClient({
           {t("empty")}
         </div>
       ) : (
-        <ul className="divide-y divide-neutral-200 rounded-lg border border-neutral-200 bg-white">
+        <ul className="divide-y divide-neutral-200 rounded-xl border border-neutral-200 bg-white shadow-sm">
           {connections.map((c) => (
             <ConnectionRow key={c.id} connection={c} onDelete={() => handleDelete(c.id)} />
           ))}
@@ -268,7 +268,7 @@ function ConnectionRow({
           <button
             onClick={saveCookie}
             disabled={saving || !cookieValue.trim()}
-            className="mt-2 rounded-md bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
+            className="mt-2 rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
           >
             {saving ? t("saving") : t("saveCookie")}
           </button>

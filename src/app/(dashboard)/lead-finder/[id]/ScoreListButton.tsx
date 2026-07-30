@@ -66,7 +66,7 @@ export default function ScoreListButton({
       <button
         onClick={handleScore}
         disabled={scoring}
-        className="rounded-md bg-neutral-900 px-3.5 py-1.5 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
+        className="rounded-md bg-indigo-600 px-3.5 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
       >
         {scoring ? t("scoring") : t("scoreWithAi")}
       </button>

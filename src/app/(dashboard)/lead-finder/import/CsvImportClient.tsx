@@ -67,11 +67,11 @@ export default function CsvImportClient() {
 
   return (
     <div className="space-y-5">
-      <div className="rounded-lg border border-neutral-200 bg-white p-5">
+      <div className="rounded-xl border border-neutral-200 bg-white shadow-sm p-5">
         <div className="flex items-center gap-3">
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm hover:border-neutral-900"
+            className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm hover:border-indigo-600"
           >
             {t("uploadFile")}
           </button>
@@ -89,12 +89,12 @@ export default function CsvImportClient() {
           onChange={(e) => analyze(e.target.value)}
           rows={6}
           placeholder="LinkedIn URL,First Name,Last Name,..."
-          className="mt-3 w-full resize-none rounded-md border border-neutral-300 px-3 py-2 font-mono text-xs focus:border-neutral-900 focus:outline-none"
+          className="mt-3 w-full resize-none rounded-md border border-neutral-300 px-3 py-2 font-mono text-xs focus:border-indigo-600 focus:outline-none"
         />
       </div>
 
       {leads !== null && (
-        <div className="rounded-lg border border-neutral-200 bg-white p-5">
+        <div className="rounded-xl border border-neutral-200 bg-white shadow-sm p-5">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-medium text-neutral-900">{t("leadsFound", { count: leads.length })}</h3>
           </div>
@@ -147,12 +147,12 @@ export default function CsvImportClient() {
                   value={listName}
                   onChange={(e) => setListName(e.target.value)}
                   placeholder={t("listNamePlaceholder")}
-                  className="flex-1 rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
+                  className="flex-1 rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-indigo-600 focus:outline-none"
                 />
                 <button
                   onClick={handleImport}
                   disabled={importing || !listName.trim()}
-                  className="shrink-0 rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
+                  className="shrink-0 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
                 >
                   {importing ? t("importing") : t("importButton", { count: leads.length })}
                 </button>

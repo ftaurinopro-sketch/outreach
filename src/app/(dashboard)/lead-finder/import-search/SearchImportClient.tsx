@@ -43,7 +43,7 @@ export default function SearchImportClient({ connections }: { connections: Publi
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border border-neutral-200 bg-white p-5">
+    <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-neutral-200 bg-white shadow-sm p-5">
       <div>
         <label className="mb-1 block text-xs font-medium text-neutral-500">{t("connectionLabel")}</label>
         <select
@@ -66,7 +66,7 @@ export default function SearchImportClient({ connections }: { connections: Publi
           value={searchUrl}
           onChange={(e) => setSearchUrl(e.target.value)}
           placeholder={t("searchUrlPlaceholder")}
-          className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
+          className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-indigo-600 focus:outline-none"
         />
         {detectedType && (
           <span className="mt-1.5 inline-block rounded-full bg-neutral-100 px-2 py-0.5 text-xs text-neutral-600">
@@ -82,7 +82,7 @@ export default function SearchImportClient({ connections }: { connections: Publi
           value={listName}
           onChange={(e) => setListName(e.target.value)}
           placeholder={t("listNamePlaceholder")}
-          className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
+          className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-indigo-600 focus:outline-none"
         />
       </div>
 
@@ -93,7 +93,7 @@ export default function SearchImportClient({ connections }: { connections: Publi
       <button
         type="submit"
         disabled={submitting}
-        className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
+        className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
       >
         {submitting ? t("starting") : t("startSearch")}
       </button>

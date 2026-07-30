@@ -35,7 +35,7 @@ function PillGroup({
             onClick={() => onToggle(opt)}
             className={`rounded-full border px-2.5 py-1 text-xs ${
               selected.has(opt)
-                ? "border-neutral-900 bg-neutral-900 text-white"
+                ? "border-indigo-600 bg-indigo-600 text-white"
                 : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-400"
             }`}
           >
@@ -159,7 +159,7 @@ export default function LeadFilterTable({
 
   return (
     <div>
-      <div className="mt-6 space-y-4 rounded-lg border border-neutral-200 bg-white p-4">
+      <div className="mt-6 space-y-4 rounded-xl border border-neutral-200 bg-white shadow-sm p-4">
         <div className="flex flex-wrap items-center gap-3">
           <input
             type="text"
@@ -222,7 +222,7 @@ export default function LeadFilterTable({
                     onClick={() => toggle(selectedFits, setSelectedFits, opt)}
                     className={`rounded-full border px-2.5 py-1 text-xs ${
                       selectedFits.has(opt)
-                        ? "border-neutral-900 bg-neutral-900 text-white"
+                        ? "border-indigo-600 bg-indigo-600 text-white"
                         : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-400"
                     }`}
                   >
@@ -269,7 +269,7 @@ export default function LeadFilterTable({
         {t("showingCount", { filtered: filtered.length, total: leads.length })}
       </p>
 
-      <div className="mt-2 overflow-x-auto rounded-lg border border-neutral-200 bg-white">
+      <div className="mt-2 overflow-x-auto rounded-xl border border-neutral-200 bg-white shadow-sm">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-neutral-200 text-xs text-neutral-400">
             <tr>

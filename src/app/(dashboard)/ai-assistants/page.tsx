@@ -14,7 +14,7 @@ export default async function AiAssistantsPage() {
         </div>
         <Link
           href="/ai-assistants/new"
-          className="rounded-md bg-neutral-900 px-3.5 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+          className="rounded-md bg-indigo-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-indigo-700"
         >
           {t("newAssistant")}
         </Link>
@@ -30,7 +30,7 @@ export default async function AiAssistantsPage() {
             <li key={agent.id}>
               <Link
                 href={`/ai-assistants/${agent.id}`}
-                className="block rounded-lg border border-neutral-200 bg-white p-5 hover:border-neutral-400 transition-colors"
+                className="block rounded-xl border border-neutral-200 bg-white shadow-sm p-5 hover:border-neutral-400 transition-colors"
               >
                 <div className="font-medium text-neutral-900">{agent.name || t("unnamed")}</div>
                 <div className="mt-1 text-sm text-neutral-500">{agent.companyName}</div>

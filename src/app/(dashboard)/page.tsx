@@ -70,7 +70,7 @@ export default async function HomePage() {
             <Link
               key={key}
               href={href}
-              className="flex items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:border-neutral-900"
+              className="flex items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:border-indigo-600"
             >
               <Icon className="h-4 w-4" />
               {t(`quickActions.${key}`)}
@@ -81,7 +81,7 @@ export default async function HomePage() {
 
       {!metrics.hasAnyCampaign ? (
         <div className="mt-8 max-w-2xl">
-          <div className="rounded-lg border border-neutral-200 bg-white p-6">
+          <div className="rounded-xl border border-neutral-200 bg-white shadow-sm p-6">
             <div className="flex items-center gap-2 text-neutral-900">
               <Sparkles className="h-5 w-5" />
               <h2 className="text-lg font-semibold">{t("emptyState.welcome")}</h2>
@@ -184,7 +184,7 @@ export default async function HomePage() {
                   <Link
                     key={c.id}
                     href={`/campaigns/${c.id}`}
-                    className="rounded-lg border border-neutral-200 bg-white p-4 text-sm hover:border-neutral-400"
+                    className="rounded-xl border border-neutral-200 bg-white shadow-sm p-4 text-sm hover:border-neutral-400"
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-medium text-neutral-900">{c.name}</span>
@@ -203,7 +203,7 @@ export default async function HomePage() {
 
                     <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-neutral-100">
                       <div
-                        className="h-full rounded-full bg-neutral-900"
+                        className="h-full rounded-full bg-indigo-600"
                         style={{ width: `${c.progressPct}%` }}
                       />
                     </div>
@@ -251,7 +251,7 @@ export default async function HomePage() {
 
           <div className="mt-10">
             <h2 className="text-sm font-medium text-neutral-900">{t("funnel.title")}</h2>
-            <div className="mt-3 space-y-2 rounded-lg border border-neutral-200 bg-white p-5">
+            <div className="mt-3 space-y-2 rounded-xl border border-neutral-200 bg-white shadow-sm p-5">
               {FUNNEL_STAGES.map((stage) => {
                 const value = metrics.funnel[stage];
                 const pct =
@@ -264,7 +264,7 @@ export default async function HomePage() {
                     <div className="h-6 flex-1 overflow-hidden rounded bg-neutral-100">
                       {value !== null && (
                         <div
-                          className="flex h-full items-center justify-end rounded bg-neutral-900 pr-2 text-xs text-white"
+                          className="flex h-full items-center justify-end rounded bg-indigo-600 pr-2 text-xs text-white"
                           style={{ width: `${Math.max(pct, 4)}%` }}
                         >
                           {value}
@@ -287,7 +287,7 @@ export default async function HomePage() {
                 {t("activity.empty")}
               </p>
             ) : (
-              <ul className="mt-3 divide-y divide-neutral-200 rounded-lg border border-neutral-200 bg-white">
+              <ul className="mt-3 divide-y divide-neutral-200 rounded-xl border border-neutral-200 bg-white shadow-sm">
                 {metrics.activity.map((event) => (
                   <li key={event.id} className="flex items-center justify-between px-4 py-3 text-sm">
                     <span className="text-neutral-800">
@@ -333,12 +333,14 @@ function KpiCard({
   notTrackedLabel?: string;
 }) {
   return (
-    <div className="rounded-lg border border-neutral-200 bg-white p-4">
-      <div className="flex items-center gap-1.5 text-xs text-neutral-500">
-        <Icon className="h-3.5 w-3.5" />
-        {label}
+    <div className="rounded-xl border border-neutral-200 bg-white shadow-sm p-4">
+      <div className="flex items-center gap-2">
+        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-indigo-50 text-indigo-600">
+          <Icon className="h-3.5 w-3.5" />
+        </span>
+        <span className="text-xs text-neutral-500">{label}</span>
       </div>
-      <div className="mt-1.5 flex items-baseline gap-2">
+      <div className="mt-2 flex items-baseline gap-2">
         <span className="text-xl font-semibold text-neutral-900">{value}</span>
         {typeof delta === "number" && (
           <span

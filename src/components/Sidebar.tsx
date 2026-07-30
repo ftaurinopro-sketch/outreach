@@ -42,7 +42,10 @@ export default function Sidebar() {
 
   return (
     <aside className="w-60 shrink-0 border-r border-neutral-200 bg-white flex flex-col">
-      <div className="h-14 flex items-center px-4 border-b border-neutral-200">
+      <div className="h-14 flex items-center gap-2 px-4 border-b border-neutral-200">
+        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-indigo-600 text-xs font-bold text-white">
+          R
+        </span>
         <span className="font-semibold text-neutral-900">{t("brand")}</span>
       </div>
       <nav className="flex-1 overflow-y-auto py-3">
@@ -55,7 +58,7 @@ export default function Sidebar() {
               key={item.href}
               href={item.href}
               className={`mx-2 mb-0.5 flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm ${
-                isActive(item.href) ? "bg-neutral-900 text-white" : "text-neutral-600 hover:bg-neutral-100"
+                isActive(item.href) ? "bg-indigo-600 text-white" : "text-neutral-600 hover:bg-neutral-100"
               }`}
             >
               <item.icon className="h-4 w-4 shrink-0" strokeWidth={2} />
@@ -72,7 +75,7 @@ export default function Sidebar() {
               key={item.href}
               href={item.href}
               className={`mx-2 mb-0.5 flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm ${
-                isActive(item.href) ? "bg-neutral-900 text-white" : "text-neutral-600 hover:bg-neutral-100"
+                isActive(item.href) ? "bg-indigo-600 text-white" : "text-neutral-600 hover:bg-neutral-100"
               }`}
             >
               <item.icon className="h-4 w-4 shrink-0" strokeWidth={2} />

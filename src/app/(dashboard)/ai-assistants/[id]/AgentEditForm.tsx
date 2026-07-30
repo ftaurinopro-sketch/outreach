@@ -76,7 +76,7 @@ export default function AgentEditForm({ agent }: { agent: AgentConfig }) {
   }
 
   return (
-    <div className="space-y-4 rounded-lg border border-neutral-200 bg-white p-5">
+    <div className="space-y-4 rounded-xl border border-neutral-200 bg-white shadow-sm p-5">
       {FIELD_KEYS.map((field) => (
         <div key={field.key}>
           <label className="mb-1 block text-xs font-medium text-neutral-500">
@@ -87,13 +87,13 @@ export default function AgentEditForm({ agent }: { agent: AgentConfig }) {
               value={values[field.key]}
               onChange={(e) => setValues((v) => ({ ...v, [field.key]: e.target.value }))}
               rows={3}
-              className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
+              className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-indigo-600 focus:outline-none"
             />
           ) : (
             <input
               value={values[field.key]}
               onChange={(e) => setValues((v) => ({ ...v, [field.key]: e.target.value }))}
-              className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
+              className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-indigo-600 focus:outline-none"
             />
           )}
         </div>
@@ -106,7 +106,7 @@ export default function AgentEditForm({ agent }: { agent: AgentConfig }) {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
+            className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
           >
             {saving ? t("saving") : t("saveChanges")}
           </button>

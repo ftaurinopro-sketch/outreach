@@ -113,7 +113,7 @@ export default function LinkedInLoginFlow({
           <button
             type="submit"
             disabled={submitting || !code.trim()}
-            className="shrink-0 rounded-md bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
+            className="shrink-0 rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
           >
             {t("confirmCode")}
           </button>
@@ -148,7 +148,7 @@ export default function LinkedInLoginFlow({
       <button
         type="submit"
         disabled={submitting}
-        className="rounded-md bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
+        className="rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
       >
         {submitting ? t("loggingIn") : t("loginWithLinkedin")}
       </button>

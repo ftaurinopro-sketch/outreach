@@ -58,7 +58,7 @@ export default function ActivateCampaignPanel({
   const selected = connections.find((c) => c.id === connectionId);
 
   return (
-    <div className="rounded-lg border border-neutral-200 bg-white p-5">
+    <div className="rounded-xl border border-neutral-200 bg-white shadow-sm p-5">
       <h3 className="text-sm font-medium text-neutral-900">{t("title")}</h3>
       <div className="mt-3">
         <label className="mb-1 block text-xs font-medium text-neutral-500">{t("linkedinProfile")}</label>
@@ -94,7 +94,7 @@ export default function ActivateCampaignPanel({
       <button
         onClick={handleActivate}
         disabled={!confirmed || activating}
-        className="mt-3 rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
+        className="mt-3 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
       >
         {activating ? t("activating") : t("activateCampaign")}
       </button>

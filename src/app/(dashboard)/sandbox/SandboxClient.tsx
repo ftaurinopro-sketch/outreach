@@ -70,7 +70,7 @@ export default function SandboxClient({
 
   return (
     <div className="grid gap-5 lg:grid-cols-[320px_1fr]">
-      <div className="rounded-lg border border-neutral-200 bg-white p-4">
+      <div className="rounded-xl border border-neutral-200 bg-white shadow-sm p-4">
         <div className="mb-3">
           <label className="mb-1 block text-xs font-medium text-neutral-500">{t("aiAssistant")}</label>
           <select
@@ -145,7 +145,7 @@ export default function SandboxClient({
         </div>
       </div>
 
-      <div className="flex flex-col rounded-lg border border-neutral-200 bg-white">
+      <div className="flex flex-col rounded-xl border border-neutral-200 bg-white shadow-sm">
         <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-2.5">
           <h3 className="text-sm font-medium text-neutral-900">{t("conversation")}</h3>
           <button onClick={clearConversation} className="text-xs text-neutral-500 hover:text-neutral-900">
@@ -180,7 +180,7 @@ export default function SandboxClient({
             onChange={(e) => setInput(e.target.value)}
             placeholder={t("typeAsProspect")}
             rows={1}
-            className="flex-1 resize-none rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
+            className="flex-1 resize-none rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-indigo-600 focus:outline-none"
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
@@ -191,7 +191,7 @@ export default function SandboxClient({
           <button
             type="submit"
             disabled={sending}
-            className="shrink-0 rounded-md bg-neutral-900 px-3.5 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
+            className="shrink-0 rounded-md bg-indigo-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
           >
             {t("send")}
           </button>
@@ -227,7 +227,7 @@ function Bubble({ from, children }: { from: "user" | "assistant"; children: Reac
     <div className={`flex ${from === "user" ? "justify-end" : "justify-start"}`}>
       <div
         className={`max-w-[80%] rounded-lg px-3.5 py-2 text-sm ${
-          from === "user" ? "bg-neutral-900 text-white" : "bg-neutral-100 text-neutral-800"
+          from === "user" ? "bg-indigo-600 text-white" : "bg-neutral-100 text-neutral-800"
         }`}
       >
         {children}

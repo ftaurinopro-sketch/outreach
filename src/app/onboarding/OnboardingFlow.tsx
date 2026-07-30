@@ -35,12 +35,12 @@ export default function OnboardingFlow({ initialConnections }: { initialConnecti
           <div key={s} className="flex flex-1 items-center gap-2">
             <div
               className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-medium ${
-                s <= step ? "bg-neutral-900 text-white" : "bg-neutral-200 text-neutral-500"
+                s <= step ? "bg-indigo-600 text-white" : "bg-neutral-200 text-neutral-500"
               }`}
             >
               {s}
             </div>
-            {s < 3 && <div className={`h-px flex-1 ${s < step ? "bg-neutral-900" : "bg-neutral-200"}`} />}
+            {s < 3 && <div className={`h-px flex-1 ${s < step ? "bg-indigo-600" : "bg-neutral-200"}`} />}
           </div>
         ))}
       </div>
@@ -54,7 +54,7 @@ export default function OnboardingFlow({ initialConnections }: { initialConnecti
             {newConnection ? (
               <ConnectionSetupPanel connection={newConnection} onSaved={() => router.refresh()} />
             ) : connections.length > 0 ? (
-              <div className="rounded-lg border border-neutral-200 bg-white p-5 text-sm text-neutral-600">
+              <div className="rounded-xl border border-neutral-200 bg-white shadow-sm p-5 text-sm text-neutral-600">
                 {t("connectionAlreadyExists", { label: connections[0].label })}
               </div>
             ) : (
@@ -84,7 +84,7 @@ export default function OnboardingFlow({ initialConnections }: { initialConnecti
             </button>
             <button
               onClick={() => setStep(2)}
-              className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+              className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
             >
               {t("continue")}
             </button>
@@ -150,7 +150,7 @@ function CreateConnectionButton({ onCreated }: { onCreated: (c: { id: string; la
     <button
       onClick={handleClick}
       disabled={creating}
-      className="rounded-md bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
+      className="rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
     >
       {creating ? t("connecting") : t("connectLinkedIn")}
     </button>
@@ -182,11 +182,11 @@ function OnboardingLeadListForm({
 
   if (done) {
     return (
-      <div className="rounded-lg border border-neutral-200 bg-white p-5">
+      <div className="rounded-xl border border-neutral-200 bg-white shadow-sm p-5">
         <p className="text-sm text-green-700">{t("searchQueued")}</p>
         <button
           onClick={onDone}
-          className="mt-3 rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+          className="mt-3 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
         >
           {t("continue")}
         </button>
@@ -217,7 +217,7 @@ function OnboardingLeadListForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3 rounded-lg border border-neutral-200 bg-white p-5">
+    <form onSubmit={handleSubmit} className="space-y-3 rounded-xl border border-neutral-200 bg-white shadow-sm p-5">
       <div>
         <label className="mb-1 block text-xs font-medium text-neutral-500">{t("linkedinProfile")}</label>
         <select
@@ -239,7 +239,7 @@ function OnboardingLeadListForm({
           value={searchUrl}
           onChange={(e) => setSearchUrl(e.target.value)}
           placeholder="https://www.linkedin.com/sales/search/people?..."
-          className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
+          className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-indigo-600 focus:outline-none"
         />
         {searchUrl && (
           <span className="mt-1.5 inline-block text-xs text-neutral-400">{detectSourceType(searchUrl)}</span>
@@ -251,14 +251,14 @@ function OnboardingLeadListForm({
           required
           value={listName}
           onChange={(e) => setListName(e.target.value)}
-          className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
+          className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-indigo-600 focus:outline-none"
         />
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <button
         type="submit"
         disabled={submitting}
-        className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
+        className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
       >
         {submitting ? t("starting") : t("startSearch")}
       </button>

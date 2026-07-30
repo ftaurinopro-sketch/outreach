@@ -25,7 +25,7 @@ export default async function ActionsQueue({ actions }: { actions: AutomationAct
   }, {});
 
   return (
-    <div className="rounded-lg border border-neutral-200 bg-white p-5">
+    <div className="rounded-xl border border-neutral-200 bg-white shadow-sm p-5">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium text-neutral-900">{t("title")}</h3>
         <div className="flex gap-1.5 text-xs">

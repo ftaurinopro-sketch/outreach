@@ -36,13 +36,13 @@ export default async function LeadFinderPage() {
         <div className="flex gap-2">
           <Link
             href="/lead-finder/import-search"
-            className="rounded-md border border-neutral-300 px-3.5 py-2 text-sm font-medium text-neutral-700 hover:border-neutral-900"
+            className="rounded-md border border-neutral-300 px-3.5 py-2 text-sm font-medium text-neutral-700 hover:border-indigo-600"
           >
             {t("importFromSearch")}
           </Link>
           <Link
             href="/lead-finder/import"
-            className="rounded-md bg-neutral-900 px-3.5 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+            className="rounded-md bg-indigo-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-indigo-700"
           >
             {t("importCsv")}
           </Link>
@@ -52,14 +52,14 @@ export default async function LeadFinderPage() {
       <div className="mt-6 grid gap-3 sm:grid-cols-3">
         <Link
           href="/lead-finder/import-search"
-          className="rounded-lg border border-neutral-200 bg-white p-4 text-sm hover:border-neutral-400"
+          className="rounded-xl border border-neutral-200 bg-white shadow-sm p-4 text-sm hover:border-neutral-400"
         >
           <div className="font-medium text-neutral-900">{t("basicSearchTitle")}</div>
           <p className="mt-1 text-neutral-500">{t("basicSearchDescription")}</p>
         </Link>
         <Link
           href="/lead-finder/import-search"
-          className="rounded-lg border border-neutral-200 bg-white p-4 text-sm hover:border-neutral-400"
+          className="rounded-xl border border-neutral-200 bg-white shadow-sm p-4 text-sm hover:border-neutral-400"
         >
           <div className="font-medium text-neutral-900">{t("salesNavigatorTitle")}</div>
           <p className="mt-1 text-neutral-500">{t("salesNavigatorDescription")}</p>
@@ -73,7 +73,7 @@ export default async function LeadFinderPage() {
       {pendingJobs.length > 0 && (
         <div className="mt-8">
           <h2 className="text-sm font-medium text-neutral-900">{t("searchesInProgress")}</h2>
-          <ul className="mt-3 divide-y divide-neutral-200 rounded-lg border border-neutral-200 bg-white">
+          <ul className="mt-3 divide-y divide-neutral-200 rounded-xl border border-neutral-200 bg-white shadow-sm">
             {pendingJobs.map((job) => (
               <li key={job.id} className="flex items-center justify-between px-4 py-3 text-sm">
                 <div>
@@ -96,7 +96,7 @@ export default async function LeadFinderPage() {
             {t("empty")}
           </div>
         ) : (
-          <ul className="mt-3 divide-y divide-neutral-200 rounded-lg border border-neutral-200 bg-white">
+          <ul className="mt-3 divide-y divide-neutral-200 rounded-xl border border-neutral-200 bg-white shadow-sm">
             {lists.map((list) => (
               <li key={list.id} className="flex items-center justify-between px-4 py-3 text-sm">
                 <div>

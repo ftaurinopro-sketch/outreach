@@ -73,7 +73,7 @@ export default async function CampaignDetailPage({ params }: Props) {
         </div>
       )}
 
-      <div className="mt-6 space-y-4 rounded-lg border border-neutral-200 bg-white p-5 text-sm">
+      <div className="mt-6 space-y-4 rounded-xl border border-neutral-200 bg-white shadow-sm p-5 text-sm">
         <Row label={t("leadList")}>
           {leadList ? (
             <Link href={`/lead-finder/${leadList.id}`} className="text-neutral-900 hover:underline">

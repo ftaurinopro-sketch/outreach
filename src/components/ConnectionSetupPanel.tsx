@@ -36,7 +36,7 @@ export default function ConnectionSetupPanel({
   }
 
   return (
-    <div className="rounded-lg border border-neutral-900 bg-neutral-50 p-5">
+    <div className="rounded-lg border border-indigo-600 bg-neutral-50 p-5">
       <h3 className="text-sm font-medium text-neutral-900">{t("setupTitle", { label: connection.label })}</h3>
 
       <div className="mt-3">
@@ -52,7 +52,7 @@ export default function ConnectionSetupPanel({
           </code>
           <button
             onClick={() => navigator.clipboard.writeText(connection.token)}
-            className="shrink-0 rounded-md border border-neutral-300 px-3 py-2 text-xs hover:border-neutral-900"
+            className="shrink-0 rounded-md border border-neutral-300 px-3 py-2 text-xs hover:border-indigo-600"
           >
             {t("copy")}
           </button>
@@ -91,7 +91,7 @@ export default function ConnectionSetupPanel({
               <button
                 onClick={saveCookie}
                 disabled={saving || !cookieValue.trim()}
-                className="shrink-0 rounded-md bg-neutral-900 px-3 py-2 text-xs font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
+                className="shrink-0 rounded-md bg-indigo-600 px-3 py-2 text-xs font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
               >
                 {saving ? t("saving") : t("save")}
               </button>

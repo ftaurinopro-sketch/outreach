@@ -448,7 +448,26 @@
     "randomDelay": "Zufällige Verzögerung",
     "dailyCap": "Tageslimit",
     "weeklyCap": "Wochenlimit",
-    "useAccountLimit": "Kontolimit"
+    "useAccountLimit": "Kontolimit",
+    "rawActionLog": "Rohes Aktionsprotokoll anzeigen"
+  },
+  "MonitoringPanel": {
+    "title": "Lead-Status",
+    "empty": "Noch keine Leads anzuzeigen.",
+    "colLead": "Lead",
+    "colStatus": "Status",
+    "colConnectedAt": "Verbunden",
+    "colMessagesSent": "Nachrichten gesendet",
+    "colLastActivity": "Letzte Aktivität",
+    "status": {
+      "pending": "Nicht gestartet",
+      "connection_sent": "Anfrage gesendet",
+      "connected": "Verbunden",
+      "messaging": "Im Gespräch",
+      "replied": "Hat geantwortet",
+      "done": "Abgeschlossen",
+      "failed": "Fehlgeschlagen"
+    }
   },
   "ActivateCampaignPanel": {
     "needConnection": "Um diese Kampagne zu aktivieren, brauchst du zuerst eine <link>LinkedIn-Verbindung</link>.",

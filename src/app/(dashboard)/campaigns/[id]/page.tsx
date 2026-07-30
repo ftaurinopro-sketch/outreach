@@ -1,15 +1,17 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { getCampaign } from "@/lib/campaigns/store";
 import { getAgent } from "@/lib/agents/store";
 import { getLeadList } from "@/lib/leads/store";
 import { listConnections } from "@/lib/connections/store";
 import { toPublicConnection } from "@/lib/connections/types";
 import { listActionsForCampaign } from "@/lib/automation/store";
+import { getCampaignMonitoring } from "@/lib/campaigns/monitoring";
 import DeleteCampaignButton from "./DeleteCampaignButton";
 import ActivateCampaignPanel from "./ActivateCampaignPanel";
 import ActionsQueue from "./ActionsQueue";
+import MonitoringPanel from "./MonitoringPanel";
 import PauseResumeCampaignButton from "./PauseResumeCampaignButton";
 
 type Props = { params: Promise<{ id: string }> };
@@ -19,16 +21,19 @@ export default async function CampaignDetailPage({ params }: Props) {
   const campaign = await getCampaign(id);
   if (!campaign) notFound();
 
-  const [agent, leadList, connections, actions, t] = await Promise.all([
+  const [agent, leadList, connections, actions, t, locale] = await Promise.all([
     getAgent(campaign.agentId),
     getLeadList(campaign.leadListId),
     listConnections(),
     campaign.status !== "draft" ? listActionsForCampaign(campaign.id) : Promise.resolve([]),
     getTranslations("CampaignDetail"),
+    getLocale(),
   ]);
 
+  const monitoring = getCampaignMonitoring(leadList?.leads ?? [], actions);
+
   return (
-    <div className="max-w-2xl px-8 py-10">
+    <div className="max-w-4xl px-8 py-10">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-neutral-900">{campaign.name}</h1>
@@ -55,8 +60,16 @@ export default async function CampaignDetailPage({ params }: Props) {
           <ActivateCampaignPanel campaignId={campaign.id} connections={connections.map(toPublicConnection)} />
         </div>
       ) : (
-        <div className="mt-6">
-          <ActionsQueue actions={actions} />
+        <div className="mt-6 space-y-6">
+          <MonitoringPanel monitoring={monitoring} locale={locale} />
+          <details>
+            <summary className="cursor-pointer text-xs font-medium text-neutral-400 hover:text-neutral-600">
+              {t("rawActionLog")}
+            </summary>
+            <div className="mt-2">
+              <ActionsQueue actions={actions} />
+            </div>
+          </details>
         </div>
       )}
 

@@ -448,7 +448,26 @@
     "randomDelay": "Retraso aleatorio",
     "dailyCap": "Límite diario",
     "weeklyCap": "Límite semanal",
-    "useAccountLimit": "Límite de la cuenta"
+    "useAccountLimit": "Límite de la cuenta",
+    "rawActionLog": "Mostrar el registro de acciones sin procesar"
+  },
+  "MonitoringPanel": {
+    "title": "Estado de los leads",
+    "empty": "Todavía no hay leads que mostrar.",
+    "colLead": "Lead",
+    "colStatus": "Estado",
+    "colConnectedAt": "Conectado",
+    "colMessagesSent": "Mensajes enviados",
+    "colLastActivity": "Última actividad",
+    "status": {
+      "pending": "Sin iniciar",
+      "connection_sent": "Solicitud enviada",
+      "connected": "Conectado",
+      "messaging": "En conversación",
+      "replied": "Respondió",
+      "done": "Completado",
+      "failed": "Fallido"
+    }
   },
   "ActivateCampaignPanel": {
     "needConnection": "Para activar esta campaña primero necesitas una <link>conexión de LinkedIn</link>.",

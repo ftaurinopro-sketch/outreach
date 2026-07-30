@@ -1,6 +1,6 @@
-export type ActionType = "send_connection_request" | "check_acceptance" | "send_message";
+export type ActionType = "send_connection_request" | "check_acceptance" | "send_message" | "check_reply";
 
-export type ActionStatus = "pending" | "in_progress" | "done" | "failed" | "expired";
+export type ActionStatus = "pending" | "in_progress" | "done" | "failed" | "expired" | "cancelled";
 
 export type AutomationAction = {
   id: string;
@@ -12,7 +12,7 @@ export type AutomationAction = {
   leadLastName: string;
   leadCompany: string;
   type: ActionType;
-  payload: { text?: string };
+  payload: { text?: string; replied?: boolean };
   status: ActionStatus;
   scheduledAt: string;
   attempts: number;
@@ -26,4 +26,6 @@ export type ActionResult = {
   error?: string;
   // for check_acceptance
   accepted?: boolean;
+  // for check_reply
+  replied?: boolean;
 };

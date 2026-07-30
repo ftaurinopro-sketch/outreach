@@ -10,11 +10,13 @@ export default async function ActionsQueue({ actions }: { actions: AutomationAct
     done: t("status.done"),
     failed: t("status.failed"),
     expired: t("status.expired"),
+    cancelled: t("status.cancelled"),
   };
   const typeLabel: Record<AutomationAction["type"], string> = {
     send_connection_request: t("type.sendConnectionRequest"),
     check_acceptance: t("type.checkAcceptance"),
     send_message: t("type.sendMessage"),
+    check_reply: t("type.checkReply"),
   };
 
   const counts = actions.reduce<Record<string, number>>((acc, a) => {

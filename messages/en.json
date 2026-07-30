@@ -103,6 +103,7 @@
       "connectionSent": "Connection request sent to {name}",
       "connectionAccepted": "{name} accepted the connection request",
       "messageSent": "Message sent to {name}",
+      "leadReplied": "{name} replied — remaining follow-ups stopped",
       "campaignStarted": "Campaign “{name}” started",
       "leadListImported": "New lead list imported: {name}",
       "leadsScored": "AI classified {count} new leads in {name}"
@@ -474,12 +475,14 @@
       "inProgress": "In progress",
       "done": "Done",
       "failed": "Failed",
-      "expired": "Expired"
+      "expired": "Expired",
+      "cancelled": "Cancelled (lead replied)"
     },
     "type": {
       "sendConnectionRequest": "Connection request",
       "checkAcceptance": "Check acceptance",
-      "sendMessage": "Message"
+      "sendMessage": "Message",
+      "checkReply": "Check for reply"
     }
   },
   "DeleteCampaignButton": {

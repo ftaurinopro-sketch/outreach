@@ -177,6 +177,28 @@ export async function enqueueMessagesAfterAcceptance(params: {
     const scheduledAt = scheduleWithinWorkingHours(cursor, settings);
     cursor = scheduledAt;
 
+    // Gate every follow-up (not the first message, which goes out right
+    // after acceptance with nothing to reply to yet) behind a reply check,
+    // so a canned follow-up never lands on top of a conversation the lead
+    // already started. The runner processes actions strictly in
+    // scheduledAt order, so this always runs before the message it guards.
+    if (index > 0) {
+      const checkAt = new Date(scheduledAt.getTime() - 5 * 60 * 1000);
+      toCreate.push(
+        newAction({
+          campaignId: action.campaignId,
+          connectionId: action.connectionId,
+          leadLinkedinUrl: action.leadLinkedinUrl,
+          leadFirstName: action.leadFirstName,
+          leadLastName: action.leadLastName,
+          leadCompany: action.leadCompany,
+          type: "check_reply",
+          payload: {},
+          scheduledAt: checkAt.toISOString(),
+        })
+      );
+    }
+
     toCreate.push(
       newAction({
         campaignId: action.campaignId,

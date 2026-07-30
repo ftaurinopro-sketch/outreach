@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { authenticateExtension } from "@/lib/connections/auth";
-import { getAction, updateAction } from "@/lib/automation/store";
+import { cancelPendingMessagesForLead, getAction, updateAction } from "@/lib/automation/store";
 import {
   enqueueAcceptanceCheck,
   enqueueMessagesAfterAcceptance,
@@ -13,6 +13,7 @@ type ReportBody = {
   success: boolean;
   error?: string;
   accepted?: boolean;
+  replied?: boolean;
 };
 
 const RETRY_DELAY_MS = 30 * 60 * 1000;
@@ -80,6 +81,13 @@ export async function POST(request: Request) {
     }
     case "send_message": {
       await updateAction(action.id, { status: "done" });
+      break;
+    }
+    case "check_reply": {
+      await updateAction(action.id, { status: "done", payload: { replied: Boolean(body.replied) } });
+      if (body.replied) {
+        await cancelPendingMessagesForLead(action.campaignId, action.leadLinkedinUrl);
+      }
       break;
     }
   }

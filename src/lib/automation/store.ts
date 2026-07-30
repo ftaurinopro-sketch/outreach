@@ -195,7 +195,7 @@ export async function claimNextAction(connectionId: string): Promise<AutomationA
 
 export async function updateAction(
   id: string,
-  patch: Partial<Pick<AutomationAction, "status" | "lastError" | "scheduledAt" | "checkCount">>
+  patch: Partial<Pick<AutomationAction, "status" | "lastError" | "scheduledAt" | "checkCount" | "payload">>
 ): Promise<AutomationAction | null> {
   if (hasSupabaseConfig()) {
     const supabase = createSupabaseServerClient();
@@ -204,6 +204,7 @@ export async function updateAction(
     if (patch.lastError !== undefined) row.last_error = patch.lastError;
     if (patch.scheduledAt !== undefined) row.scheduled_at = patch.scheduledAt;
     if (patch.checkCount !== undefined) row.check_count = patch.checkCount;
+    if (patch.payload !== undefined) row.payload = patch.payload;
 
     const { data, error } = await supabase
       .from("automation_actions")
@@ -236,4 +237,38 @@ export async function getAction(id: string): Promise<AutomationAction | null> {
   }
   const actions = await readLocalFile();
   return actions.find((a) => a.id === id) ?? null;
+}
+
+// Called once a "check_reply" action detects the lead has replied: stops the
+// rest of that lead's sequence in this campaign rather than sending a
+// canned follow-up on top of a live conversation.
+export async function cancelPendingMessagesForLead(
+  campaignId: string,
+  leadLinkedinUrl: string
+): Promise<void> {
+  if (hasSupabaseConfig()) {
+    const supabase = createSupabaseServerClient();
+    const { error } = await supabase
+      .from("automation_actions")
+      .update({ status: "cancelled" })
+      .eq("campaign_id", campaignId)
+      .eq("lead_linkedin_url", leadLinkedinUrl)
+      .in("type", ["send_message", "check_reply"])
+      .in("status", ["pending", "in_progress"]);
+    if (error) throw error;
+    return;
+  }
+
+  const actions = await readLocalFile();
+  for (const a of actions) {
+    if (
+      a.campaignId === campaignId &&
+      a.leadLinkedinUrl === leadLinkedinUrl &&
+      (a.type === "send_message" || a.type === "check_reply") &&
+      (a.status === "pending" || a.status === "in_progress")
+    ) {
+      a.status = "cancelled";
+    }
+  }
+  await writeLocalFile(actions);
 }

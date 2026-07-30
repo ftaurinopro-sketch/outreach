@@ -309,6 +309,32 @@ async function sendMessage(page, text) {
   return { success: true };
 }
 
+async function checkForReply(page) {
+  // Best-effort, same caveat as everything else in this file: opens the
+  // existing message thread with the lead (via the "Message" button on
+  // their profile) and looks at who sent the most recent bubble. LinkedIn
+  // marks the current user's own messages with the "msg-s-event-listitem"
+  // variant classes vs. the other person's — untested against a live
+  // thread, adjust the selector below if it comes back wrong.
+  const clicked = await clickByText(page, "Message");
+  if (!clicked) {
+    // No thread / not connected yet — nothing to reply to.
+    return { success: true, replied: false };
+  }
+  await page.waitForTimeout(1500);
+
+  const lastIsFromLead = await page.evaluate(() => {
+    const bubbles = Array.from(document.querySelectorAll("li.msg-s-message-list__event"));
+    if (bubbles.length === 0) return false;
+    const last = bubbles[bubbles.length - 1];
+    // The other person's messages carry this modifier class on LinkedIn's
+    // current messaging UI; our own outgoing bubbles don't.
+    return Boolean(last.querySelector(".msg-s-event-listitem--other"));
+  });
+
+  return { success: true, replied: Boolean(lastIsFromLead) };
+}
+
 async function scrapeSearchResults(page) {
   // Best-effort extraction: LinkedIn/Sales Navigator result cards differ by
   // layout and change often (untested against a live session — see
@@ -391,6 +417,8 @@ async function runAction(action) {
         return await checkAcceptance(page);
       case "send_message":
         return await sendMessage(page, action.text);
+      case "check_reply":
+        return await checkForReply(page);
       default:
         return { success: false, error: `Azione sconosciuta: ${action.type}` };
     }

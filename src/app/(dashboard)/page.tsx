@@ -141,7 +141,11 @@ export default async function HomePage() {
               value={String(metrics.kpis.messagesSent)}
               delta={metrics.kpis.messagesSentDelta}
             />
-            <KpiCard icon={Reply} label={t("kpi.replyRate")} value="—" notTrackedYet notTrackedLabel={t("notTrackedYet")} />
+            <KpiCard
+              icon={Reply}
+              label={t("kpi.replyRate")}
+              value={metrics.kpis.replyRate !== null ? `${metrics.kpis.replyRate}%` : "—"}
+            />
             <KpiCard
               icon={ThumbsUp}
               label={t("kpi.positiveReplies")}
@@ -291,6 +295,7 @@ export default async function HomePage() {
                       {event.kind === "connection_accepted" &&
                         t("activity.connectionAccepted", { name: event.leadName })}
                       {event.kind === "message_sent" && t("activity.messageSent", { name: event.leadName })}
+                      {event.kind === "lead_replied" && t("activity.leadReplied", { name: event.leadName })}
                       {event.kind === "campaign_started" &&
                         t("activity.campaignStarted", { name: event.campaignName })}
                       {event.kind === "lead_list_imported" &&

@@ -103,6 +103,7 @@
       "connectionSent": "Richiesta di connessione inviata a {name}",
       "connectionAccepted": "{name} ha accettato la richiesta di connessione",
       "messageSent": "Messaggio inviato a {name}",
+      "leadReplied": "{name} ha risposto — follow-up rimanenti interrotti",
       "campaignStarted": "Campagna “{name}” avviata",
       "leadListImported": "Nuova Lead List importata: {name}",
       "leadsScored": "AI ha classificato {count} nuovi lead in {name}"
@@ -474,12 +475,14 @@
       "inProgress": "In corso",
       "done": "Completata",
       "failed": "Fallita",
-      "expired": "Scaduta"
+      "expired": "Scaduta",
+      "cancelled": "Annullata (il lead ha risposto)"
     },
     "type": {
       "sendConnectionRequest": "Richiesta connessione",
       "checkAcceptance": "Verifica accettazione",
-      "sendMessage": "Messaggio"
+      "sendMessage": "Messaggio",
+      "checkReply": "Controllo risposta"
     }
   },
   "DeleteCampaignButton": {

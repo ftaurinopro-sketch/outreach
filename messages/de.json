@@ -103,6 +103,7 @@
       "connectionSent": "Kontaktanfrage an {name} gesendet",
       "connectionAccepted": "{name} hat die Kontaktanfrage angenommen",
       "messageSent": "Nachricht an {name} gesendet",
+      "leadReplied": "{name} hat geantwortet — verbleibende Follow-ups gestoppt",
       "campaignStarted": "Kampagne „{name}“ gestartet",
       "leadListImported": "Neue Lead List importiert: {name}",
       "leadsScored": "KI hat {count} neue Leads in {name} bewertet"
@@ -474,12 +475,14 @@
       "inProgress": "Läuft",
       "done": "Erledigt",
       "failed": "Fehlgeschlagen",
-      "expired": "Abgelaufen"
+      "expired": "Abgelaufen",
+      "cancelled": "Storniert (Lead hat geantwortet)"
     },
     "type": {
       "sendConnectionRequest": "Kontaktanfrage",
       "checkAcceptance": "Annahme prüfen",
-      "sendMessage": "Nachricht"
+      "sendMessage": "Nachricht",
+      "checkReply": "Antwort prüfen"
     }
   },
   "DeleteCampaignButton": {

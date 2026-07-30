@@ -24,7 +24,12 @@ export type CampaignCard = {
 };
 
 export type ActivityEvent =
-  | { id: string; at: string; kind: "connection_sent" | "connection_accepted" | "message_sent"; leadName: string }
+  | {
+      id: string;
+      at: string;
+      kind: "connection_sent" | "connection_accepted" | "message_sent" | "lead_replied";
+      leadName: string;
+    }
   | { id: string; at: string; kind: "campaign_started"; campaignName: string }
   | { id: string; at: string; kind: "lead_list_imported"; listName: string }
   | { id: string; at: string; kind: "leads_scored"; listName: string; count: number };
@@ -43,6 +48,8 @@ export type DashboardMetrics = {
     acceptanceRate: number | null;
     messagesSent: number;
     messagesSentDelta: number | null;
+    repliesReceived: number;
+    replyRate: number | null;
     avgAiScore: number | null;
   };
   campaignCards: CampaignCard[];
@@ -51,10 +58,11 @@ export type DashboardMetrics = {
     connectionsSent: number;
     connectionsAccepted: number;
     firstMessageSent: number;
-    // Reply tracking isn't implemented in the automation pipeline yet, so
-    // these stages have no real data source — surfaced as untracked (null)
-    // rather than a fabricated zero, same as "customersAcquired" below.
-    repliesReceived: number | null;
+    repliesReceived: number;
+    // Sentiment classification of replies and meeting-booking detection
+    // aren't implemented, so these stages have no real data source —
+    // surfaced as untracked (null) rather than a fabricated zero, same as
+    // "customersAcquired" below.
     positiveReplies: number | null;
     meetingsBooked: number | null;
     customersAcquired: number | null;
@@ -120,6 +128,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
   let messagesSentPrev = 0;
   const engagedLinkedinUrls = new Set<string>();
   const firstMessageSentUrls = new Set<string>();
+  const repliedLinkedinUrls = new Set<string>();
   const campaignCards: CampaignCard[] = [];
   const activity: ActivityEvent[] = [];
 
@@ -171,6 +180,15 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
           id: action.id,
           at: action.createdAt,
           kind: "message_sent",
+          leadName: `${action.leadFirstName} ${action.leadLastName}`.trim() || action.leadLinkedinUrl,
+        });
+      }
+      if (action.type === "check_reply" && action.status === "done" && action.payload.replied) {
+        repliedLinkedinUrls.add(action.leadLinkedinUrl);
+        activity.push({
+          id: action.id,
+          at: action.createdAt,
+          kind: "lead_replied",
           leadName: `${action.leadFirstName} ${action.leadLastName}`.trim() || action.leadLinkedinUrl,
         });
       }
@@ -269,6 +287,11 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
       acceptanceRate: connectionsSent > 0 ? Math.round((connectionsAccepted / connectionsSent) * 100) : null,
       messagesSent,
       messagesSentDelta: pctDelta(messagesSentCurr, messagesSentPrev),
+      repliesReceived: repliedLinkedinUrls.size,
+      replyRate:
+        firstMessageSentUrls.size > 0
+          ? Math.round((repliedLinkedinUrls.size / firstMessageSentUrls.size) * 100)
+          : null,
       avgAiScore,
     },
     campaignCards: campaignCards.sort((a, b) => (b.lastActivityAt ?? "").localeCompare(a.lastActivityAt ?? "")),
@@ -277,7 +300,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
       connectionsSent,
       connectionsAccepted,
       firstMessageSent: firstMessageSentUrls.size,
-      repliesReceived: null,
+      repliesReceived: repliedLinkedinUrls.size,
       positiveReplies: null,
       meetingsBooked: null,
       customersAcquired: null,

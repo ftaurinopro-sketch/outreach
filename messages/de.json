@@ -15,7 +15,9 @@
     "sandbox": "Sandbox",
     "reports": "Berichte",
     "settings": "Einstellungen",
-    "signOut": "Abmelden"
+    "signOut": "Abmelden",
+    "admin": "Admin",
+    "adminSection": "Verwaltung"
   },
   "ComingSoon": {
     "notBuiltYet": "Modul noch nicht gebaut — siehe die Roadmap im Produktplan."
@@ -631,5 +633,24 @@
     "startSearch": "Suche starten",
     "skipAndFinish": "Überspringen und abschließen",
     "finishing": "Wird abgeschlossen..."
+  },
+  "Admin": {
+    "title": "Benutzer",
+    "subtitle": "{count} registrierte Benutzer",
+    "email": "E-Mail",
+    "provider": "Anbieter",
+    "joined": "Registriert am",
+    "lastSignIn": "Letzte Anmeldung",
+    "onboarded": "Onboarding abgeschlossen",
+    "yes": "Ja",
+    "no": "Nein",
+    "empty": "Noch keine Benutzer.",
+    "actions": "Aktionen",
+    "impersonate": "Imitieren",
+    "impersonating": "Wird gestartet…",
+    "impersonateConfirm": "Als {email} anmelden? Dies wird protokolliert.",
+    "impersonateError": "Imitation konnte nicht gestartet werden.",
+    "impersonationBanner": "Du imitierst {email} (gestartet von {admin}).",
+    "exitImpersonation": "Imitation beenden"
   }
 }

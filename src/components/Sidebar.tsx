@@ -13,6 +13,7 @@ import {
   Inbox as InboxIcon,
   FlaskConical,
   Settings as SettingsIcon,
+  ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
 import LanguageSwitcher from "./LanguageSwitcher";
@@ -32,7 +33,7 @@ const TOOLS_NAV: { href: string; key: string; icon: LucideIcon }[] = [
   { href: "/settings", key: "settings", icon: SettingsIcon },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ isSuperadmin = false }: { isSuperadmin?: boolean }) {
   const pathname = usePathname();
   const t = useTranslations("Sidebar");
 
@@ -83,6 +84,22 @@ export default function Sidebar() {
             </Link>
           ))}
         </div>
+        {isSuperadmin && (
+          <div>
+            <div className="px-4 pb-1 text-[11px] font-medium uppercase tracking-wide text-neutral-400">
+              {t("adminSection")}
+            </div>
+            <Link
+              href="/admin/users"
+              className={`mx-2 mb-0.5 flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm ${
+                isActive("/admin/users") ? "bg-indigo-600 text-white" : "text-neutral-600 hover:bg-neutral-100"
+              }`}
+            >
+              <ShieldCheck className="h-4 w-4 shrink-0" strokeWidth={2} />
+              {t("admin")}
+            </Link>
+          </div>
+        )}
       </nav>
       <div className="space-y-2 border-t border-neutral-200 p-3">
         <LanguageSwitcher />

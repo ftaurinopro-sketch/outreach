@@ -15,7 +15,9 @@
     "sandbox": "Sandbox",
     "reports": "Informes",
     "settings": "Ajustes",
-    "signOut": "Cerrar sesión"
+    "signOut": "Cerrar sesión",
+    "admin": "Admin",
+    "adminSection": "Administración"
   },
   "ComingSoon": {
     "notBuiltYet": "Módulo aún no construido — consulta la hoja de ruta en el plan de producto."
@@ -631,5 +633,24 @@
     "startSearch": "Iniciar búsqueda",
     "skipAndFinish": "Omitir y terminar",
     "finishing": "Terminando..."
+  },
+  "Admin": {
+    "title": "Usuarios",
+    "subtitle": "{count} usuarios registrados",
+    "email": "Correo",
+    "provider": "Proveedor",
+    "joined": "Registrado",
+    "lastSignIn": "Último acceso",
+    "onboarded": "Onboarding completado",
+    "yes": "Sí",
+    "no": "No",
+    "empty": "Todavía no hay usuarios.",
+    "actions": "Acciones",
+    "impersonate": "Suplantar",
+    "impersonating": "Iniciando…",
+    "impersonateConfirm": "¿Acceder como {email}? Esta acción queda registrada.",
+    "impersonateError": "No se pudo iniciar la suplantación.",
+    "impersonationBanner": "Estás suplantando a {email} (iniciado por {admin}).",
+    "exitImpersonation": "Salir de la suplantación"
   }
 }

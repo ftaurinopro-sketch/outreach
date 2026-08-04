@@ -15,7 +15,9 @@
     "sandbox": "Sandbox",
     "reports": "Report",
     "settings": "Impostazioni",
-    "signOut": "Esci"
+    "signOut": "Esci",
+    "admin": "Admin",
+    "adminSection": "Amministrazione"
   },
   "ComingSoon": {
     "notBuiltYet": "Modulo non ancora costruito — vedi la roadmap nel piano di prodotto."
@@ -631,5 +633,24 @@
     "startSearch": "Avvia ricerca",
     "skipAndFinish": "Salta e termina",
     "finishing": "Completamento..."
+  },
+  "Admin": {
+    "title": "Utenti",
+    "subtitle": "{count} utenti registrati",
+    "email": "Email",
+    "provider": "Provider",
+    "joined": "Iscritto il",
+    "lastSignIn": "Ultimo accesso",
+    "onboarded": "Onboarding completato",
+    "yes": "Sì",
+    "no": "No",
+    "empty": "Nessun utente ancora.",
+    "actions": "Azioni",
+    "impersonate": "Impersona",
+    "impersonating": "Avvio…",
+    "impersonateConfirm": "Accedere come {email}? L'azione viene registrata nel log.",
+    "impersonateError": "Impossibile avviare l'impersonazione.",
+    "impersonationBanner": "Stai impersonando {email} (avviato da {admin}).",
+    "exitImpersonation": "Esci dall'impersonazione"
   }
 }

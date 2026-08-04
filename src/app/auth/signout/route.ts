@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { createSupabaseUserClient, hasSupabaseAuthConfig } from "@/lib/supabase/user";
 
 export async function POST(request: Request) {
@@ -10,5 +11,7 @@ export async function POST(request: Request) {
     const supabase = await createSupabaseUserClient();
     await supabase.auth.signOut();
   }
+  const cookieStore = await cookies();
+  cookieStore.delete("impersonator_email");
   return NextResponse.redirect(new URL("/login", request.url));
 }

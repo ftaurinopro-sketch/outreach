@@ -15,7 +15,9 @@
     "sandbox": "Sandbox",
     "reports": "Reports",
     "settings": "Settings",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "admin": "Admin",
+    "adminSection": "Admin"
   },
   "ComingSoon": {
     "notBuiltYet": "Module not built yet — see the roadmap in the product plan."
@@ -631,5 +633,24 @@
     "startSearch": "Start search",
     "skipAndFinish": "Skip and finish",
     "finishing": "Finishing..."
+  },
+  "Admin": {
+    "title": "Users",
+    "subtitle": "{count} registered users",
+    "email": "Email",
+    "provider": "Provider",
+    "joined": "Joined",
+    "lastSignIn": "Last sign-in",
+    "onboarded": "Onboarded",
+    "yes": "Yes",
+    "no": "No",
+    "empty": "No users yet.",
+    "actions": "Actions",
+    "impersonate": "Impersonate",
+    "impersonating": "Starting…",
+    "impersonateConfirm": "Log in as {email}? This is logged in the audit trail.",
+    "impersonateError": "Could not start impersonation.",
+    "impersonationBanner": "You're impersonating {email} (started by {admin}).",
+    "exitImpersonation": "Exit impersonation"
   }
 }

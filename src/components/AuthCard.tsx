@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import LinkedInSignInButton from "./LinkedInSignInButton";
+import EmailPasswordForm from "./EmailPasswordForm";
 
 // Login and signup are the same underlying LinkedIn OAuth call — Supabase
 // creates the account on first sign-in automatically, there's no separate
@@ -16,6 +17,7 @@ export default function AuthCard() {
   const [mode, setMode] = useState<"login" | "register">(
     searchParams.get("mode") === "register" ? "register" : "login"
   );
+  const [showEmail, setShowEmail] = useState(false);
 
   return (
     <div>
@@ -49,6 +51,26 @@ export default function AuthCard() {
 
       <div className="mt-6">
         <LinkedInSignInButton label={mode === "login" ? t("continueLogin") : t("continueRegister")} />
+      </div>
+
+      <div className="mt-4 flex items-center gap-2">
+        <div className="h-px flex-1 bg-neutral-200" />
+        <span className="text-xs text-neutral-400">{t("or")}</span>
+        <div className="h-px flex-1 bg-neutral-200" />
+      </div>
+
+      <div className="mt-4">
+        {showEmail ? (
+          <EmailPasswordForm mode={mode} />
+        ) : (
+          <button
+            type="button"
+            onClick={() => setShowEmail(true)}
+            className="w-full rounded-md border border-neutral-300 px-4 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50"
+          >
+            {t("continueWithEmail")}
+          </button>
+        )}
       </div>
 
       <p className="mt-4 text-center text-xs text-neutral-400">{t("moreProvidersSoon")}</p>

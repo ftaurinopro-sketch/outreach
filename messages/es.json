@@ -625,7 +625,14 @@
     "brandFeature1": "Importa leads directamente desde Sales Navigator",
     "brandFeature2": "Solicitudes de conexión y secuencias de mensajes automáticas",
     "brandFeature3": "Se detiene en cuanto un lead responde",
-    "brandFooter": "© ReachOS — para equipos que venden en LinkedIn."
+    "brandFooter": "© ReachOS — para equipos que venden en LinkedIn.",
+    "or": "o",
+    "continueWithEmail": "Continuar con email",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Contraseña",
+    "emailLoginButton": "Acceder",
+    "emailRegisterButton": "Crear cuenta",
+    "checkEmailToConfirm": "Revisa tu correo — confirma tu email para terminar de crear la cuenta."
   },
   "Settings": {
     "title": "Ajustes",

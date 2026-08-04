@@ -600,7 +600,8 @@
     "loginTitle": "Willkommen bei ReachOS",
     "loginSubtitle": "Melde dich mit LinkedIn an — sicher, auf der echten LinkedIn-Seite, wir sehen dein Passwort nie. Die Verbindung eines Kontos für die Automatisierung folgt danach als separater Schritt.",
     "continueWithLinkedIn": "Weiter mit LinkedIn",
-    "connecting": "Verbindung wird hergestellt..."
+    "connecting": "Verbindung wird hergestellt...",
+    "loginError": "LinkedIn-Anmeldung konnte nicht gestartet werden — versuche es erneut."
   },
   "Settings": {
     "title": "Einstellungen",

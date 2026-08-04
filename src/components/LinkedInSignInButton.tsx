@@ -13,30 +13,43 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 export default function LinkedInSignInButton() {
   const t = useTranslations("Auth");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleClick() {
     setLoading(true);
+    setError(null);
     const supabase = createSupabaseBrowserClient();
-    await supabase.auth.signInWithOAuth({
+    const { data, error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: "linkedin_oidc",
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
       },
     });
-    // Browser navigates away to LinkedIn; no need to reset loading here.
+    // The @supabase/ssr browser client doesn't reliably self-navigate on
+    // this call (unlike the plain supabase-js client) — drive the redirect
+    // ourselves from the URL it returns instead of assuming it happens.
+    if (data?.url) {
+      window.location.assign(data.url);
+      return;
+    }
+    setError(oauthError?.message ?? t("loginError"));
+    setLoading(false);
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleClick}
-      disabled={loading}
-      className="flex w-full items-center justify-center gap-2 rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
-    >
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.38-1.85 3.61 0 4.28 2.38 4.28 5.47v6.27zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.11 20.45H3.56V9h3.55v11.45z" />
-      </svg>
-      {loading ? t("connecting") : t("continueWithLinkedIn")}
-    </button>
+    <div>
+      <button
+        type="button"
+        onClick={handleClick}
+        disabled={loading}
+        className="flex w-full items-center justify-center gap-2 rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.38-1.85 3.61 0 4.28 2.38 4.28 5.47v6.27zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.11 20.45H3.56V9h3.55v11.45z" />
+        </svg>
+        {loading ? t("connecting") : t("continueWithLinkedIn")}
+      </button>
+      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+    </div>
   );
 }

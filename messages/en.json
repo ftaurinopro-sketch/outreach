@@ -154,22 +154,41 @@
       "tone": {
         "question": "What tone should the assistant use?",
         "placeholder": "Type a custom tone or pick one below",
-        "quickReplies": ["Casual", "Professional", "Direct", "Consultative"]
+        "quickReplies": [
+          "Casual",
+          "Professional",
+          "Direct",
+          "Consultative"
+        ]
       },
       "goal": {
         "question": "What's the end goal of the conversation?",
         "placeholder": "Type a custom goal or pick one below",
-        "quickReplies": ["Book a call", "Collect an email", "Qualify the lead"]
+        "quickReplies": [
+          "Book a call",
+          "Collect an email",
+          "Qualify the lead"
+        ]
       },
       "language": {
         "question": "What language should the assistant write in?",
         "placeholder": "Type a custom language or pick one below",
-        "quickReplies": ["English", "Italiano", "Español", "Deutsch"]
+        "quickReplies": [
+          "English",
+          "Italiano",
+          "Español",
+          "Deutsch"
+        ]
       },
       "objective": {
         "question": "What's this agent's main objective?",
         "placeholder": "Type a custom objective or pick one below",
-        "quickReplies": ["Lead Generation", "Partnership", "Recruiting", "Networking"]
+        "quickReplies": [
+          "Lead Generation",
+          "Partnership",
+          "Recruiting",
+          "Networking"
+        ]
       },
       "products": {
         "question": "What products or services do you offer?",
@@ -569,7 +588,6 @@
     "loggingIn": "Logging in...",
     "loginInProgress": "Logging in — this runs in the runner, it can take a moment...",
     "loginSuccess": "Connected! You can start using this account.",
-    "loginSuccessRedirecting": "Connected! Taking you to your dashboard...",
     "loginError": "Error while logging in",
     "verificationNeeded": "LinkedIn is asking for a verification code — check your email/phone.",
     "verificationCodePlaceholder": "Verification code",
@@ -580,7 +598,8 @@
   },
   "Auth": {
     "loginTitle": "Welcome to ReachOS",
-    "loginSubtitle": "Log in with LinkedIn — this both signs you into ReachOS and connects your account for automation, in one step."
+    "loginSubtitle": "Sign in with LinkedIn — secure, on LinkedIn's own site, we never see your password. You'll connect an account for automation as a separate step after this.",
+    "continueWithLinkedIn": "Continue with LinkedIn"
   },
   "Settings": {
     "title": "Settings",

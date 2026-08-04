@@ -154,22 +154,41 @@
       "tone": {
         "question": "¿Qué tono debe usar el assistant?",
         "placeholder": "Escribe un tono personalizado o elige uno abajo",
-        "quickReplies": ["Casual", "Profesional", "Directo", "Consultivo"]
+        "quickReplies": [
+          "Casual",
+          "Profesional",
+          "Directo",
+          "Consultivo"
+        ]
       },
       "goal": {
         "question": "¿Cuál es el objetivo final de la conversación?",
         "placeholder": "Escribe un objetivo personalizado o elige uno abajo",
-        "quickReplies": ["Agendar una llamada", "Recoger un email", "Cualificar el lead"]
+        "quickReplies": [
+          "Agendar una llamada",
+          "Recoger un email",
+          "Cualificar el lead"
+        ]
       },
       "language": {
         "question": "¿En qué idioma debe escribir el assistant?",
         "placeholder": "Escribe un idioma personalizado o elige uno abajo",
-        "quickReplies": ["English", "Italiano", "Español", "Deutsch"]
+        "quickReplies": [
+          "English",
+          "Italiano",
+          "Español",
+          "Deutsch"
+        ]
       },
       "objective": {
         "question": "¿Cuál es el objetivo principal de este agente?",
         "placeholder": "Escribe un objetivo personalizado o elige uno abajo",
-        "quickReplies": ["Lead Generation", "Partnership", "Recruiting", "Networking"]
+        "quickReplies": [
+          "Lead Generation",
+          "Partnership",
+          "Recruiting",
+          "Networking"
+        ]
       },
       "products": {
         "question": "¿Qué productos o servicios ofreces?",
@@ -569,7 +588,6 @@
     "loggingIn": "Iniciando sesión...",
     "loginInProgress": "Iniciando sesión — se ejecuta en el runner, puede tardar un momento...",
     "loginSuccess": "¡Conectado! Ya puedes usar esta cuenta.",
-    "loginSuccessRedirecting": "¡Conectado! Te llevamos a tu panel...",
     "loginError": "Error al iniciar sesión",
     "verificationNeeded": "LinkedIn pide un código de verificación — revisa tu email/teléfono.",
     "verificationCodePlaceholder": "Código de verificación",
@@ -580,7 +598,8 @@
   },
   "Auth": {
     "loginTitle": "Bienvenido a ReachOS",
-    "loginSubtitle": "Inicia sesión con LinkedIn — este paso te da acceso a ReachOS y conecta tu cuenta para la automatización, todo junto."
+    "loginSubtitle": "Inicia sesión con LinkedIn — seguro, en el propio sitio de LinkedIn, nunca vemos tu contraseña. Conectarás una cuenta para la automatización como paso separado después de esto.",
+    "continueWithLinkedIn": "Continuar con LinkedIn"
   },
   "Settings": {
     "title": "Ajustes",

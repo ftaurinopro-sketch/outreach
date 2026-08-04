@@ -154,22 +154,41 @@
       "tone": {
         "question": "Welchen Ton soll der Assistant verwenden?",
         "placeholder": "Eigenen Ton eingeben oder unten auswählen",
-        "quickReplies": ["Casual", "Professionell", "Direkt", "Beratend"]
+        "quickReplies": [
+          "Casual",
+          "Professionell",
+          "Direkt",
+          "Beratend"
+        ]
       },
       "goal": {
         "question": "Was ist das Ziel des Gesprächs?",
         "placeholder": "Eigenes Ziel eingeben oder unten auswählen",
-        "quickReplies": ["Anruf buchen", "E-Mail sammeln", "Lead qualifizieren"]
+        "quickReplies": [
+          "Anruf buchen",
+          "E-Mail sammeln",
+          "Lead qualifizieren"
+        ]
       },
       "language": {
         "question": "In welcher Sprache soll der Assistant schreiben?",
         "placeholder": "Eigene Sprache eingeben oder unten auswählen",
-        "quickReplies": ["English", "Italiano", "Español", "Deutsch"]
+        "quickReplies": [
+          "English",
+          "Italiano",
+          "Español",
+          "Deutsch"
+        ]
       },
       "objective": {
         "question": "Was ist das Hauptziel dieses Agenten?",
         "placeholder": "Eigenes Ziel eingeben oder unten auswählen",
-        "quickReplies": ["Lead Generation", "Partnership", "Recruiting", "Networking"]
+        "quickReplies": [
+          "Lead Generation",
+          "Partnership",
+          "Recruiting",
+          "Networking"
+        ]
       },
       "products": {
         "question": "Welche Produkte oder Dienstleistungen bietet ihr an?",
@@ -569,7 +588,6 @@
     "loggingIn": "Anmeldung läuft...",
     "loginInProgress": "Anmeldung läuft — das passiert im Runner, es kann einen Moment dauern...",
     "loginSuccess": "Verbunden! Du kannst dieses Konto jetzt nutzen.",
-    "loginSuccessRedirecting": "Verbunden! Du wirst zu deinem Dashboard weitergeleitet...",
     "loginError": "Fehler bei der Anmeldung",
     "verificationNeeded": "LinkedIn verlangt einen Verifizierungscode — prüfe E-Mail/Telefon.",
     "verificationCodePlaceholder": "Verifizierungscode",
@@ -580,7 +598,8 @@
   },
   "Auth": {
     "loginTitle": "Willkommen bei ReachOS",
-    "loginSubtitle": "Melde dich mit LinkedIn an — das meldet dich bei ReachOS an und verbindet dein Konto für die Automatisierung, in einem Schritt."
+    "loginSubtitle": "Melde dich mit LinkedIn an — sicher, auf der echten LinkedIn-Seite, wir sehen dein Passwort nie. Die Verbindung eines Kontos für die Automatisierung folgt danach als separater Schritt.",
+    "continueWithLinkedIn": "Weiter mit LinkedIn"
   },
   "Settings": {
     "title": "Einstellungen",

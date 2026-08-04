@@ -14,9 +14,9 @@ const STEPS = [1, 2, 3] as const;
 export default function OnboardingFlow({ initialConnections }: { initialConnections: PublicConnection[] }) {
   const t = useTranslations("Onboarding");
   const router = useRouter();
-  // Logging in already connects LinkedIn (the unified "log in with
-  // LinkedIn" flow at /login), so anyone reaching onboarding with a
-  // connection already on file can skip straight past that step.
+  // If a connection is already on file (e.g. resuming an onboarding that
+  // got interrupted after step 1), skip straight past the connect step
+  // instead of asking again.
   const [step, setStep] = useState(initialConnections.length > 0 ? 2 : 1);
   const [connections, setConnections] = useState(initialConnections);
   const [newConnection, setNewConnection] = useState<{ id: string; label: string; token: string } | null>(

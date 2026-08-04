@@ -1,37 +1,31 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 type Status = "idle" | "pending" | "in_progress" | "awaiting_verification" | "success" | "failed";
 
-// Drives the automated email/password LinkedIn login: submits credentials,
-// polls the attempt's status, and surfaces LinkedIn's verification-code
-// challenge if one appears. Two modes:
-// - Normal (connectionId given): logs an existing connection in. Used by
-//   ConnectionSetupPanel and the per-connection row for existing ones.
-// - authMode: connectionId isn't known yet — submitting hits the unified
-//   /api/auth/linkedin-login route instead, which creates/signs the user
-//   into ReachOS *and* returns the connection to poll, then redirects home
-//   on success.
+// Drives the automated email/password LinkedIn login for an existing
+// connection: submits credentials, polls the attempt's status, and
+// surfaces LinkedIn's verification-code challenge if one appears. Shared by
+// ConnectionSetupPanel (right after creating a connection, as part of
+// onboarding) and the per-connection row for existing ones. This is the
+// "connect for automation" step — logging into ReachOS itself is a
+// separate, real LinkedIn OAuth flow (see LinkedInSignInButton), since
+// LinkedIn's public OAuth grants identity only, not automation permission.
 export default function LinkedInLoginFlow({
   connectionId,
   defaultEmail,
   onSuccess,
-  authMode,
 }: {
-  connectionId?: string;
+  connectionId: string;
   defaultEmail?: string;
   onSuccess?: () => void;
-  authMode?: boolean;
 }) {
   const t = useTranslations("ConnectionsClient");
-  const router = useRouter();
   const [email, setEmail] = useState(defaultEmail ?? "");
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
-  const [activeConnectionId, setActiveConnectionId] = useState<string | null>(connectionId ?? null);
   const [attemptId, setAttemptId] = useState<string | null>(null);
   const [status, setStatus] = useState<Status>("idle");
   const [prompt, setPrompt] = useState<string | null>(null);
@@ -45,10 +39,10 @@ export default function LinkedInLoginFlow({
     };
   }, []);
 
-  function startPolling(connId: string, id: string) {
+  function startPolling(id: string) {
     if (pollRef.current) clearInterval(pollRef.current);
     pollRef.current = setInterval(async () => {
-      const res = await fetch(`/api/connections/${connId}/login/${id}`);
+      const res = await fetch(`/api/connections/${connectionId}/login/${id}`);
       if (!res.ok) return;
       const data = await res.json();
       setStatus(data.status);
@@ -56,13 +50,7 @@ export default function LinkedInLoginFlow({
       setError(data.error ?? null);
       if (data.status === "success" || data.status === "failed") {
         if (pollRef.current) clearInterval(pollRef.current);
-        if (data.status === "success") {
-          onSuccess?.();
-          if (authMode) {
-            router.push("/");
-            router.refresh();
-          }
-        }
+        if (data.status === "success") onSuccess?.();
       }
     }, 3000);
   }
@@ -72,20 +60,17 @@ export default function LinkedInLoginFlow({
     setSubmitting(true);
     setError(null);
     try {
-      const endpoint = authMode ? "/api/auth/linkedin-login" : `/api/connections/${connectionId}/login`;
-      const res = await fetch(endpoint, {
+      const res = await fetch(`/api/connections/${connectionId}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || t("loginError"));
-      const connId = authMode ? data.connectionId : connectionId!;
-      setActiveConnectionId(connId);
       setAttemptId(data.attemptId);
       setStatus("pending");
       setPassword("");
-      startPolling(connId, data.attemptId);
+      startPolling(data.attemptId);
     } catch (err) {
       setStatus("failed");
       setError(err instanceof Error ? err.message : t("unexpectedError"));
@@ -96,11 +81,11 @@ export default function LinkedInLoginFlow({
 
   async function handleVerify(e: React.FormEvent) {
     e.preventDefault();
-    if (!activeConnectionId || !attemptId || !code.trim()) return;
+    if (!attemptId || !code.trim()) return;
     setSubmitting(true);
     setError(null);
     try {
-      const res = await fetch(`/api/connections/${activeConnectionId}/login/${attemptId}/verify`, {
+      const res = await fetch(`/api/connections/${connectionId}/login/${attemptId}/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code: code.trim() }),
@@ -116,7 +101,7 @@ export default function LinkedInLoginFlow({
   }
 
   if (status === "success") {
-    return <p className="text-sm text-green-700">{authMode ? t("loginSuccessRedirecting") : t("loginSuccess")}</p>;
+    return <p className="text-sm text-green-700">{t("loginSuccess")}</p>;
   }
 
   if (status === "awaiting_verification") {
@@ -148,18 +133,14 @@ export default function LinkedInLoginFlow({
   }
 
   return (
-    <form onSubmit={handleLogin} className={authMode ? "space-y-3" : "space-y-2"}>
+    <form onSubmit={handleLogin} className="space-y-2">
       <input
         type="email"
         required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder={t("linkedinEmailPlaceholder")}
-        className={
-          authMode
-            ? "w-full rounded-md border border-neutral-300 px-3 py-2.5 text-sm focus:border-indigo-600 focus:outline-none"
-            : "w-full rounded-md border border-neutral-300 px-2.5 py-1.5 text-sm"
-        }
+        className="w-full rounded-md border border-neutral-300 px-2.5 py-1.5 text-sm"
       />
       <input
         type="password"
@@ -167,20 +148,12 @@ export default function LinkedInLoginFlow({
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder={t("linkedinPasswordPlaceholder")}
-        className={
-          authMode
-            ? "w-full rounded-md border border-neutral-300 px-3 py-2.5 text-sm focus:border-indigo-600 focus:outline-none"
-            : "w-full rounded-md border border-neutral-300 px-2.5 py-1.5 text-sm"
-        }
+        className="w-full rounded-md border border-neutral-300 px-2.5 py-1.5 text-sm"
       />
       <button
         type="submit"
         disabled={submitting}
-        className={
-          authMode
-            ? "w-full rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
-            : "rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
-        }
+        className="rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
       >
         {submitting ? t("loggingIn") : t("loginWithLinkedin")}
       </button>

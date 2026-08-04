@@ -154,22 +154,41 @@
       "tone": {
         "question": "Che tono deve usare l'assistant?",
         "placeholder": "Scrivi un tono personalizzato oppure scegli qui sotto",
-        "quickReplies": ["Casual", "Professionale", "Diretto", "Consulenziale"]
+        "quickReplies": [
+          "Casual",
+          "Professionale",
+          "Diretto",
+          "Consulenziale"
+        ]
       },
       "goal": {
         "question": "Qual è l'obiettivo finale della conversazione?",
         "placeholder": "Scrivi un obiettivo personalizzato oppure scegli qui sotto",
-        "quickReplies": ["Prenotare una call", "Raccogliere l'email", "Qualificare il lead"]
+        "quickReplies": [
+          "Prenotare una call",
+          "Raccogliere l'email",
+          "Qualificare il lead"
+        ]
       },
       "language": {
         "question": "In che lingua deve scrivere l'assistant?",
         "placeholder": "Scrivi una lingua personalizzata oppure scegli qui sotto",
-        "quickReplies": ["English", "Italiano", "Español", "Deutsch"]
+        "quickReplies": [
+          "English",
+          "Italiano",
+          "Español",
+          "Deutsch"
+        ]
       },
       "objective": {
         "question": "Qual è l'obiettivo principale di questo agent?",
         "placeholder": "Scrivi un obiettivo personalizzato oppure scegli qui sotto",
-        "quickReplies": ["Lead Generation", "Partnership", "Recruiting", "Networking"]
+        "quickReplies": [
+          "Lead Generation",
+          "Partnership",
+          "Recruiting",
+          "Networking"
+        ]
       },
       "products": {
         "question": "Che prodotti o servizi offri?",
@@ -569,7 +588,6 @@
     "loggingIn": "Accesso in corso...",
     "loginInProgress": "Accesso in corso — viene eseguito dal runner, può richiedere qualche istante...",
     "loginSuccess": "Connesso! Ora puoi usare questo account.",
-    "loginSuccessRedirecting": "Connesso! Ti sto portando alla tua dashboard...",
     "loginError": "Errore durante l'accesso",
     "verificationNeeded": "LinkedIn richiede un codice di verifica — controlla email/telefono.",
     "verificationCodePlaceholder": "Codice di verifica",
@@ -580,7 +598,8 @@
   },
   "Auth": {
     "loginTitle": "Benvenuto su ReachOS",
-    "loginSubtitle": "Accedi con LinkedIn — questo passaggio ti fa entrare in ReachOS e collega il tuo account per l'automazione, tutto insieme."
+    "loginSubtitle": "Accedi con LinkedIn — sicuro, sul sito vero di LinkedIn, non vediamo mai la tua password. Collegherai un account per l'automazione come passaggio separato dopo questo.",
+    "continueWithLinkedIn": "Continua con LinkedIn"
   },
   "Settings": {
     "title": "Impostazioni",

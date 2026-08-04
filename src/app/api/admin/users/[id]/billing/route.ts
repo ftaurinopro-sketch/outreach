@@ -7,6 +7,7 @@ import { TRIAL_EXTEND_DAYS } from "@/lib/billing/subscription";
 type Params = { params: Promise<{ id: string }> };
 type Action = "extend_trial" | "set_active" | "set_expired";
 const VALID_ACTIONS: Action[] = ["extend_trial", "set_active", "set_expired"];
+const MAX_EXTEND_DAYS = 365;
 
 export async function POST(request: Request, { params }: Params) {
   if (!hasSupabaseAuthConfig()) {
@@ -22,7 +23,7 @@ export async function POST(request: Request, { params }: Params) {
   }
 
   const { id } = await params;
-  const { action } = (await request.json().catch(() => ({}))) as { action?: string };
+  const { action, days } = (await request.json().catch(() => ({}))) as { action?: string; days?: number };
   if (!action || !VALID_ACTIONS.includes(action as Action)) {
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   }
@@ -30,6 +31,10 @@ export async function POST(request: Request, { params }: Params) {
   const admin = createSupabaseServerClient();
 
   if (action === "extend_trial") {
+    const extendBy =
+      typeof days === "number" && Number.isFinite(days) && days >= 1 && days <= MAX_EXTEND_DAYS
+        ? Math.floor(days)
+        : TRIAL_EXTEND_DAYS;
     const { data: profile } = await admin
       .from("profiles")
       .select("trial_ends_at")
@@ -39,7 +44,7 @@ export async function POST(request: Request, { params }: Params) {
       profile?.trial_ends_at && new Date(profile.trial_ends_at) > new Date()
         ? new Date(profile.trial_ends_at)
         : new Date();
-    base.setDate(base.getDate() + TRIAL_EXTEND_DAYS);
+    base.setDate(base.getDate() + extendBy);
     await admin
       .from("profiles")
       .update({ trial_ends_at: base.toISOString(), subscription_status: "trialing" })

@@ -694,7 +694,20 @@
     "trialEndsOn": "Testphase endet am {date}",
     "extendTrial": "Testphase verlängern",
     "setActive": "Aktivieren",
-    "setExpired": "Als abgelaufen markieren"
+    "setExpired": "Als abgelaufen markieren",
+    "backToUsers": "← Zurück zu Benutzern",
+    "statAgents": "AI Assistants",
+    "statLeadLists": "Lead-Listen",
+    "statTotalLeads": "Importierte Leads",
+    "statCampaigns": "Kampagnen",
+    "statConnections": "Verbindungen (aktiv/gesamt)",
+    "statConnectionRequestsSent": "Gesendete Kontaktanfragen",
+    "statMessagesSent": "Gesendete Nachrichten",
+    "sectionCampaigns": "Kampagnen",
+    "sectionAgents": "AI Assistants",
+    "sectionLeadLists": "Lead-Listen",
+    "sectionConnections": "Verbindungen",
+    "noneYet": "Noch keine."
   },
   "Billing": {
     "trialExpiredTitle": "Deine Testphase ist beendet",

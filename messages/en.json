@@ -694,7 +694,20 @@
     "trialEndsOn": "Trial ends {date}",
     "extendTrial": "Extend trial",
     "setActive": "Activate",
-    "setExpired": "Mark expired"
+    "setExpired": "Mark expired",
+    "backToUsers": "← Back to users",
+    "statAgents": "AI Assistants",
+    "statLeadLists": "Lead lists",
+    "statTotalLeads": "Leads imported",
+    "statCampaigns": "Campaigns",
+    "statConnections": "Connections (active/total)",
+    "statConnectionRequestsSent": "Connection requests sent",
+    "statMessagesSent": "Messages sent",
+    "sectionCampaigns": "Campaigns",
+    "sectionAgents": "AI Assistants",
+    "sectionLeadLists": "Lead lists",
+    "sectionConnections": "Connections",
+    "noneYet": "None yet."
   },
   "Billing": {
     "trialExpiredTitle": "Your trial has ended",

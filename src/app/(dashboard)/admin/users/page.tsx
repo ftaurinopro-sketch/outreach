@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { createSupabaseUserClient, hasSupabaseAuthConfig } from "@/lib/supabase/user";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -55,7 +56,14 @@ export default async function AdminUsersPage() {
           <tbody>
             {rows.map((row) => (
               <tr key={row.id} className="border-b border-neutral-100 last:border-0">
-                <td className="px-4 py-2.5 text-neutral-900">{row.email}</td>
+                <td className="px-4 py-2.5">
+                  <Link
+                    href={`/admin/users/${row.id}`}
+                    className="font-medium text-indigo-600 hover:underline"
+                  >
+                    {row.email}
+                  </Link>
+                </td>
                 <td className="px-4 py-2.5 text-neutral-600">{row.provider}</td>
                 <td className="px-4 py-2.5 text-neutral-600">
                   {new Date(row.createdAt).toLocaleDateString()}

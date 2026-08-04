@@ -694,7 +694,20 @@
     "trialEndsOn": "La prueba termina el {date}",
     "extendTrial": "Extender prueba",
     "setActive": "Activar",
-    "setExpired": "Marcar caducado"
+    "setExpired": "Marcar caducado",
+    "backToUsers": "← Volver a usuarios",
+    "statAgents": "AI Assistants",
+    "statLeadLists": "Listas de leads",
+    "statTotalLeads": "Leads importados",
+    "statCampaigns": "Campañas",
+    "statConnections": "Conexiones (activas/totales)",
+    "statConnectionRequestsSent": "Solicitudes de conexión enviadas",
+    "statMessagesSent": "Mensajes enviados",
+    "sectionCampaigns": "Campañas",
+    "sectionAgents": "AI Assistants",
+    "sectionLeadLists": "Listas de leads",
+    "sectionConnections": "Conexiones",
+    "noneYet": "Todavía ninguno."
   },
   "Billing": {
     "trialExpiredTitle": "Tu prueba ha terminado",

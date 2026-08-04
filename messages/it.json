@@ -599,7 +599,8 @@
   "Auth": {
     "loginTitle": "Benvenuto su ReachOS",
     "loginSubtitle": "Accedi con LinkedIn — sicuro, sul sito vero di LinkedIn, non vediamo mai la tua password. Collegherai un account per l'automazione come passaggio separato dopo questo.",
-    "continueWithLinkedIn": "Continua con LinkedIn"
+    "continueWithLinkedIn": "Continua con LinkedIn",
+    "connecting": "Connessione in corso..."
   },
   "Settings": {
     "title": "Impostazioni",

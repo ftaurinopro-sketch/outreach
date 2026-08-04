@@ -599,7 +599,8 @@
   "Auth": {
     "loginTitle": "Bienvenido a ReachOS",
     "loginSubtitle": "Inicia sesión con LinkedIn — seguro, en el propio sitio de LinkedIn, nunca vemos tu contraseña. Conectarás una cuenta para la automatización como paso separado después de esto.",
-    "continueWithLinkedIn": "Continuar con LinkedIn"
+    "continueWithLinkedIn": "Continuar con LinkedIn",
+    "connecting": "Conectando..."
   },
   "Settings": {
     "title": "Ajustes",

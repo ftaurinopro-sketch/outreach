@@ -20,13 +20,18 @@ export default async function DashboardLayout({ children }: { children: React.Re
       const cookieStore = await cookies();
       impersonatorEmail = cookieStore.get("impersonator_email")?.value ?? null;
       if (impersonatorEmail) impersonatingAs = user.email ?? null;
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("onboarding_completed")
-        .eq("id", user.id)
-        .maybeSingle();
-      if (!profile?.onboarding_completed) {
-        redirect("/onboarding");
+      // Superadmins manage the platform, they don't run campaigns — skip the
+      // "connect LinkedIn / build an AI assistant" onboarding meant for
+      // regular users.
+      if (!isSuperadmin) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("onboarding_completed")
+          .eq("id", user.id)
+          .maybeSingle();
+        if (!profile?.onboarding_completed) {
+          redirect("/onboarding");
+        }
       }
     }
   }

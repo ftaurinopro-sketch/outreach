@@ -632,7 +632,9 @@
     "passwordPlaceholder": "Password",
     "emailLoginButton": "Accedi",
     "emailRegisterButton": "Crea account",
-    "checkEmailToConfirm": "Controlla la posta — conferma l'email per completare la creazione dell'account."
+    "checkEmailToConfirm": "Controlla la posta — conferma l'email per completare la creazione dell'account.",
+    "showPassword": "Mostra",
+    "hidePassword": "Nascondi"
   },
   "Settings": {
     "title": "Impostazioni",

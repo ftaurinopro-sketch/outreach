@@ -11,6 +11,7 @@ export default function EmailPasswordForm({ mode }: { mode: "login" | "register"
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [checkEmail, setCheckEmail] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -57,15 +58,24 @@ export default function EmailPasswordForm({ mode }: { mode: "login" | "register"
         placeholder={t("emailPlaceholder")}
         className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-indigo-600 focus:outline-none"
       />
-      <input
-        type="password"
-        required
-        minLength={8}
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder={t("passwordPlaceholder")}
-        className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-indigo-600 focus:outline-none"
-      />
+      <div className="relative">
+        <input
+          type={showPassword ? "text" : "password"}
+          required
+          minLength={8}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder={t("passwordPlaceholder")}
+          className="w-full rounded-md border border-neutral-300 px-3 py-2 pr-16 text-sm focus:border-indigo-600 focus:outline-none"
+        />
+        <button
+          type="button"
+          onClick={() => setShowPassword((v) => !v)}
+          className="absolute inset-y-0 right-0 px-3 text-xs font-medium text-neutral-400 hover:text-neutral-700"
+        >
+          {showPassword ? t("hidePassword") : t("showPassword")}
+        </button>
+      </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <button
         type="submit"

@@ -12,12 +12,10 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* This app doesn't have a real dark theme (colors are hardcoded neutral-9xx
+   / white throughout, not dark-mode aware) — leaving the OS dark-mode swap
+   in made form text inherit near-white on white inputs and become
+   unreadable, since Tailwind's preflight sets `color: inherit` on inputs. */
 
 body {
   background: var(--background);

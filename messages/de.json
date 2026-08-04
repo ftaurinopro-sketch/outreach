@@ -632,7 +632,9 @@
     "passwordPlaceholder": "Passwort",
     "emailLoginButton": "Anmelden",
     "emailRegisterButton": "Konto erstellen",
-    "checkEmailToConfirm": "Schau in dein Postfach — bestätige deine E-Mail, um das Konto abzuschließen."
+    "checkEmailToConfirm": "Schau in dein Postfach — bestätige deine E-Mail, um das Konto abzuschließen.",
+    "showPassword": "Anzeigen",
+    "hidePassword": "Verbergen"
   },
   "Settings": {
     "title": "Einstellungen",

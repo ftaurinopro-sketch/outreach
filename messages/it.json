@@ -683,6 +683,22 @@
     "impersonateConfirm": "Accedere come {email}? L'azione viene registrata nel log.",
     "impersonateError": "Impossibile avviare l'impersonazione.",
     "impersonationBanner": "Stai impersonando {email} (avviato da {admin}).",
-    "exitImpersonation": "Esci dall'impersonazione"
+    "exitImpersonation": "Esci dall'impersonazione",
+    "plan": "Piano",
+    "status": {
+      "trialing": "Prova",
+      "active": "Attivo",
+      "expired": "Scaduto",
+      "canceled": "Annullato"
+    },
+    "trialEndsOn": "Prova termina il {date}",
+    "extendTrial": "Estendi prova",
+    "setActive": "Attiva",
+    "setExpired": "Segna scaduto"
+  },
+  "Billing": {
+    "trialExpiredTitle": "Il tuo periodo di prova è terminato",
+    "trialExpiredBody": "Contattaci per attivare l'abbonamento e continuare a usare ReachOS — i pagamenti self-service non sono ancora attivi.",
+    "signOut": "Esci"
   }
 }

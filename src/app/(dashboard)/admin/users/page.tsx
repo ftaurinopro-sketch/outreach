@@ -4,6 +4,14 @@ import { createSupabaseUserClient, hasSupabaseAuthConfig } from "@/lib/supabase/
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSuperadminEmail } from "@/lib/auth/superadmin";
 import ImpersonateButton from "./ImpersonateButton";
+import BillingActions from "./BillingActions";
+
+const STATUS_STYLES: Record<string, string> = {
+  trialing: "bg-amber-50 text-amber-700",
+  active: "bg-emerald-50 text-emerald-700",
+  expired: "bg-red-50 text-red-700",
+  canceled: "bg-neutral-100 text-neutral-600",
+};
 
 export default async function AdminUsersPage() {
   if (!hasSupabaseAuthConfig()) notFound();
@@ -20,19 +28,24 @@ export default async function AdminUsersPage() {
 
   const [{ data: usersPage }, { data: profiles }] = await Promise.all([
     admin.auth.admin.listUsers({ perPage: 200 }),
-    admin.from("profiles").select("id, created_at, onboarding_completed"),
+    admin.from("profiles").select("id, created_at, onboarding_completed, trial_ends_at, subscription_status"),
   ]);
 
   const profileById = new Map((profiles ?? []).map((p) => [p.id, p]));
   const rows = (usersPage?.users ?? [])
-    .map((u) => ({
-      id: u.id,
-      email: u.email ?? "—",
-      provider: u.app_metadata?.provider ?? "—",
-      createdAt: u.created_at,
-      lastSignInAt: u.last_sign_in_at,
-      onboardingCompleted: profileById.get(u.id)?.onboarding_completed ?? false,
-    }))
+    .map((u) => {
+      const profile = profileById.get(u.id);
+      return {
+        id: u.id,
+        email: u.email ?? "—",
+        provider: u.app_metadata?.provider ?? "—",
+        createdAt: u.created_at,
+        lastSignInAt: u.last_sign_in_at,
+        onboardingCompleted: profile?.onboarding_completed ?? false,
+        subscriptionStatus: profile?.subscription_status ?? "trialing",
+        trialEndsAt: profile?.trial_ends_at ?? null,
+      };
+    })
     .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
 
   return (
@@ -40,7 +53,7 @@ export default async function AdminUsersPage() {
       <h1 className="text-lg font-semibold text-neutral-900">{t("title")}</h1>
       <p className="mt-1 text-sm text-neutral-500">{t("subtitle", { count: rows.length })}</p>
 
-      <div className="mt-6 overflow-hidden rounded-xl border border-neutral-200 bg-white">
+      <div className="mt-6 overflow-x-auto rounded-xl border border-neutral-200 bg-white">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-neutral-200 bg-neutral-50 text-xs uppercase tracking-wide text-neutral-500">
             <tr>
@@ -49,6 +62,7 @@ export default async function AdminUsersPage() {
               <th className="px-4 py-2.5 font-medium">{t("joined")}</th>
               <th className="px-4 py-2.5 font-medium">{t("lastSignIn")}</th>
               <th className="px-4 py-2.5 font-medium">{t("onboarded")}</th>
+              <th className="px-4 py-2.5 font-medium">{t("plan")}</th>
               <th className="px-4 py-2.5 font-medium">{t("actions")}</th>
             </tr>
           </thead>
@@ -75,13 +89,32 @@ export default async function AdminUsersPage() {
                   </span>
                 </td>
                 <td className="px-4 py-2.5">
-                  {row.id !== user?.id && <ImpersonateButton userId={row.id} email={row.email} />}
+                  <div className="flex flex-col gap-0.5">
+                    <span
+                      className={`w-fit rounded-full px-2 py-0.5 text-xs font-medium ${
+                        STATUS_STYLES[row.subscriptionStatus] ?? STATUS_STYLES.trialing
+                      }`}
+                    >
+                      {t(`status.${row.subscriptionStatus}`)}
+                    </span>
+                    {row.trialEndsAt && (
+                      <span className="text-xs text-neutral-400">
+                        {t("trialEndsOn", { date: new Date(row.trialEndsAt).toLocaleDateString() })}
+                      </span>
+                    )}
+                  </div>
+                </td>
+                <td className="px-4 py-2.5">
+                  <div className="flex flex-col gap-1.5">
+                    {row.id !== user?.id && <ImpersonateButton userId={row.id} email={row.email} />}
+                    <BillingActions userId={row.id} />
+                  </div>
                 </td>
               </tr>
             ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-center text-neutral-400">
+                <td colSpan={7} className="px-4 py-6 text-center text-neutral-400">
                   {t("empty")}
                 </td>
               </tr>

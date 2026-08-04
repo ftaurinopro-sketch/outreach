@@ -683,6 +683,22 @@
     "impersonateConfirm": "Log in as {email}? This is logged in the audit trail.",
     "impersonateError": "Could not start impersonation.",
     "impersonationBanner": "You're impersonating {email} (started by {admin}).",
-    "exitImpersonation": "Exit impersonation"
+    "exitImpersonation": "Exit impersonation",
+    "plan": "Plan",
+    "status": {
+      "trialing": "Trialing",
+      "active": "Active",
+      "expired": "Expired",
+      "canceled": "Canceled"
+    },
+    "trialEndsOn": "Trial ends {date}",
+    "extendTrial": "Extend trial",
+    "setActive": "Activate",
+    "setExpired": "Mark expired"
+  },
+  "Billing": {
+    "trialExpiredTitle": "Your trial has ended",
+    "trialExpiredBody": "Reach out to us to upgrade and keep using ReachOS — we haven't turned on self-serve billing yet.",
+    "signOut": "Sign out"
   }
 }

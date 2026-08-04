@@ -683,6 +683,22 @@
     "impersonateConfirm": "Als {email} anmelden? Dies wird protokolliert.",
     "impersonateError": "Imitation konnte nicht gestartet werden.",
     "impersonationBanner": "Du imitierst {email} (gestartet von {admin}).",
-    "exitImpersonation": "Imitation beenden"
+    "exitImpersonation": "Imitation beenden",
+    "plan": "Plan",
+    "status": {
+      "trialing": "Testphase",
+      "active": "Aktiv",
+      "expired": "Abgelaufen",
+      "canceled": "Gekündigt"
+    },
+    "trialEndsOn": "Testphase endet am {date}",
+    "extendTrial": "Testphase verlängern",
+    "setActive": "Aktivieren",
+    "setExpired": "Als abgelaufen markieren"
+  },
+  "Billing": {
+    "trialExpiredTitle": "Deine Testphase ist beendet",
+    "trialExpiredBody": "Kontaktiere uns, um zu upgraden und ReachOS weiter zu nutzen — Self-Service-Zahlungen sind noch nicht aktiv.",
+    "signOut": "Abmelden"
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { PublicConnection } from "@/lib/connections/types";
 import { DEFAULT_CONNECTION_LIMITS } from "@/lib/connections/types";
@@ -19,7 +19,58 @@ export default function OnboardingFlow({ initialConnections }: { initialConnecti
   const [newConnection, setNewConnection] = useState<{ id: string; label: string; token: string } | null>(
     null
   );
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
   const [finishing, setFinishing] = useState(false);
+  const autoCreateAttempted = useRef(false);
+
+  async function autoCreateConnection() {
+    setCreating(true);
+    setCreateError(null);
+    try {
+      const res = await fetch("/api/connections", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...DEFAULT_CONNECTION_LIMITS, label: t("defaultConnectionLabel") }),
+      });
+      if (!res.ok) throw new Error();
+      const { connection } = await res.json();
+      setNewConnection({ id: connection.id, label: connection.label, token: connection.token });
+      setConnections((prev) => [
+        {
+          ...DEFAULT_CONNECTION_LIMITS,
+          id: connection.id,
+          label: connection.label,
+          userId: null,
+          linkedinEmail: null,
+          hasSessionCookie: false,
+          createdAt: new Date().toISOString(),
+          lastSeenAt: null,
+        },
+        ...prev,
+      ]);
+    } catch {
+      setCreateError(t("connectionCreateError"));
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  // Skip the extra "click to connect" step: land on step 1 with the
+  // LinkedIn login form already up, instead of an intermediate button.
+  useEffect(() => {
+    if (autoCreateAttempted.current) return;
+    if (connections.length > 0) return;
+    autoCreateAttempted.current = true;
+    // One-time bootstrap fetch on mount — the ref guard above already
+    // prevents this from re-firing, so the setState-in-effect warning
+    // doesn't apply the way it would for state driven by props/deps.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    autoCreateConnection();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const pendingConnection = connections.find((c) => !c.hasSessionCookie) ?? null;
 
   async function finish() {
     setFinishing(true);
@@ -53,28 +104,29 @@ export default function OnboardingFlow({ initialConnections }: { initialConnecti
           <div className="mt-6">
             {newConnection ? (
               <ConnectionSetupPanel connection={newConnection} onSaved={() => router.refresh()} />
+            ) : pendingConnection ? (
+              <ConnectionSetupPanel
+                connection={{ id: pendingConnection.id, label: pendingConnection.label }}
+                onSaved={() => router.refresh()}
+              />
             ) : connections.length > 0 ? (
               <div className="rounded-xl border border-neutral-200 bg-white shadow-sm p-5 text-sm text-neutral-600">
                 {t("connectionAlreadyExists", { label: connections[0].label })}
               </div>
+            ) : creating ? (
+              <div className="rounded-xl border border-neutral-200 bg-white shadow-sm p-5 text-sm text-neutral-500">
+                {t("connecting")}
+              </div>
             ) : (
-              <CreateConnectionButton
-                onCreated={(c) => {
-                  setNewConnection(c);
-                  setConnections((prev) => [
-                    {
-                      ...c,
-                      ...DEFAULT_CONNECTION_LIMITS,
-                      userId: null,
-                      linkedinEmail: null,
-                      hasSessionCookie: false,
-                      createdAt: new Date().toISOString(),
-                      lastSeenAt: null,
-                    },
-                    ...prev,
-                  ]);
-                }}
-              />
+              <div className="rounded-xl border border-neutral-200 bg-white shadow-sm p-5">
+                {createError && <p className="mb-3 text-sm text-red-600">{createError}</p>}
+                <button
+                  onClick={autoCreateConnection}
+                  className="rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700"
+                >
+                  {t("connectLinkedIn")}
+                </button>
+              </div>
             )}
           </div>
 
@@ -130,32 +182,6 @@ export default function OnboardingFlow({ initialConnections }: { initialConnecti
   );
 }
 
-function CreateConnectionButton({ onCreated }: { onCreated: (c: { id: string; label: string; token: string }) => void }) {
-  const t = useTranslations("Onboarding");
-  const [creating, setCreating] = useState(false);
-
-  async function handleClick() {
-    setCreating(true);
-    const res = await fetch("/api/connections", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...DEFAULT_CONNECTION_LIMITS, label: t("defaultConnectionLabel") }),
-    });
-    const { connection } = await res.json();
-    setCreating(false);
-    onCreated({ id: connection.id, label: connection.label, token: connection.token });
-  }
-
-  return (
-    <button
-      onClick={handleClick}
-      disabled={creating}
-      className="rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
-    >
-      {creating ? t("connecting") : t("connectLinkedIn")}
-    </button>
-  );
-}
 
 function OnboardingLeadListForm({
   connections,

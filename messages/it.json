@@ -571,7 +571,9 @@
     "verificationNeeded": "LinkedIn richiede un codice di verifica — controlla email/telefono.",
     "verificationCodePlaceholder": "Codice di verifica",
     "confirmCode": "Conferma",
-    "preferManualCookie": "Preferisci incollare il cookie di sessione manualmente?"
+    "preferManualCookie": "Preferisci incollare il cookie di sessione manualmente?",
+    "showAdvanced": "Avanzate: setup del runner self-hosted",
+    "hideAdvanced": "Nascondi impostazioni avanzate"
   },
   "Auth": {
     "loginTitle": "Bentornato",
@@ -607,6 +609,7 @@
     "defaultConnectionLabel": "Il mio profilo LinkedIn",
     "connecting": "Connessione...",
     "connectLinkedIn": "Collega LinkedIn",
+    "connectionCreateError": "Impossibile creare la connessione — riprova.",
     "noReadyConnection": "Serve una connessione con un cookie di sessione configurato per importare una ricerca — potrai tornarci da Lead Finder una volta pronta.",
     "searchQueued": "Ricerca in coda — il runner la eseguirà a breve. Troverai la lista in Lead Finder.",
     "createError": "Errore nella creazione del job",

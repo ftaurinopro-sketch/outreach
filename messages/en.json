@@ -571,7 +571,9 @@
     "verificationNeeded": "LinkedIn is asking for a verification code — check your email/phone.",
     "verificationCodePlaceholder": "Verification code",
     "confirmCode": "Confirm",
-    "preferManualCookie": "Prefer to paste the session cookie manually?"
+    "preferManualCookie": "Prefer to paste the session cookie manually?",
+    "showAdvanced": "Advanced: self-hosted runner setup",
+    "hideAdvanced": "Hide advanced setup"
   },
   "Auth": {
     "loginTitle": "Welcome back",
@@ -607,6 +609,7 @@
     "defaultConnectionLabel": "My LinkedIn profile",
     "connecting": "Connecting...",
     "connectLinkedIn": "Connect LinkedIn",
+    "connectionCreateError": "Couldn't create the connection — try again.",
     "noReadyConnection": "You need a connection with a session cookie configured to import a search — you can come back to this from Lead Finder once it's set up.",
     "searchQueued": "Search queued — the runner will pick it up shortly. You'll find the list in Lead Finder.",
     "createError": "Error while creating the job",

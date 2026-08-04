@@ -571,7 +571,9 @@
     "verificationNeeded": "LinkedIn verlangt einen Verifizierungscode — prüfe E-Mail/Telefon.",
     "verificationCodePlaceholder": "Verifizierungscode",
     "confirmCode": "Bestätigen",
-    "preferManualCookie": "Lieber den Sitzungscookie manuell einfügen?"
+    "preferManualCookie": "Lieber den Sitzungscookie manuell einfügen?",
+    "showAdvanced": "Erweitert: Self-Hosted-Runner-Einrichtung",
+    "hideAdvanced": "Erweiterte Einrichtung ausblenden"
   },
   "Auth": {
     "loginTitle": "Willkommen zurück",
@@ -607,6 +609,7 @@
     "defaultConnectionLabel": "Mein LinkedIn-Profil",
     "connecting": "Verbindung wird hergestellt...",
     "connectLinkedIn": "LinkedIn verbinden",
+    "connectionCreateError": "Verbindung konnte nicht erstellt werden — versuche es erneut.",
     "noReadyConnection": "Du brauchst eine Verbindung mit konfiguriertem Sitzungscookie, um eine Suche zu importieren — das kannst du später in Lead Finder nachholen.",
     "searchQueued": "Suche in der Warteschlange — der Runner führt sie in Kürze aus. Du findest die Liste in Lead Finder.",
     "createError": "Fehler beim Erstellen des Jobs",

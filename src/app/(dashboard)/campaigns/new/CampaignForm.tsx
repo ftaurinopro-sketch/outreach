@@ -35,7 +35,6 @@ export default function CampaignForm({
   const t = useTranslations("CampaignForm");
   const [values, setValues] = useState<CampaignInput>({
     ...EMPTY_CAMPAIGN_INPUT,
-    agentId: agents[0]?.id ?? "",
     leadListId: leadLists[0]?.id ?? "",
     messages: [newMessageStep()],
   });
@@ -129,10 +128,11 @@ export default function CampaignForm({
         <div>
           <label className="mb-1 block text-xs font-medium text-neutral-500">{t("aiAssistant")}</label>
           <select
-            value={values.agentId}
-            onChange={(e) => set("agentId", e.target.value)}
+            value={values.agentId ?? ""}
+            onChange={(e) => set("agentId", e.target.value || null)}
             className="w-full rounded-md border border-neutral-300 px-2.5 py-2 text-sm"
           >
+            <option value="">{t("noAiAssistant")}</option>
             {agents.map((a) => (
               <option key={a.id} value={a.id}>
                 {a.name}

@@ -11,7 +11,7 @@ export default async function NewCampaignPage() {
     getTranslations("NewCampaign"),
   ]);
 
-  if (agents.length === 0 || leadLists.length === 0) {
+  if (leadLists.length === 0) {
     return (
       <div className="max-w-2xl px-8 py-10">
         <h1 className="text-2xl font-semibold text-neutral-900">{t("title")}</h1>
@@ -19,25 +19,10 @@ export default async function NewCampaignPage() {
           {t("prerequisitesIntro")}
           <ul className="mt-2 list-disc space-y-1 pl-5">
             <li>
-              {t.rich("needAgent", { strong: (chunks) => <strong>{chunks}</strong> })} (
-              {agents.length > 0 ? (
-                t("present")
-              ) : (
-                <Link href="/ai-assistants/new" className="text-neutral-900 underline">
-                  {t("createOne")}
-                </Link>
-              )}
-              )
-            </li>
-            <li>
               {t.rich("needLeadList", { strong: (chunks) => <strong>{chunks}</strong> })} (
-              {leadLists.length > 0 ? (
-                t("present")
-              ) : (
-                <Link href="/lead-finder/import" className="text-neutral-900 underline">
-                  {t("importOne")}
-                </Link>
-              )}
+              <Link href="/lead-finder/import" className="text-neutral-900 underline">
+                {t("importOne")}
+              </Link>
               )
             </li>
           </ul>

@@ -22,7 +22,7 @@ export default async function CampaignDetailPage({ params }: Props) {
   if (!campaign) notFound();
 
   const [agent, leadList, connections, actions, t, locale] = await Promise.all([
-    getAgent(campaign.agentId),
+    campaign.agentId ? getAgent(campaign.agentId) : Promise.resolve(null),
     getLeadList(campaign.leadListId),
     listConnections(),
     campaign.status !== "draft" ? listActionsForCampaign(campaign.id) : Promise.resolve([]),
@@ -88,8 +88,10 @@ export default async function CampaignDetailPage({ params }: Props) {
             <Link href={`/ai-assistants/${agent.id}`} className="text-neutral-900 hover:underline">
               {agent.name}
             </Link>
-          ) : (
+          ) : campaign.agentId ? (
             <span className="text-red-600">{t("agentDeleted")}</span>
+          ) : (
+            <span className="text-neutral-400">{t("noAiAssistant")}</span>
           )}
         </Row>
         <Row label={t("connectionNote")}>

@@ -37,7 +37,10 @@ export const DEFAULT_AUTOMATION_SETTINGS: CampaignAutomationSettings = {
 export type CampaignInput = {
   name: string;
   leadListId: string;
-  agentId: string;
+  // Optional — a campaign can run on plain typed message templates without
+  // an AI Assistant persona attached. Only needed for AI-driven features
+  // (lead scoring against its ICP, sandbox testing, autonomous replies).
+  agentId: string | null;
   connectionNote: string;
   messages: CampaignMessageStep[];
   replyMode: ReplyMode;
@@ -64,7 +67,7 @@ export function newMessageStep(): CampaignMessageStep {
 export const EMPTY_CAMPAIGN_INPUT: CampaignInput = {
   name: "",
   leadListId: "",
-  agentId: "",
+  agentId: null,
   connectionNote: "",
   messages: [{ id: "seed-1", text: "", delayDays: 5 }],
   replyMode: "review",

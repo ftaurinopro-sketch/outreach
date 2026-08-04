@@ -15,9 +15,9 @@ export async function POST(request: Request) {
   const body = (await request.json()) as Partial<CampaignInput>;
   const messages = (body.messages ?? []).slice(0, MAX_SEQUENCE_MESSAGES);
 
-  if (!body.name || !body.leadListId || !body.agentId || !messages[0]?.text?.trim()) {
+  if (!body.name || !body.leadListId || !messages[0]?.text?.trim()) {
     return NextResponse.json(
-      { error: "name, leadListId, agentId e il primo messaggio sono obbligatori" },
+      { error: "name, leadListId e il primo messaggio sono obbligatori" },
       { status: 400 }
     );
   }
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
   const campaign = await createCampaign({
     name: body.name,
     leadListId: body.leadListId,
-    agentId: body.agentId,
+    agentId: body.agentId || null,
     connectionNote: body.connectionNote ?? "",
     messages,
     replyMode: body.replyMode === "autonomous" ? "autonomous" : "review",

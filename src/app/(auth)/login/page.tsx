@@ -1,15 +1,10 @@
-import { getTranslations } from "next-intl/server";
-import LinkedInSignInButton from "@/components/LinkedInSignInButton";
+import { Suspense } from "react";
+import AuthCard from "@/components/AuthCard";
 
-export default async function LoginPage() {
-  const t = await getTranslations("Auth");
+export default function LoginPage() {
   return (
-    <div>
-      <h1 className="text-lg font-semibold text-neutral-900">{t("loginTitle")}</h1>
-      <p className="mt-1 text-sm text-neutral-500">{t("loginSubtitle")}</p>
-      <div className="mt-6">
-        <LinkedInSignInButton />
-      </div>
-    </div>
+    <Suspense>
+      <AuthCard />
+    </Suspense>
   );
 }

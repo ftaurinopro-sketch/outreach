@@ -208,7 +208,16 @@
         "question": "¿Hay algo que el agente no deba decir o hacer nunca?",
         "placeholder": "Ej. nunca hables de precio, nunca prometas descuentos..."
       }
-    }
+    },
+    "websiteQuestion": "¿Cuál es el sitio web de tu empresa? Pega la URL y extraeré automáticamente lo básico — igualmente podrás revisar y editar todo antes de guardar.",
+    "websitePlaceholder": "https://tuempresa.com",
+    "websiteAnalyze": "Analizar",
+    "websiteAnalyzing": "Leyendo tu sitio web...",
+    "websiteAnalyzed": "Listo — encontré algunas cosas en tu sitio. Te las iré proponiendo, pero puedes cambiar lo que quieras.",
+    "websiteAnalyzedNothing": "No pude extraer mucho de esa página — no hay problema, sigamos con las preguntas.",
+    "websiteAnalysisFailed": "No pude leer ese sitio — sigamos con las preguntas.",
+    "suggestionLabel": "Encontrado en tu sitio web:",
+    "useSuggestion": "Usar esta respuesta"
   },
   "AgentDetail": {
     "testInSandbox": "Probar en Sandbox"
@@ -599,11 +608,24 @@
     "hideAdvanced": "Ocultar configuración avanzada"
   },
   "Auth": {
-    "loginTitle": "Bienvenido a ReachOS",
-    "loginSubtitle": "Inicia sesión con LinkedIn — seguro, en el propio sitio de LinkedIn, nunca vemos tu contraseña. Conectarás una cuenta para la automatización como paso separado después de esto.",
+    "loginTitle": "Bienvenido de nuevo",
+    "loginSubtitle": "Accede con LinkedIn — seguro, en el sitio real de LinkedIn, nunca vemos tu contraseña.",
     "continueWithLinkedIn": "Continuar con LinkedIn",
     "connecting": "Conectando...",
-    "loginError": "No se pudo iniciar el acceso con LinkedIn — inténtalo de nuevo."
+    "loginError": "No se pudo iniciar el acceso con LinkedIn — inténtalo de nuevo.",
+    "tabLogin": "Acceder",
+    "tabRegister": "Registrarse",
+    "registerTitle": "Crea tu cuenta",
+    "registerSubtitle": "Regístrate con LinkedIn — seguro, en el sitio real de LinkedIn, nunca vemos tu contraseña. Conectarás una cuenta para la automatización como paso separado después de esto.",
+    "continueLogin": "Continuar con LinkedIn",
+    "continueRegister": "Regístrate con LinkedIn",
+    "moreProvidersSoon": "Pronto más opciones de acceso (Google, etc.).",
+    "brandHeadline": "Convierte el outreach en LinkedIn en un sistema, no en una tarea manual.",
+    "brandSubline": "ReachOS encuentra leads, envía solicitudes de conexión y hace seguimiento — automáticamente, hasta que alguien responde.",
+    "brandFeature1": "Importa leads directamente desde Sales Navigator",
+    "brandFeature2": "Solicitudes de conexión y secuencias de mensajes automáticas",
+    "brandFeature3": "Se detiene en cuanto un lead responde",
+    "brandFooter": "© ReachOS — para equipos que venden en LinkedIn."
   },
   "Settings": {
     "title": "Ajustes",
@@ -623,7 +645,7 @@
     "connecting": "Conectando...",
     "connectLinkedIn": "Conectar LinkedIn",
     "connectionCreateError": "No se pudo crear la conexión — inténtalo de nuevo.",
-    "noReadyConnection": "Necesitas una conexión con un cookie de sesión configurado para importar una búsqueda — podrás volver a esto desde Lead Finder cuando esté lista.",
+    "noReadyConnection": "Para importar una búsqueda primero necesitas conectar una cuenta de LinkedIn para la automatización — es un paso distinto al inicio de sesión, y todavía no lo has completado.",
     "searchQueued": "Búsqueda en cola — el runner la ejecutará en breve. Encontrarás la lista en Lead Finder.",
     "createError": "Error al crear el job",
     "linkedinProfile": "Perfil de LinkedIn",
@@ -632,7 +654,8 @@
     "starting": "Iniciando...",
     "startSearch": "Iniciar búsqueda",
     "skipAndFinish": "Omitir y terminar",
-    "finishing": "Terminando..."
+    "finishing": "Terminando...",
+    "noReadyConnectionAction": "Configúralo ahora"
   },
   "Admin": {
     "title": "Usuarios",

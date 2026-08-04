@@ -208,7 +208,16 @@
         "question": "Is there anything the agent should never say or do?",
         "placeholder": "E.g. never discuss pricing, never promise discounts..."
       }
-    }
+    },
+    "websiteQuestion": "What's your company website? Paste the URL and I'll pull the basics from it automatically — you'll still get to review and edit everything before saving.",
+    "websitePlaceholder": "https://yourcompany.com",
+    "websiteAnalyze": "Analyze",
+    "websiteAnalyzing": "Reading your website...",
+    "websiteAnalyzed": "Got it — I found a few things on your site. I'll suggest them as we go, but feel free to change anything.",
+    "websiteAnalyzedNothing": "I couldn't pull much from that page — no worries, let's go through the questions instead.",
+    "websiteAnalysisFailed": "Couldn't read that site — let's go through the questions instead.",
+    "suggestionLabel": "Found on your website:",
+    "useSuggestion": "Use this"
   },
   "AgentDetail": {
     "testInSandbox": "Test in Sandbox"
@@ -599,11 +608,24 @@
     "hideAdvanced": "Hide advanced setup"
   },
   "Auth": {
-    "loginTitle": "Welcome to ReachOS",
-    "loginSubtitle": "Sign in with LinkedIn — secure, on LinkedIn's own site, we never see your password. You'll connect an account for automation as a separate step after this.",
+    "loginTitle": "Welcome back",
+    "loginSubtitle": "Log in with LinkedIn — secure, on LinkedIn's own site, we never see your password.",
     "continueWithLinkedIn": "Continue with LinkedIn",
     "connecting": "Connecting...",
-    "loginError": "Couldn't start LinkedIn sign-in — try again."
+    "loginError": "Couldn't start LinkedIn sign-in — try again.",
+    "tabLogin": "Log in",
+    "tabRegister": "Sign up",
+    "registerTitle": "Create your account",
+    "registerSubtitle": "Sign up with LinkedIn — secure, on LinkedIn's own site, we never see your password. You'll connect an account for automation as a separate step after this.",
+    "continueLogin": "Continue with LinkedIn",
+    "continueRegister": "Sign up with LinkedIn",
+    "moreProvidersSoon": "More sign-in options (Google, etc.) coming soon.",
+    "brandHeadline": "Turn LinkedIn outreach into a system, not a chore.",
+    "brandSubline": "ReachOS finds leads, sends connection requests, and follows up — automatically, until someone replies.",
+    "brandFeature1": "Import leads straight from Sales Navigator",
+    "brandFeature2": "Automated connection requests and message sequences",
+    "brandFeature3": "Stops the moment a lead replies",
+    "brandFooter": "© ReachOS — built for teams who sell on LinkedIn."
   },
   "Settings": {
     "title": "Settings",
@@ -623,7 +645,7 @@
     "connecting": "Connecting...",
     "connectLinkedIn": "Connect LinkedIn",
     "connectionCreateError": "Couldn't create the connection — try again.",
-    "noReadyConnection": "You need a connection with a session cookie configured to import a search — you can come back to this from Lead Finder once it's set up.",
+    "noReadyConnection": "To import a search you first need to connect a LinkedIn account for automation — that's a different step from logging in, and you haven't finished it yet.",
     "searchQueued": "Search queued — the runner will pick it up shortly. You'll find the list in Lead Finder.",
     "createError": "Error while creating the job",
     "linkedinProfile": "LinkedIn profile",
@@ -632,7 +654,8 @@
     "starting": "Starting...",
     "startSearch": "Start search",
     "skipAndFinish": "Skip and finish",
-    "finishing": "Finishing..."
+    "finishing": "Finishing...",
+    "noReadyConnectionAction": "Set it up now"
   },
   "Admin": {
     "title": "Users",

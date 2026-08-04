@@ -208,7 +208,16 @@
         "question": "Gibt es etwas, das der Agent niemals sagen oder tun soll?",
         "placeholder": "Z. B. nie über den Preis sprechen, nie Rabatte versprechen..."
       }
-    }
+    },
+    "websiteQuestion": "Wie lautet die Website deines Unternehmens? Füge die URL ein — ich hole automatisch die wichtigsten Infos heraus, du kannst danach trotzdem alles überprüfen und ändern.",
+    "websitePlaceholder": "https://deinunternehmen.de",
+    "websiteAnalyze": "Analysieren",
+    "websiteAnalyzing": "Lese deine Website...",
+    "websiteAnalyzed": "Erledigt — ich habe ein paar Dinge auf deiner Website gefunden. Ich schlage sie dir unterwegs vor, du kannst aber alles ändern.",
+    "websiteAnalyzedNothing": "Von dieser Seite konnte ich nicht viel entnehmen — kein Problem, gehen wir die Fragen durch.",
+    "websiteAnalysisFailed": "Diese Website konnte ich nicht lesen — gehen wir die Fragen durch.",
+    "suggestionLabel": "Auf deiner Website gefunden:",
+    "useSuggestion": "Diese Antwort verwenden"
   },
   "AgentDetail": {
     "testInSandbox": "In Sandbox testen"
@@ -599,11 +608,24 @@
     "hideAdvanced": "Erweiterte Einrichtung ausblenden"
   },
   "Auth": {
-    "loginTitle": "Willkommen bei ReachOS",
-    "loginSubtitle": "Melde dich mit LinkedIn an — sicher, auf der echten LinkedIn-Seite, wir sehen dein Passwort nie. Die Verbindung eines Kontos für die Automatisierung folgt danach als separater Schritt.",
+    "loginTitle": "Willkommen zurück",
+    "loginSubtitle": "Melde dich mit LinkedIn an — sicher, auf der echten LinkedIn-Seite, wir sehen dein Passwort nie.",
     "continueWithLinkedIn": "Weiter mit LinkedIn",
     "connecting": "Verbindung wird hergestellt...",
-    "loginError": "LinkedIn-Anmeldung konnte nicht gestartet werden — versuche es erneut."
+    "loginError": "LinkedIn-Anmeldung konnte nicht gestartet werden — versuche es erneut.",
+    "tabLogin": "Anmelden",
+    "tabRegister": "Registrieren",
+    "registerTitle": "Konto erstellen",
+    "registerSubtitle": "Registriere dich mit LinkedIn — sicher, auf der echten LinkedIn-Seite, wir sehen dein Passwort nie. Du verbindest ein Konto für die Automatisierung als separaten Schritt danach.",
+    "continueLogin": "Weiter mit LinkedIn",
+    "continueRegister": "Mit LinkedIn registrieren",
+    "moreProvidersSoon": "Bald weitere Anmeldeoptionen (Google usw.).",
+    "brandHeadline": "Mach LinkedIn-Outreach zu einem System, nicht zu einer lästigen Aufgabe.",
+    "brandSubline": "ReachOS findet Leads, sendet Kontaktanfragen und macht Follow-ups — automatisch, bis jemand antwortet.",
+    "brandFeature1": "Leads direkt aus Sales Navigator importieren",
+    "brandFeature2": "Automatische Kontaktanfragen und Nachrichtenfolgen",
+    "brandFeature3": "Stoppt, sobald ein Lead antwortet",
+    "brandFooter": "© ReachOS — für Teams, die auf LinkedIn verkaufen."
   },
   "Settings": {
     "title": "Einstellungen",
@@ -623,7 +645,7 @@
     "connecting": "Verbindung wird hergestellt...",
     "connectLinkedIn": "LinkedIn verbinden",
     "connectionCreateError": "Verbindung konnte nicht erstellt werden — versuche es erneut.",
-    "noReadyConnection": "Du brauchst eine Verbindung mit konfiguriertem Sitzungscookie, um eine Suche zu importieren — das kannst du später in Lead Finder nachholen.",
+    "noReadyConnection": "Um eine Suche zu importieren, musst du zuerst ein LinkedIn-Konto für die Automatisierung verbinden — das ist ein anderer Schritt als die Anmeldung, und du hast ihn noch nicht abgeschlossen.",
     "searchQueued": "Suche in der Warteschlange — der Runner führt sie in Kürze aus. Du findest die Liste in Lead Finder.",
     "createError": "Fehler beim Erstellen des Jobs",
     "linkedinProfile": "LinkedIn-Profil",
@@ -632,7 +654,8 @@
     "starting": "Wird gestartet...",
     "startSearch": "Suche starten",
     "skipAndFinish": "Überspringen und abschließen",
-    "finishing": "Wird abgeschlossen..."
+    "finishing": "Wird abgeschlossen...",
+    "noReadyConnectionAction": "Jetzt einrichten"
   },
   "Admin": {
     "title": "Benutzer",

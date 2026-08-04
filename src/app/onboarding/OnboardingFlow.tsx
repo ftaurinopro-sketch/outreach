@@ -27,6 +27,16 @@ export default function OnboardingFlow({ initialConnections }: { initialConnecti
   const [finishing, setFinishing] = useState(false);
   const autoCreateAttempted = useRef(false);
 
+  // initialConnections only feeds the two useState initializers above, so a
+  // plain prop change (e.g. after the router.refresh() a successful login
+  // triggers) wouldn't otherwise reach this component's state — without
+  // this, step 3 could still think there's no ready connection right after
+  // the user finishes connecting one in step 1.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setConnections(initialConnections);
+  }, [initialConnections]);
+
   async function autoCreateConnection() {
     setCreating(true);
     setCreateError(null);
@@ -168,10 +178,22 @@ export default function OnboardingFlow({ initialConnections }: { initialConnecti
           <p className="mt-1 text-sm text-neutral-500">{t("step3Description")}</p>
 
           <div className="mt-6">
-            <OnboardingLeadListForm
-              connections={connections.filter((c) => c.hasSessionCookie)}
-              onDone={finish}
-            />
+            {connections.some((c) => c.hasSessionCookie) ? (
+              <OnboardingLeadListForm
+                connections={connections.filter((c) => c.hasSessionCookie)}
+                onDone={finish}
+              />
+            ) : (
+              <div className="rounded-xl border border-dashed border-neutral-300 bg-white px-5 py-6 text-sm text-neutral-600">
+                <p>{t("noReadyConnection")}</p>
+                <button
+                  onClick={() => setStep(1)}
+                  className="mt-3 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                >
+                  {t("noReadyConnectionAction")}
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="mt-6 flex justify-between">
@@ -200,14 +222,6 @@ function OnboardingLeadListForm({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
-
-  if (connections.length === 0) {
-    return (
-      <div className="rounded-lg border border-dashed border-neutral-300 bg-white px-5 py-8 text-sm text-neutral-500">
-        {t("noReadyConnection")}
-      </div>
-    );
-  }
 
   if (done) {
     return (

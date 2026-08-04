@@ -20,8 +20,11 @@ create table if not exists profiles (
 
 alter table profiles enable row level security;
 
+drop policy if exists "profiles_select_own" on profiles;
 create policy "profiles_select_own" on profiles for select using (auth.uid() = id);
+drop policy if exists "profiles_update_own" on profiles;
 create policy "profiles_update_own" on profiles for update using (auth.uid() = id);
+drop policy if exists "profiles_insert_own" on profiles;
 create policy "profiles_insert_own" on profiles for insert with check (auth.uid() = id);
 
 -- Auto-create a profile row whenever a new auth user is created (covers
@@ -46,21 +49,25 @@ create trigger on_auth_user_created
 -- agents
 alter table agents add column if not exists user_id uuid not null default auth.uid() references auth.users (id) on delete cascade;
 alter table agents enable row level security;
+drop policy if exists "agents_all_own" on agents;
 create policy "agents_all_own" on agents for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 -- lead_lists
 alter table lead_lists add column if not exists user_id uuid not null default auth.uid() references auth.users (id) on delete cascade;
 alter table lead_lists enable row level security;
+drop policy if exists "lead_lists_all_own" on lead_lists;
 create policy "lead_lists_all_own" on lead_lists for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 -- campaigns
 alter table campaigns add column if not exists user_id uuid not null default auth.uid() references auth.users (id) on delete cascade;
 alter table campaigns enable row level security;
+drop policy if exists "campaigns_all_own" on campaigns;
 create policy "campaigns_all_own" on campaigns for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 -- connections
 alter table connections add column if not exists user_id uuid not null default auth.uid() references auth.users (id) on delete cascade;
 alter table connections enable row level security;
+drop policy if exists "connections_all_own" on connections;
 create policy "connections_all_own" on connections for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 -- automation_actions / scrape_jobs: user_id for bookkeeping, no default (set

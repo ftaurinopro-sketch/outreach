@@ -1,4 +1,4 @@
-import { createCipheriv, createDecipheriv, randomBytes } from "crypto";
+import { createCipheriv, createDecipheriv, createHmac, randomBytes } from "crypto";
 
 // Symmetric encryption for secrets we must store at rest (LinkedIn session
 // cookie, LinkedIn password) — anything that grants account access, not
@@ -47,4 +47,26 @@ export function decryptSecret(encoded: string): string {
 
 export function hasEncryptionKey(): boolean {
   return Boolean(process.env.CONNECTION_ENCRYPTION_KEY);
+}
+
+// The unified "log in with LinkedIn" flow (src/app/api/auth/linkedin-login)
+// needs a Supabase Auth password to sign the user into ReachOS itself, but
+// the user only ever types their LinkedIn password — we never want that
+// reused as their ReachOS account password (different trust domains: a
+// leaked LinkedIn password shouldn't also be a leaked ReachOS password).
+// This derives a synthetic, opaque password from the email using a
+// server-only secret, so it's stable across logins without ever being
+// shown to the user or stored anywhere itself.
+export function deriveAppPassword(email: string): string {
+  const secret = process.env.APP_PASSWORD_DERIVATION_SECRET;
+  if (!secret) {
+    throw new Error(
+      "APP_PASSWORD_DERIVATION_SECRET non impostata: necessaria per il login unificato con LinkedIn. Genera una chiave con: openssl rand -base64 32"
+    );
+  }
+  return createHmac("sha256", secret).update(email.trim().toLowerCase()).digest("hex");
+}
+
+export function hasAppPasswordSecret(): boolean {
+  return Boolean(process.env.APP_PASSWORD_DERIVATION_SECRET);
 }

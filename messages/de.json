@@ -569,6 +569,7 @@
     "loggingIn": "Anmeldung läuft...",
     "loginInProgress": "Anmeldung läuft — das passiert im Runner, es kann einen Moment dauern...",
     "loginSuccess": "Verbunden! Du kannst dieses Konto jetzt nutzen.",
+    "loginSuccessRedirecting": "Verbunden! Du wirst zu deinem Dashboard weitergeleitet...",
     "loginError": "Fehler bei der Anmeldung",
     "verificationNeeded": "LinkedIn verlangt einen Verifizierungscode — prüfe E-Mail/Telefon.",
     "verificationCodePlaceholder": "Verifizierungscode",
@@ -578,21 +579,8 @@
     "hideAdvanced": "Erweiterte Einrichtung ausblenden"
   },
   "Auth": {
-    "loginTitle": "Willkommen zurück",
-    "loginSubtitle": "Melde dich bei deinem ReachOS-Konto an.",
-    "signupTitle": "Konto erstellen",
-    "signupSubtitle": "Starte mit ReachOS in ein paar Minuten.",
-    "continueWithGoogle": "Mit Google fortfahren",
-    "orWithEmail": "oder mit E-Mail",
-    "email": "E-Mail",
-    "password": "Passwort",
-    "loggingIn": "Anmeldung läuft...",
-    "logIn": "Anmelden",
-    "signingUp": "Registrierung läuft...",
-    "signUp": "Registrieren",
-    "noAccount": "Noch kein Konto?",
-    "haveAccount": "Bereits ein Konto?",
-    "checkEmail": "Bestätige deine E-Mail-Adresse über den Link in deinem Posteingang und melde dich dann an."
+    "loginTitle": "Willkommen bei ReachOS",
+    "loginSubtitle": "Melde dich mit LinkedIn an — das meldet dich bei ReachOS an und verbindet dein Konto für die Automatisierung, in einem Schritt."
   },
   "Settings": {
     "title": "Einstellungen",

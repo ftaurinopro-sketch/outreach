@@ -1,9 +1,12 @@
-# ReachOS Runner — esecutore cloud via cookie di sessione
+# ReachOS Runner — esecutore condiviso via cookie di sessione
 
-Alternativa all'estensione Chrome (`extension/`): invece di eseguire le azioni nel tuo browser reale, il
-runner usa un **browser headless (Playwright)** autenticato su LinkedIn tramite il cookie di sessione
-`li_at`. Non serve tenere Chrome aperto: puoi far girare questo script sul tuo computer, o in futuro su un
-piccolo server sempre acceso.
+Alternativa all'estensione Chrome (`extension/`): invece di eseguire le azioni nel browser di ogni singolo
+utente, il runner usa un **browser headless (Playwright)** autenticato su LinkedIn tramite il cookie di
+sessione `li_at`.
+
+**Un solo processo serve automaticamente tutte le connessioni di tutti gli utenti** della piattaforma — non
+è un'installazione che ogni cliente deve fare per conto proprio. Va fatto girare una volta sola, su un
+server sempre acceso (vedi "Dove farlo girare" sotto), non sul computer di ognuno.
 
 ## ⚠️ Leggi prima di usarlo
 
@@ -24,8 +27,9 @@ piccolo server sempre acceso.
   eseguito contro un account LinkedIn reale.
 - **Testa prima su un account secondario**, con limiti bassi (i default in `/connections` sono 15
   connessioni/giorno, 80/settimana, 30 messaggi/giorno).
-- **`chromium` non gira su Vercel** in questo setup: è un processo Node persistente, va eseguito sulla tua
-  macchina o su un server/VPS proprio (Railway, Render, una piccola VM...), non come funzione serverless.
+- **`chromium` non gira su Vercel**: è un processo Node persistente, va eseguito su un servizio che supporti
+  processi always-on (Railway, Render, Fly.io, una piccola VPS...), non come funzione serverless. Vercel
+  resta il backend/API; il runner è un deploy separato che ci parla via HTTP.
 
 ## Login automatico (email + password) vs. cookie manuale
 
@@ -49,7 +53,7 @@ Da `/connections` puoi collegare un profilo in due modi:
 Questo valore scade periodicamente (LinkedIn invalida le sessioni): se il runner smette di autenticarsi,
 ripeti questi passaggi e aggiorna il cookie da `/connections` nell'app.
 
-## Installazione
+## Configurazione
 
 ```bash
 cd runner
@@ -58,10 +62,11 @@ cp .env.example .env
 ```
 
 Modifica `runner/.env`:
-- `REACHOS_BACKEND_URL` — URL di ReachOS (es. `http://localhost:3213` in locale)
-- `REACHOS_TOKEN` — token generato creando una connessione in `/connections`
-- (il cookie `li_at` si imposta invece dalla UI di ReachOS, non da qui — il runner lo scarica da lì ad ogni
-  avvio)
+- `REACHOS_BACKEND_URL` — URL pubblico di ReachOS (es. `https://tuo-progetto.vercel.app`)
+- `RUNNER_MASTER_KEY` — una stringa segreta a tua scelta (es. generata con `openssl rand -base64 32`), che
+  deve combaciare **esattamente** con `RUNNER_MASTER_KEY` impostata sul backend (Vercel → Environment
+  Variables). È l'unica credenziale: dà al runner accesso a *tutte* le connessioni di *tutti* gli utenti,
+  quindi trattala come una password d'amministratore, non va mai esposta lato client.
 
 ```bash
 npm start
@@ -70,17 +75,31 @@ npm start
 La prima volta, ti conviene mettere `REACHOS_HEADLESS=false` in `.env` per vedere il browser mentre lavora
 e verificare che tutto funzioni come previsto.
 
+## Dove farlo girare
+
+Deve restare acceso 24/7, quindi non sul tuo laptop. Opzioni semplici (tutte supportano un processo Node
+persistente con Playwright):
+- **Railway** o **Render**: collega questo repo, imposta la root directory su `runner/`, comando di build
+  `npm install`, comando di avvio `npm start`, aggiungi le variabili d'ambiente sopra. Piano gratuito/economico
+  sufficiente per iniziare.
+- Una **piccola VPS** (Hetzner, DigitalOcean...) con `pm2` o un servizio systemd per tenerlo vivo dopo un
+  riavvio.
+
 ## Come funziona
 
-Ad ogni ciclo il runner controlla prima se c'è un **login in attesa** (`/api/extension/next-login-job`) —
-in quel caso esegue quello e basta per questo ciclo, dato che può restare bloccato fino a 10 minuti in
-attesa di un codice di verifica. Altrimenti, stesso protocollo dell'estensione
-(`/api/extension/next-action`, `/api/extension/report`): il runner fa polling ogni
-`REACHOS_POLL_INTERVAL_SECONDS` (default 180s), se c'è un'azione in coda apre una pagina Playwright sul
-profilo del lead, esegue l'azione (`send_connection_request`, `check_acceptance`, `send_message`) e riporta
-l'esito. La logica di pianificazione (quante azioni al giorno, quando ricontrollare l'accettazione, quando
-mandare il follow-up) resta lato server in `src/lib/automation/scheduler.ts` — il
-runner esegue solo quello che gli viene detto, un'azione alla volta.
+Ad ogni ciclo il runner chiama `GET /api/runner/connections` (autenticato con `RUNNER_MASTER_KEY`) per
+ottenere l'elenco di **tutte** le connessioni esistenti, poi passa una per una: per ciascuna, controlla
+prima se c'è un **login in attesa** (`/api/extension/next-login-job`) — in quel caso esegue quello e basta
+per quella connessione in questo ciclo, dato che può restare bloccato fino a 10 minuti in attesa di un
+codice di verifica. Altrimenti, stesso protocollo dell'estensione (`/api/extension/next-action`,
+`/api/extension/report`), autenticato stavolta con il token della singola connessione (non la master key):
+se c'è un'azione in coda apre una pagina Playwright sul profilo del lead, esegue l'azione
+(`send_connection_request`, `check_acceptance`, `send_message`) e riporta l'esito. Un errore su una
+connessione (cookie scaduto, selettore cambiato...) non blocca le altre: viene loggato e si passa alla
+successiva. Il giro completo su tutte le connessioni si ripete ogni `REACHOS_POLL_INTERVAL_SECONDS`
+(default 180s). La logica di pianificazione (quante azioni al giorno, quando ricontrollare l'accettazione,
+quando mandare il follow-up) resta lato server in `src/lib/automation/scheduler.ts` — il runner esegue solo
+quello che gli viene detto, un'azione alla volta per connessione.
 
 Gestisce anche i **job di import da ricerca** (Lead Finder → "Importa da ricerca"): se non ci sono azioni di
 campagna in coda, controlla `/api/extension/next-scrape-job`, apre l'URL di ricerca (LinkedIn o Sales

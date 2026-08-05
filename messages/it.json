@@ -582,15 +582,10 @@
     "saving": "Salvataggio...",
     "saveCookie": "Salva cookie",
     "setupTitle": "Connessione \"{label}\" creata — configura il runner",
-    "setupStep1": "1. <strong>Token</strong> (mostrato una sola volta) — va in <code>runner/.env</code> come <code>REACHOS_TOKEN</code>:",
-    "copy": "Copia",
     "setupStep2": "2. <strong>Cookie di sessione LinkedIn (li_at)</strong> — è come una password: chi lo ha può agire come te su LinkedIn. Per trovarlo: vai su linkedin.com già loggato → apri DevTools (F12) → Application (o Storage) → Cookies → linkedin.com → copia il valore del cookie <code>li_at</code>.",
     "save": "Salva",
     "cookieSaved": "Cookie salvato.",
     "skipHint": "Puoi anche saltare questo passaggio ora e aggiungerlo dopo dalla lista connessioni qui sotto.",
-    "setupCliStep1": "Nel repo:",
-    "setupCliStep2": "Copia <code>runner/.env.example</code> in <code>runner/.env</code> e imposta URL del sito + token.",
-    "setupCliStep3": "<code>npm start</code> — vedi <code>runner/README.md</code> per i dettagli e gli avvisi sul rischio.",
     "savedEverything": "Ho salvato tutto",
     "loginSectionTitle": "Accedi con LinkedIn",
     "loginSectionDescription": "Inserisci email e password di LinkedIn — il runner farà il login al posto tuo e restituirà una sessione, senza bisogno di DevTools.",
@@ -608,7 +603,8 @@
     "preferManualCookie": "Preferisci incollare il cookie di sessione manualmente?",
     "showAdvanced": "Avanzate: setup del runner self-hosted",
     "hideAdvanced": "Nascondi impostazioni avanzate",
-    "passwordDifferentNote": "Questa è la tua vera password LinkedIn — diversa da come hai fatto accesso a ReachOS. Non possiamo riusare il tuo login ReachOS qui, perché l'accesso con LinkedIn prova solo la tua identità, non concede permessi di automazione."
+    "passwordDifferentNote": "Questa è la tua vera password LinkedIn — diversa da come hai fatto accesso a ReachOS. Non possiamo riusare il tuo login ReachOS qui, perché l'accesso con LinkedIn prova solo la tua identità, non concede permessi di automazione.",
+    "sharedRunnerNote": "L'automazione gira sul runner condiviso di ReachOS — non c'è nulla da installare o configurare qui, la prende in carico automaticamente una volta impostata."
   },
   "Auth": {
     "loginTitle": "Bentornato",

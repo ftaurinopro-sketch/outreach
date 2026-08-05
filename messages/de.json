@@ -582,15 +582,10 @@
     "saving": "Wird gespeichert...",
     "saveCookie": "Cookie speichern",
     "setupTitle": "Verbindung \"{label}\" erstellt — Runner einrichten",
-    "setupStep1": "1. <strong>Token</strong> (wird nur einmal angezeigt) — kommt in <code>runner/.env</code> als <code>REACHOS_TOKEN</code>:",
-    "copy": "Kopieren",
     "setupStep2": "2. <strong>LinkedIn-Sitzungscookie (li_at)</strong> — er ist wie ein Passwort: Wer ihn hat, kann auf LinkedIn als du auftreten. So findest du ihn: gehe angemeldet auf linkedin.com → öffne DevTools (F12) → Application (oder Storage) → Cookies → linkedin.com → kopiere den Wert des Cookies <code>li_at</code>.",
     "save": "Speichern",
     "cookieSaved": "Cookie gespeichert.",
     "skipHint": "Du kannst diesen Schritt auch jetzt überspringen und ihn später aus der Verbindungsliste unten hinzufügen.",
-    "setupCliStep1": "Im Repo:",
-    "setupCliStep2": "Kopiere <code>runner/.env.example</code> nach <code>runner/.env</code> und setze URL der Seite + Token.",
-    "setupCliStep3": "<code>npm start</code> — Details und Risikohinweise siehe <code>runner/README.md</code>.",
     "savedEverything": "Ich habe alles gespeichert",
     "loginSectionTitle": "Mit LinkedIn anmelden",
     "loginSectionDescription": "Gib deine LinkedIn-E-Mail und dein Passwort ein — der Runner meldet sich für dich an und liefert eine Sitzung zurück, ganz ohne DevTools.",
@@ -608,7 +603,8 @@
     "preferManualCookie": "Lieber den Sitzungscookie manuell einfügen?",
     "showAdvanced": "Erweitert: Self-Hosted-Runner-Einrichtung",
     "hideAdvanced": "Erweiterte Einrichtung ausblenden",
-    "passwordDifferentNote": "Das ist dein echtes LinkedIn-Passwort — anders als deine Anmeldung bei ReachOS. Wir können deine ReachOS-Anmeldung hier nicht wiederverwenden, da die Anmeldung mit LinkedIn nur deine Identität bestätigt, aber keine Automatisierungsrechte gewährt."
+    "passwordDifferentNote": "Das ist dein echtes LinkedIn-Passwort — anders als deine Anmeldung bei ReachOS. Wir können deine ReachOS-Anmeldung hier nicht wiederverwenden, da die Anmeldung mit LinkedIn nur deine Identität bestätigt, aber keine Automatisierungsrechte gewährt.",
+    "sharedRunnerNote": "Die Automatisierung läuft auf dem gemeinsamen Runner von ReachOS — hier musst du nichts installieren oder konfigurieren, er übernimmt diese Verbindung automatisch, sobald sie eingerichtet ist."
   },
   "Auth": {
     "loginTitle": "Willkommen zurück",

@@ -1,28 +1,40 @@
-// ReachOS runner: polls the same /api/extension/* queue the Chrome extension
-// uses (see extension/), but executes actions with a headless Playwright
-// browser authenticated via a saved LinkedIn session cookie (li_at) instead
-// of riding the user's own logged-in browser. From LinkedIn's point of view
-// this looks like a login from a new device/location — expect a possible
-// verification prompt the first time. See README.md before running this
-// against a real account.
+// ReachOS runner: one shared, always-on process that services every
+// tenant's connections (not one process per user/connection — see
+// README.md for the earlier local-only setup this replaced). Polls the
+// same /api/extension/* queue the Chrome extension uses (see extension/),
+// but executes actions with a headless Playwright browser authenticated
+// via a saved LinkedIn session cookie (li_at) instead of riding the user's
+// own logged-in browser. From LinkedIn's point of view this looks like a
+// login from a new device/location — expect a possible verification
+// prompt the first time. See README.md before running this against a real
+// account.
 import { chromium } from "playwright";
 
 const BACKEND_URL = (process.env.REACHOS_BACKEND_URL || "").replace(/\/$/, "");
-const TOKEN = process.env.REACHOS_TOKEN;
+const MASTER_KEY = process.env.RUNNER_MASTER_KEY;
 const HEADLESS = process.env.REACHOS_HEADLESS !== "false";
 const POLL_INTERVAL_MS = Number(process.env.REACHOS_POLL_INTERVAL_SECONDS || 180) * 1000;
 
-if (!BACKEND_URL || !TOKEN) {
-  console.error("Imposta REACHOS_BACKEND_URL e REACHOS_TOKEN in runner/.env (vedi .env.example).");
+if (!BACKEND_URL || !MASTER_KEY) {
+  console.error("Imposta REACHOS_BACKEND_URL e RUNNER_MASTER_KEY in runner/.env (vedi .env.example).");
   process.exit(1);
 }
 
-let browser = null;
-let context = null;
+async function listConnections() {
+  const res = await fetch(`${BACKEND_URL}/api/runner/connections`, {
+    headers: { Authorization: `Bearer ${MASTER_KEY}` },
+  });
+  if (!res.ok) {
+    console.error(`[ReachOS runner] impossibile elencare le connessioni (HTTP ${res.status})`);
+    return [];
+  }
+  const data = await res.json();
+  return data.connections ?? [];
+}
 
-async function fetchSessionCookie() {
+async function fetchSessionCookie(token) {
   const res = await fetch(`${BACKEND_URL}/api/extension/session`, {
-    headers: { Authorization: `Bearer ${TOKEN}` },
+    headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
@@ -32,53 +44,53 @@ async function fetchSessionCookie() {
   return data.sessionCookie;
 }
 
-async function nextAction() {
+async function nextAction(token) {
   const res = await fetch(`${BACKEND_URL}/api/extension/next-action`, {
-    headers: { Authorization: `Bearer ${TOKEN}` },
+    headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) return null;
   const data = await res.json();
   return data.action;
 }
 
-async function report(actionId, result) {
+async function report(token, actionId, result) {
   await fetch(`${BACKEND_URL}/api/extension/report`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${TOKEN}` },
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     body: JSON.stringify({ actionId, ...result }),
   });
 }
 
-async function nextScrapeJob() {
+async function nextScrapeJob(token) {
   const res = await fetch(`${BACKEND_URL}/api/extension/next-scrape-job`, {
-    headers: { Authorization: `Bearer ${TOKEN}` },
+    headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) return null;
   const data = await res.json();
   return data.job;
 }
 
-async function reportScrape(jobId, result) {
+async function reportScrape(token, jobId, result) {
   await fetch(`${BACKEND_URL}/api/extension/report-scrape`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${TOKEN}` },
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     body: JSON.stringify({ jobId, ...result }),
   });
 }
 
-async function nextLoginJob() {
+async function nextLoginJob(token) {
   const res = await fetch(`${BACKEND_URL}/api/extension/next-login-job`, {
-    headers: { Authorization: `Bearer ${TOKEN}` },
+    headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) return null;
   const data = await res.json();
   return data.job;
 }
 
-async function reportLogin(result) {
+async function reportLogin(token, result) {
   await fetch(`${BACKEND_URL}/api/extension/report-login`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${TOKEN}` },
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     body: JSON.stringify(result),
   });
 }
@@ -87,11 +99,11 @@ async function reportLogin(result) {
 // browser session sits on LinkedIn's checkpoint page waiting. Gives up
 // after timeoutMs so a login attempt can't hold a browser open forever if
 // the user never checks their email.
-async function pollLoginCode(attemptId, timeoutMs = 10 * 60 * 1000, intervalMs = 5000) {
+async function pollLoginCode(token, attemptId, timeoutMs = 10 * 60 * 1000, intervalMs = 5000) {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
     const res = await fetch(`${BACKEND_URL}/api/extension/login-attempts/${attemptId}`, {
-      headers: { Authorization: `Bearer ${TOKEN}` },
+      headers: { Authorization: `Bearer ${token}` },
     });
     if (res.ok) {
       const data = await res.json();
@@ -143,7 +155,7 @@ async function classifyLoginOutcome(page) {
   return { kind: "unknown", message: "Esito del login non determinabile (selettore da aggiornare?)." };
 }
 
-async function runLoginJob(job) {
+async function runLoginJob(token, job) {
   const loginBrowser = await chromium.launch({ headless: HEADLESS });
   const loginContext = await loginBrowser.newContext();
   const page = await loginContext.newPage();
@@ -157,15 +169,15 @@ async function runLoginJob(job) {
     let outcome = await classifyLoginOutcome(page);
 
     if (outcome.kind === "verification_code") {
-      await reportLogin({
+      await reportLogin(token, {
         attemptId: job.attemptId,
         status: "awaiting_verification",
         verificationPrompt: outcome.prompt,
       });
 
-      const code = await pollLoginCode(job.attemptId);
+      const code = await pollLoginCode(token, job.attemptId);
       if (!code) {
-        await reportLogin({
+        await reportLogin(token, {
           attemptId: job.attemptId,
           status: "failed",
           error: "Tempo scaduto in attesa del codice di verifica (10 minuti).",
@@ -186,18 +198,18 @@ async function runLoginJob(job) {
       const cookies = await loginContext.cookies();
       const liAt = cookies.find((c) => c.name === "li_at");
       if (!liAt) {
-        await reportLogin({
+        await reportLogin(token, {
           attemptId: job.attemptId,
           status: "failed",
           error: "Login riuscito ma il cookie li_at non è stato trovato nel contesto del browser.",
         });
         return;
       }
-      await reportLogin({ attemptId: job.attemptId, status: "success", sessionCookie: liAt.value });
+      await reportLogin(token, { attemptId: job.attemptId, status: "success", sessionCookie: liAt.value });
       return;
     }
 
-    await reportLogin({
+    await reportLogin(token, {
       attemptId: job.attemptId,
       status: "failed",
       error: outcome.message || "Login non riuscito.",
@@ -209,12 +221,15 @@ async function runLoginJob(job) {
   }
 }
 
-async function getContext() {
-  if (context) return context;
-  const sessionCookie = await fetchSessionCookie();
-
-  browser = await chromium.launch({ headless: HEADLESS });
-  context = await browser.newContext();
+// Opens a fresh browser context authenticated with this connection's saved
+// session cookie. Not cached across ticks — with potentially many tenants'
+// connections serviced by one shared process, keeping N persistent browsers
+// open isn't worth the memory; a job (or none) happens at most once per
+// connection per cycle anyway, so relaunching is cheap by comparison.
+async function openConnectionContext(token) {
+  const sessionCookie = await fetchSessionCookie(token);
+  const browser = await chromium.launch({ headless: HEADLESS });
+  const context = await browser.newContext();
   await context.addCookies([
     {
       name: "li_at",
@@ -225,7 +240,7 @@ async function getContext() {
       secure: true,
     },
   ]);
-  return context;
+  return { browser, context };
 }
 
 async function clickByText(page, text) {
@@ -386,10 +401,10 @@ async function scrapeSearchResults(page) {
   });
 }
 
-async function runScrapeJob(job) {
-  const ctx = await getContext();
-  const page = await ctx.newPage();
+async function runScrapeJob(token, job) {
+  const { browser, context } = await openConnectionContext(token);
   try {
+    const page = await context.newPage();
     await page.goto(job.searchUrl, { waitUntil: "domcontentloaded", timeout: 30000 });
     await page.waitForTimeout(3000);
 
@@ -399,14 +414,14 @@ async function runScrapeJob(job) {
     }
     return { success: true, leads };
   } finally {
-    await page.close();
+    await browser.close().catch(() => {});
   }
 }
 
-async function runAction(action) {
-  const ctx = await getContext();
-  const page = await ctx.newPage();
+async function runAction(token, action) {
+  const { browser, context } = await openConnectionContext(token);
   try {
+    const page = await context.newPage();
     await page.goto(action.leadLinkedinUrl, { waitUntil: "domcontentloaded", timeout: 30000 });
     await page.waitForTimeout(2500);
 
@@ -423,62 +438,82 @@ async function runAction(action) {
         return { success: false, error: `Azione sconosciuta: ${action.type}` };
     }
   } finally {
-    await page.close();
+    await browser.close().catch(() => {});
   }
 }
 
-async function tick() {
-  // Checked first: a pending login blocks everything else for this
-  // connection anyway (no session cookie yet to run regular actions with),
-  // and the user is likely watching /connections live for the outcome.
-  // Note this can hold the loop for up to ~10 minutes if LinkedIn asks for
-  // a verification code — acceptable for a single-account personal runner,
-  // but it does mean queued campaign actions wait behind it.
-  const loginJob = await nextLoginJob();
+// At most one job per connection per cycle, same priority as before
+// (pending login blocks everything else for that connection, since there's
+// no session cookie yet to run regular actions with). Errors are caught
+// per-connection so one broken/expired connection never stops the shared
+// process from servicing everyone else.
+async function tickForConnection(conn) {
+  const loginJob = await nextLoginJob(conn.token);
   if (loginJob) {
-    console.log(`[ReachOS runner] eseguo login automatico LinkedIn per ${loginJob.email}`);
+    console.log(`[ReachOS runner] [${conn.label}] login automatico LinkedIn per ${loginJob.email}`);
     try {
-      await runLoginJob(loginJob);
+      await runLoginJob(conn.token, loginJob);
     } catch (e) {
-      console.error("[ReachOS runner] errore login:", e);
-      await reportLogin({ attemptId: loginJob.attemptId, status: "failed", error: String(e?.message || e) });
+      console.error(`[ReachOS runner] [${conn.label}] errore login:`, e);
+      await reportLogin(conn.token, {
+        attemptId: loginJob.attemptId,
+        status: "failed",
+        error: String(e?.message || e),
+      });
     }
     return;
   }
 
-  const action = await nextAction();
+  const action = await nextAction(conn.token);
   if (action) {
-    console.log(`[ReachOS runner] eseguo ${action.type} per ${action.leadFirstName || action.leadLinkedinUrl}`);
+    console.log(`[ReachOS runner] [${conn.label}] eseguo ${action.type} per ${action.leadFirstName || action.leadLinkedinUrl}`);
     let result;
     try {
-      result = await runAction(action);
+      result = await runAction(conn.token, action);
     } catch (e) {
       result = { success: false, error: String(e?.message || e) };
     }
-    console.log("[ReachOS runner] esito:", result);
-    await report(action.id, result);
+    console.log(`[ReachOS runner] [${conn.label}] esito:`, result);
+    await report(conn.token, action.id, result);
     return;
   }
 
-  const job = await nextScrapeJob();
+  const job = await nextScrapeJob(conn.token);
   if (job) {
-    console.log(`[ReachOS runner] eseguo scrape (${job.sourceType}) -> ${job.searchUrl}`);
+    console.log(`[ReachOS runner] [${conn.label}] eseguo scrape (${job.sourceType}) -> ${job.searchUrl}`);
     let result;
     try {
-      result = await runScrapeJob(job);
+      result = await runScrapeJob(conn.token, job);
     } catch (e) {
       result = { success: false, error: String(e?.message || e) };
     }
     console.log(
-      "[ReachOS runner] esito scrape:",
+      `[ReachOS runner] [${conn.label}] esito scrape:`,
       result.success ? `${result.leads.length} lead trovati` : result.error
     );
-    await reportScrape(job.id, result);
+    await reportScrape(conn.token, job.id, result);
+  }
+}
+
+async function tick() {
+  const connections = await listConnections();
+  if (connections.length === 0) {
+    console.log("[ReachOS runner] nessuna connessione da servire al momento.");
+    return;
+  }
+  for (const conn of connections) {
+    try {
+      await tickForConnection(conn);
+    } catch (e) {
+      console.error(`[ReachOS runner] [${conn.label || conn.id}] errore nel ciclo:`, e);
+    }
   }
 }
 
 async function loop() {
-  console.log(`[ReachOS runner] avviato — poll ogni ${POLL_INTERVAL_MS / 1000}s, headless=${HEADLESS}`);
+  console.log(
+    `[ReachOS runner] avviato (modalità condivisa multi-tenant) — poll ogni ${POLL_INTERVAL_MS / 1000}s, headless=${HEADLESS}`
+  );
   for (;;) {
     try {
       await tick();
@@ -489,9 +524,8 @@ async function loop() {
   }
 }
 
-process.on("SIGINT", async () => {
+process.on("SIGINT", () => {
   console.log("\n[ReachOS runner] arresto...");
-  if (browser) await browser.close();
   process.exit(0);
 });
 

@@ -59,36 +59,7 @@ export default function ConnectionSetupPanel({
 
       {showAdvanced && (
         <div className="mt-3 space-y-4 border-t border-neutral-200 pt-3">
-          {connection.token && (
-            <div>
-              <p className="text-xs text-neutral-500">
-                {t.rich("setupStep1", {
-                  strong: (chunks) => <strong>{chunks}</strong>,
-                  code: (chunks) => <code className="font-mono">{chunks}</code>,
-                })}
-              </p>
-              <div className="mt-1 flex items-center gap-2">
-                <code className="flex-1 truncate rounded-md border border-neutral-300 bg-white px-3 py-2 text-xs">
-                  {connection.token}
-                </code>
-                <button
-                  onClick={() => navigator.clipboard.writeText(connection.token!)}
-                  className="shrink-0 rounded-md border border-neutral-300 px-3 py-2 text-xs hover:border-indigo-600"
-                >
-                  {t("copy")}
-                </button>
-              </div>
-            </div>
-          )}
-
-          <ol className="list-decimal space-y-1 pl-5 text-xs text-neutral-500">
-            <li>
-              {t("setupCliStep1")}{" "}
-              <code className="font-mono">cd runner && npm install && npx playwright install chromium</code>
-            </li>
-            <li>{t.rich("setupCliStep2", { code: (chunks) => <code className="font-mono">{chunks}</code> })}</li>
-            <li>{t.rich("setupCliStep3", { code: (chunks) => <code className="font-mono">{chunks}</code> })}</li>
-          </ol>
+          <p className="text-xs text-neutral-500">{t("sharedRunnerNote")}</p>
 
           <div>
             {!showManualCookie ? (

@@ -582,15 +582,10 @@
     "saving": "Saving...",
     "saveCookie": "Save cookie",
     "setupTitle": "Connection \"{label}\" created — set up the runner",
-    "setupStep1": "1. <strong>Token</strong> (shown only once) — goes in <code>runner/.env</code> as <code>REACHOS_TOKEN</code>:",
-    "copy": "Copy",
     "setupStep2": "2. <strong>LinkedIn session cookie (li_at)</strong> — it's like a password: whoever has it can act as you on LinkedIn. To find it: go to linkedin.com already logged in → open DevTools (F12) → Application (or Storage) → Cookies → linkedin.com → copy the value of the <code>li_at</code> cookie.",
     "save": "Save",
     "cookieSaved": "Cookie saved.",
     "skipHint": "You can also skip this step now and add it later from the connections list below.",
-    "setupCliStep1": "In the repo:",
-    "setupCliStep2": "Copy <code>runner/.env.example</code> to <code>runner/.env</code> and set the site URL + token.",
-    "setupCliStep3": "<code>npm start</code> — see <code>runner/README.md</code> for details and risk warnings.",
     "savedEverything": "I've saved everything",
     "loginSectionTitle": "Log in with LinkedIn",
     "loginSectionDescription": "Enter your LinkedIn email and password — the runner will log in for you and hand back a session, no DevTools needed.",
@@ -608,7 +603,8 @@
     "preferManualCookie": "Prefer to paste the session cookie manually?",
     "showAdvanced": "Advanced: self-hosted runner setup",
     "hideAdvanced": "Hide advanced setup",
-    "passwordDifferentNote": "This is your real LinkedIn password — different from how you signed into ReachOS. We can't reuse your ReachOS login here, since LinkedIn's sign-in only proves who you are, it doesn't grant automation access."
+    "passwordDifferentNote": "This is your real LinkedIn password — different from how you signed into ReachOS. We can't reuse your ReachOS login here, since LinkedIn's sign-in only proves who you are, it doesn't grant automation access.",
+    "sharedRunnerNote": "Automation runs on ReachOS's shared runner — nothing to install or configure here, it picks up this connection automatically once it's set up."
   },
   "Auth": {
     "loginTitle": "Welcome back",

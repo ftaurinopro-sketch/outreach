@@ -20,7 +20,7 @@ function personalize(
     position: string;
     location: string;
     industry: string;
-    customField?: string;
+    customFields?: Record<string, string>;
   }
 ): string {
   const replacements: [string, string, string][] = [
@@ -30,13 +30,18 @@ function personalize(
     ["jobTitle", "job_title", lead.position],
     ["location", "location", lead.location],
     ["industry", "industry", lead.industry],
-    ["customField", "custom_field", lead.customField ?? ""],
   ];
-  return replacements.reduce(
+  const withFixedFields = replacements.reduce(
     (text, [camel, snake, value]) =>
       text.replaceAll(`{{${camel}}}`, value).replaceAll(`{{${snake}}}`, value),
     template
   );
+  // {{custom_field:Key}} — Key matches a CSV column that wasn't one of the
+  // recognized fields above (src/lib/leads/csv.ts). Case-sensitive, exact
+  // match against how the column was named in the import.
+  return withFixedFields.replace(/\{\{custom_field:([^}]+)\}\}/g, (_match, key: string) => {
+    return lead.customFields?.[key.trim()] ?? "";
+  });
 }
 
 function isWorkingDay(date: Date, workingDays: number[]): boolean {
@@ -150,7 +155,7 @@ export async function enqueueConnectionRequests(params: {
         leadPosition: lead.position,
         leadLocation: lead.location,
         leadIndustry: lead.industry,
-        leadCustomField: lead.customField ?? "",
+        leadCustomFields: lead.customFields ?? {},
         type: "send_connection_request",
         payload: { text: params.connectionNote ? personalize(params.connectionNote, lead) : undefined },
         scheduledAt: scheduledAt.toISOString(),
@@ -178,7 +183,7 @@ export async function enqueueAcceptanceCheck(
       leadPosition: action.leadPosition,
       leadLocation: action.leadLocation,
       leadIndustry: action.leadIndustry,
-      leadCustomField: action.leadCustomField,
+      leadCustomFields: action.leadCustomFields,
       type: "check_acceptance",
       payload: {},
       scheduledAt: scheduledAt.toISOString(),
@@ -199,7 +204,7 @@ export async function enqueueMessagesAfterAcceptance(params: {
     position: action.leadPosition,
     location: action.leadLocation,
     industry: action.leadIndustry,
-    customField: action.leadCustomField,
+    customFields: action.leadCustomFields,
   };
 
   const toCreate: AutomationAction[] = [];
@@ -232,7 +237,7 @@ export async function enqueueMessagesAfterAcceptance(params: {
           leadPosition: action.leadPosition,
           leadLocation: action.leadLocation,
           leadIndustry: action.leadIndustry,
-          leadCustomField: action.leadCustomField,
+          leadCustomFields: action.leadCustomFields,
           type: "check_reply",
           payload: {},
           scheduledAt: checkAt.toISOString(),
@@ -251,7 +256,7 @@ export async function enqueueMessagesAfterAcceptance(params: {
         leadPosition: action.leadPosition,
         leadLocation: action.leadLocation,
         leadIndustry: action.leadIndustry,
-        leadCustomField: action.leadCustomField,
+        leadCustomFields: action.leadCustomFields,
         type: "send_message",
         payload: { text: personalize(step.text, lead) },
         scheduledAt: scheduledAt.toISOString(),

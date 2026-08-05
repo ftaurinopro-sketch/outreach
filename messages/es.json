@@ -305,7 +305,8 @@
     "title": "Importar leads desde CSV",
     "expectedColumns": "Columnas esperadas:",
     "onlyRequired": "Solo LinkedIn URL es obligatoria.",
-    "downloadTemplate": "Descargar plantilla"
+    "downloadTemplate": "Descargar plantilla",
+    "customFieldsHint": "Cualquier otra columna se convierte en un campo personalizado, utilizable en los mensajes como '{{custom_field:NombreColumna}}'."
   },
   "CsvImportClient": {
     "importError": "Error al importar",
@@ -449,7 +450,7 @@
     "language": "Idioma",
     "suggestMessage": "Sugerir mensaje",
     "suggesting": "Redactando...",
-    "variableHint": "Variables disponibles: '{{first_name}}', '{{last_name}}', '{{company}}', '{{job_title}}', '{{location}}', '{{industry}}', '{{custom_field}}' — se sustituyen con los datos de cada lead al enviar."
+    "variableHint": "Variables disponibles: '{{first_name}}', '{{last_name}}', '{{company}}', '{{job_title}}', '{{location}}', '{{industry}}' — más '{{custom_field:NombreColumna}}' para cualquier columna extra del CSV, p. ej. '{{custom_field:Deal Size}}'. Se sustituyen con los datos de cada lead al enviar."
   },
   "CampaignDetail": {
     "leadList": "Lista de leads",

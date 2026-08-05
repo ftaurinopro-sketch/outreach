@@ -13,13 +13,13 @@ export type AutomationAction = {
   leadCompany: string;
   // Denormalized onto the action (same reasoning as the three fields
   // above) so message personalization — {{jobTitle}}/{{location}}/
-  // {{industry}}/{{customField}} — still works for follow-up steps queued
-  // after acceptance, which only have this action snapshot to work from,
-  // not the original Lead record.
+  // {{industry}}/{{custom_field:Key}} — still works for follow-up steps
+  // queued after acceptance, which only have this action snapshot to work
+  // from, not the original Lead record.
   leadPosition: string;
   leadLocation: string;
   leadIndustry: string;
-  leadCustomField: string;
+  leadCustomFields: Record<string, string>;
   type: ActionType;
   payload: { text?: string; replied?: boolean };
   status: ActionStatus;

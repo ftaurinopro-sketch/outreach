@@ -9,8 +9,7 @@ type CsvField =
   | "location"
   | "company"
   | "position"
-  | "industry"
-  | "customField";
+  | "industry";
 
 const HEADER_MAP: Record<string, CsvField> = {
   "linkedin url": "linkedinUrl",
@@ -21,7 +20,6 @@ const HEADER_MAP: Record<string, CsvField> = {
   company: "company",
   position: "position",
   industry: "industry",
-  "custom field": "customField",
 };
 
 export type ParseError =
@@ -35,10 +33,15 @@ export type ParseResult = {
 };
 
 export function parseLeadsCsv(csvText: string): ParseResult {
+  // Only trimmed, not lowercased — original casing is preserved for
+  // whatever ends up as a custom-field key below, so "Deal Size" in the CSV
+  // becomes {{custom_field:Deal Size}} in a message, not "deal size".
+  // Recognized fields are still matched case-insensitively via .toLowerCase()
+  // lookups against HEADER_MAP.
   const { data, errors, meta } = Papa.parse<Record<string, string>>(csvText, {
     header: true,
     skipEmptyLines: true,
-    transformHeader: (h) => h.trim().toLowerCase(),
+    transformHeader: (h) => h.trim(),
   });
 
   const parseErrors: ParseError[] = errors.map((e) => ({
@@ -47,10 +50,7 @@ export function parseLeadsCsv(csvText: string): ParseResult {
     message: e.message,
   }));
 
-  const knownHeaders = new Set(Object.keys(HEADER_MAP));
-  const missingLinkedinUrl = !(meta.fields ?? []).some(
-    (f) => knownHeaders.has(f.trim().toLowerCase()) && HEADER_MAP[f.trim().toLowerCase()] === "linkedinUrl"
-  );
+  const missingLinkedinUrl = !(meta.fields ?? []).some((f) => HEADER_MAP[f.toLowerCase()] === "linkedinUrl");
   if (missingLinkedinUrl) {
     parseErrors.unshift({ type: "missingLinkedinUrlColumn" });
   }
@@ -67,10 +67,20 @@ export function parseLeadsCsv(csvText: string): ParseResult {
       position: "",
       industry: "",
     };
+    let customFields: Record<string, string> | undefined;
     for (const [header, value] of Object.entries(row)) {
-      const key = HEADER_MAP[header.trim().toLowerCase()];
-      if (key) lead[key] = (value ?? "").trim();
+      const trimmedValue = (value ?? "").trim();
+      const key = HEADER_MAP[header.toLowerCase()];
+      if (key) {
+        lead[key] = trimmedValue;
+      } else if (trimmedValue) {
+        // Any column that isn't one of the recognized fields becomes a
+        // custom field instead of being silently dropped.
+        customFields ??= {};
+        customFields[header] = trimmedValue;
+      }
     }
+    if (customFields) lead.customFields = customFields;
     if (!lead.linkedinUrl) {
       parseErrors.push({ type: "missingLinkedinUrlRow", row: i + 2 });
       return;

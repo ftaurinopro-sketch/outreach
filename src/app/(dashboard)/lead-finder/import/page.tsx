@@ -9,13 +9,13 @@ export default async function ImportLeadsPage() {
       <p className="mt-1 text-sm text-neutral-500">
         {t("expectedColumns")}{" "}
         <code className="rounded bg-neutral-100 px-1 py-0.5 text-xs">
-          LinkedIn URL, First Name, Last Name, Headline, Location, Company, Position, Industry, Custom Field
+          LinkedIn URL, First Name, Last Name, Headline, Location, Company, Position, Industry
         </code>
         . {t("onlyRequired")}{" "}
         <a href="/lead-import-template.csv" download className="text-neutral-900 underline">
           {t("downloadTemplate")}
         </a>
-        .
+        . {t("customFieldsHint")}
       </p>
       <div className="mt-6">
         <CsvImportClient />

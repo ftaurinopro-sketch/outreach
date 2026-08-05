@@ -350,11 +350,31 @@ async function checkForReply(page) {
   return { success: true, replied: Boolean(lastIsFromLead) };
 }
 
+// Splits a headline like "Software Engineer at TechCorp" or "Ingegnere
+// presso TechCorp" into { position, company }. Best-effort text heuristic,
+// not a real parser — headlines are free text and plenty won't match any
+// separator (e.g. "Helping B2B teams grow"), in which case both come back
+// empty and only the raw headline is kept. Untested against a live session,
+// same caveat as the rest of this file (see README.md).
+function splitHeadline(headline) {
+  const separators = [" at ", " @ ", " presso ", " chez ", " bei ", " en ", " | ", " · "];
+  for (const sep of separators) {
+    const idx = headline.toLowerCase().indexOf(sep.toLowerCase());
+    if (idx === -1) continue;
+    return {
+      position: headline.slice(0, idx).trim(),
+      company: headline.slice(idx + sep.length).trim(),
+    };
+  }
+  return { position: "", company: "" };
+}
+
 async function scrapeSearchResults(page) {
   // Best-effort extraction: LinkedIn/Sales Navigator result cards differ by
   // layout and change often (untested against a live session — see
   // README.md). This grabs every profile link on the page and tries to find
-  // a headline near it; it will need adjustment if it comes back empty.
+  // a headline and location near it; it will need adjustment if it comes
+  // back empty.
   const results = await page.evaluate(() => {
     const seen = new Set();
     const out = [];
@@ -373,29 +393,41 @@ async function scrapeSearchResults(page) {
       seen.add(profileUrl);
 
       let headline = "";
+      let location = "";
       const card = a.closest('li, div[data-chameleon-result-urn], div.entity-result');
       if (card) {
         const headlineEl = card.querySelector(
           '.entity-result__primary-subtitle, [data-anonymize="title"], .t-14.t-black.t-normal'
         );
         headline = headlineEl?.textContent?.trim() || "";
+
+        // Location typically renders as a second subtitle line right below
+        // the headline on both classic search and Sales Navigator cards.
+        const locationEl = card.querySelector(
+          '.entity-result__secondary-subtitle, [data-anonymize="location"], .t-12.t-black--light.t-normal'
+        );
+        location = locationEl?.textContent?.trim() || "";
       }
 
-      out.push({ profileUrl, name, headline });
+      out.push({ profileUrl, name, headline, location });
     }
     return out;
   });
 
   return results.map((r) => {
     const [firstName, ...rest] = r.name.split(" ");
+    const { position, company } = splitHeadline(r.headline);
     return {
       linkedinUrl: r.profileUrl,
       firstName: firstName || "",
       lastName: rest.join(" "),
       headline: r.headline,
-      location: "",
-      company: "",
-      position: "",
+      location: r.location,
+      company,
+      position,
+      // Not shown on LinkedIn/Sales Navigator search-result cards at all
+      // (only on the full profile page), so there's nothing to scrape here
+      // without an extra per-lead page visit — left empty on purpose.
       industry: "",
     };
   });

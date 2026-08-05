@@ -33,11 +33,12 @@ export type Lead = {
   company: string;
   position: string;
   industry: string;
-  // One arbitrary extra value per lead, carried through to message
-  // personalization as {{customField}}/{{custom_field}} — a CSV import can
-  // populate this via the optional "Custom Field" column. Not a generic
-  // multi-field system; just the single field the product spec asks for.
-  customField?: string;
+  // Any CSV column that isn't one of the recognized fields above becomes a
+  // custom field here, keyed by its (trimmed) header text — e.g. a "Deal
+  // Size" column becomes customFields["Deal Size"]. Referenced in messages
+  // as {{custom_field:Deal Size}}, substituted at send time
+  // (src/lib/automation/scheduler.ts personalize()).
+  customFields?: Record<string, string>;
   // AI scoring (src/lib/leads/scoring.ts) — absent until the list has been
   // analyzed at least once.
   score?: number;
@@ -59,6 +60,8 @@ export type LeadList = {
 
 export type LeadListSummary = Omit<LeadList, "leads"> & { leadCount: number };
 
+// The recognized columns — any other column in the CSV is captured as a
+// custom field instead of being ignored (see Lead.customFields above).
 export const CSV_COLUMNS = [
   "LinkedIn URL",
   "First Name",
@@ -68,5 +71,4 @@ export const CSV_COLUMNS = [
   "Company",
   "Position",
   "Industry",
-  "Custom Field",
 ] as const;

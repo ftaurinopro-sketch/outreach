@@ -2,7 +2,12 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { DEFAULT_LOCALE, LOCALE_COOKIE, type Locale } from "@/i18n/locales";
 
-const PUBLIC_PATHS = ["/login", "/signup", "/auth"];
+// /api/extension and /api/runner authenticate themselves via their own
+// bearer tokens (per-connection token, or RUNNER_MASTER_KEY) — they have no
+// Supabase session at all, so gating them here on `user` was silently
+// redirecting every single call from the extension/runner to /login (a
+// 307 with an HTML body) instead of ever reaching the route handler.
+const PUBLIC_PATHS = ["/login", "/signup", "/auth", "/api/extension", "/api/runner"];
 
 // Spain + the LatAm countries big enough to matter here. Everything else
 // (including AT/CH, deliberately — only DE was asked for) falls through to

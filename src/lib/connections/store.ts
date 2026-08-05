@@ -101,6 +101,22 @@ export async function getConnectionByToken(token: string): Promise<Connection | 
   return connections.find((c) => c.token === token) ?? null;
 }
 
+// Every connection across every tenant, id+token only — what the shared
+// cloud runner polls to know which connections it's responsible for. Only
+// ever called from a route gated by RUNNER_MASTER_KEY (see
+// authenticateRunnerMaster in ./auth), never from a user-session context —
+// this is intentionally not scoped by owner.
+export async function listAllConnectionTokens(): Promise<{ id: string; token: string; label: string }[]> {
+  if (hasSupabaseConfig()) {
+    const supabase = createSupabaseServerClient();
+    const { data, error } = await supabase.from("connections").select("id, token, label");
+    if (error) throw error;
+    return data as { id: string; token: string; label: string }[];
+  }
+  const connections = await readLocalFile();
+  return connections.map((c) => ({ id: c.id, token: c.token, label: c.label }));
+}
+
 export async function createConnection(input: ConnectionInput): Promise<Connection> {
   const connection: Connection = {
     id: randomUUID(),

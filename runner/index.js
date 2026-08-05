@@ -529,4 +529,17 @@ process.on("SIGINT", () => {
   process.exit(0);
 });
 
-loop();
+// RUN_ONCE=true: do a single pass over every connection and exit, instead of
+// looping forever. This is what lets the runner live as a free scheduled
+// GitHub Actions job (a fresh container per run, see
+// .github/workflows/runner.yml) instead of needing a paid always-on host —
+// the trade-off is checking every N minutes (however often the workflow is
+// scheduled) instead of continuously, which is fine for this use case
+// (nothing here needs sub-minute latency).
+if (process.env.RUN_ONCE === "true") {
+  tick()
+    .catch((e) => console.error("[ReachOS runner] errore nel ciclo:", e))
+    .finally(() => process.exit(0));
+} else {
+  loop();
+}

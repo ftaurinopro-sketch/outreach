@@ -1,0 +1,45 @@
+name: ReachOS runner (scheduled)
+
+# Free alternative to a paid always-on host: runs the shared runner
+# (runner/index.js) as a single pass every 15 minutes instead of as a
+# persistent process — see runner/README.md for the trade-off (checked
+# every 15 min instead of continuously, fine for this use case).
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: runner
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: runner/package-lock.json
+
+      - run: npm ci --ignore-scripts
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ hashFiles('runner/package-lock.json') }}
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run one pass over every connection
+        run: node index.js
+        env:
+          REACHOS_BACKEND_URL: ${{ secrets.REACHOS_BACKEND_URL }}
+          RUNNER_MASTER_KEY: ${{ secrets.RUNNER_MASTER_KEY }}
+          RUN_ONCE: "true"
+          REACHOS_HEADLESS: "true"

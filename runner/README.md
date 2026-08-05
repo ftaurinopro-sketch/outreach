@@ -77,13 +77,29 @@ e verificare che tutto funzioni come previsto.
 
 ## Dove farlo girare
 
-Deve restare acceso 24/7, quindi non sul tuo laptop. Opzioni semplici (tutte supportano un processo Node
-persistente con Playwright):
-- **Railway** o **Render**: collega questo repo, imposta la root directory su `runner/`, comando di build
-  `npm install`, comando di avvio `npm start`, aggiungi le variabili d'ambiente sopra. Piano gratuito/economico
-  sufficiente per iniziare.
-- Una **piccola VPS** (Hetzner, DigitalOcean...) con `pm2` o un servizio systemd per tenerlo vivo dopo un
-  riavvio.
+### Opzione gratis: GitHub Actions programmato (consigliata per iniziare)
+
+`.github/workflows/runner.yml` fa girare il runner **una passata sola** ogni 15 minuti (invece di un
+processo sempre acceso) su un runner temporaneo di GitHub Actions — gratis entro i minuti inclusi nel piano
+GitHub che hai già, nessun account nuovo da creare. Il compromesso: le connessioni vengono controllate ogni
+~15 minuti invece che di continuo, ma per richieste di connessione/messaggi/controlli non è un problema (anzi,
+un ritmo più umano è meglio per non farsi notare da LinkedIn).
+
+Per attivarlo, su GitHub → questo repo → Settings → Secrets and variables → Actions → "New repository
+secret", aggiungi:
+- `REACHOS_BACKEND_URL` = l'URL pubblico dell'app (es. `https://tuo-progetto.vercel.app`)
+- `RUNNER_MASTER_KEY` = la stessa chiave impostata su Vercel
+
+Fatto: il workflow parte da solo secondo lo schedule. Puoi anche lanciarlo a mano da GitHub → tab "Actions" →
+"ReachOS runner (scheduled)" → "Run workflow", utile per il primo test.
+
+### Opzione a pagamento: processo sempre acceso
+
+Se in futuro serve una latenza più bassa (controllo continuo invece che ogni 15 minuti), un servizio come
+**Railway** o **Render** (~$5-7/mese) può far girare `npm start` come processo persistente invece del
+workflow schedulato — stesso codice, stesse variabili d'ambiente, cambia solo come viene avviato:
+collega il repo, imposta la root directory su `runner/`, build command `npm install`, start command
+`npm start`.
 
 ## Come funziona
 

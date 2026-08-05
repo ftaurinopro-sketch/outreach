@@ -3,7 +3,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { getLeadList } from "@/lib/leads/store";
 import { listAgents } from "@/lib/agents/store";
 import { listCampaigns } from "@/lib/campaigns/store";
-import { listActionsForCampaign } from "@/lib/automation/store";
+import { listActionsForCampaigns } from "@/lib/automation/store";
 import { hasClaudeConfig } from "@/lib/claude";
 import DeleteListButton from "./DeleteListButton";
 import ScoreListButton from "./ScoreListButton";
@@ -23,10 +23,10 @@ export default async function LeadListPage({ params }: Props) {
   if (!list) notFound();
 
   const campaignsForList = campaigns.filter((c) => c.leadListId === list.id && c.status !== "draft");
-  const actionLists = await Promise.all(campaignsForList.map((c) => listActionsForCampaign(c.id)));
+  const actionsByCampaign = await listActionsForCampaigns(campaignsForList.map((c) => c.id));
   const contactedUrls = [
     ...new Set(
-      actionLists
+      [...actionsByCampaign.values()]
         .flat()
         .filter((a) => a.type === "send_connection_request" && a.status === "done")
         .map((a) => a.leadLinkedinUrl)

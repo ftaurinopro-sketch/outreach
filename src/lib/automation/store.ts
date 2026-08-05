@@ -97,6 +97,41 @@ export async function listActionsForCampaign(campaignId: string): Promise<Automa
     .sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt));
 }
 
+// Batched form of listActionsForCampaign — for callers (dashboard metrics)
+// that need actions for many campaigns at once, this is one query instead
+// of one round trip per campaign.
+export async function listActionsForCampaigns(
+  campaignIds: string[]
+): Promise<Map<string, AutomationAction[]>> {
+  const byCampaign = new Map<string, AutomationAction[]>();
+  if (campaignIds.length === 0) return byCampaign;
+
+  let actions: AutomationAction[];
+  if (hasSupabaseConfig()) {
+    const supabase = createSupabaseServerClient();
+    const { data, error } = await supabase
+      .from("automation_actions")
+      .select("*")
+      .in("campaign_id", campaignIds)
+      .order("scheduled_at", { ascending: true });
+    if (error) throw error;
+    actions = (data as ActionRow[]).map(fromRow);
+  } else {
+    const all = await readLocalFile();
+    const idSet = new Set(campaignIds);
+    actions = all
+      .filter((a) => idSet.has(a.campaignId))
+      .sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt));
+  }
+
+  for (const action of actions) {
+    const list = byCampaign.get(action.campaignId);
+    if (list) list.push(action);
+    else byCampaign.set(action.campaignId, [action]);
+  }
+  return byCampaign;
+}
+
 export async function listActionsForConnection(connectionId: string): Promise<AutomationAction[]> {
   if (hasSupabaseConfig()) {
     const supabase = createSupabaseServerClient();

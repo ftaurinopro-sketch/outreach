@@ -1,9 +1,8 @@
 import { listCampaigns } from "@/lib/campaigns/store";
-import { listActionsForCampaign } from "@/lib/automation/store";
-import { listLeadLists, getLeadList } from "@/lib/leads/store";
+import { listActionsForCampaigns } from "@/lib/automation/store";
+import { listFullLeadLists } from "@/lib/leads/store";
 import { listConnections } from "@/lib/connections/store";
 import { listAgents } from "@/lib/agents/store";
-import type { AutomationAction } from "@/lib/automation/types";
 
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -88,25 +87,19 @@ function isInWindow(iso: string, from: number, to: number): boolean {
 }
 
 export async function getDashboardMetrics(): Promise<DashboardMetrics> {
-  const [campaigns, leadListSummaries, connections, agents] = await Promise.all([
+  const [campaigns, fullLeadLists, connections, agents] = await Promise.all([
     listCampaigns(),
-    listLeadLists(),
+    listFullLeadLists(),
     listConnections(),
     listAgents(),
   ]);
 
   const nonDraftCampaigns = campaigns.filter((c) => c.status !== "draft");
-  const actionsByCampaign = new Map<string, AutomationAction[]>(
-    await Promise.all(
-      nonDraftCampaigns.map(async (c) => [c.id, await listActionsForCampaign(c.id)] as const)
-    )
-  );
+  const actionsByCampaign = await listActionsForCampaigns(nonDraftCampaigns.map((c) => c.id));
 
-  const fullLeadLists = await Promise.all(leadListSummaries.map((s) => getLeadList(s.id)));
   const scoreByLinkedinUrl = new Map<string, number>();
   let totalProspects = 0;
   for (const list of fullLeadLists) {
-    if (!list) continue;
     totalProspects += list.leads.length;
     for (const lead of list.leads) {
       if (typeof lead.score === "number") scoreByLinkedinUrl.set(lead.linkedinUrl, lead.score);
@@ -309,7 +302,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
     checklist: {
       connectLinkedin: connections.length > 0,
       configureAgent: agents.length > 0,
-      importLeadList: leadListSummaries.length > 0,
+      importLeadList: fullLeadLists.length > 0,
       createCampaign: campaigns.length > 0,
       startAutomation: campaigns.some((c) => c.status === "active" || c.status === "paused"),
     },

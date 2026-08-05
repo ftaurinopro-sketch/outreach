@@ -68,6 +68,24 @@ export async function listLeadLists(): Promise<LeadListSummary[]> {
     .map(toSummary);
 }
 
+// Same query as listLeadLists (it already pulls the full `leads` jsonb just
+// to count it), but returns the full lists instead of throwing that data
+// away — for callers (dashboard metrics) that need every list's full lead
+// data anyway, this avoids fetching each list a second time via getLeadList.
+export async function listFullLeadLists(): Promise<LeadList[]> {
+  if (hasSupabaseAuthConfig()) {
+    const supabase = await createSupabaseUserClient();
+    const { data, error } = await supabase
+      .from("lead_lists")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    return (data as LeadListRow[]).map(fromRow);
+  }
+  const lists = await readLocalFile();
+  return [...lists].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
 export async function getLeadList(id: string): Promise<LeadList | null> {
   if (hasSupabaseAuthConfig()) {
     const supabase = await createSupabaseUserClient();

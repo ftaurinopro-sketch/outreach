@@ -1,5 +1,8 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
+import { createSupabaseUserClient, hasSupabaseAuthConfig } from "@/lib/supabase/user";
+import { isSuperadminUser } from "@/lib/auth/superadmin";
 import {
   Users,
   UserPlus,
@@ -44,6 +47,19 @@ const FUNNEL_STAGES = [
 ] as const;
 
 export default async function HomePage() {
+  if (hasSupabaseAuthConfig()) {
+    const supabase = await createSupabaseUserClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+      if (isSuperadminUser(user.email, profile?.role)) {
+        redirect("/admin/users");
+      }
+    }
+  }
+
   const [metrics, t, locale] = await Promise.all([
     getDashboardMetrics(),
     getTranslations("Dashboard"),

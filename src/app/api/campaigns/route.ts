@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createCampaign, listCampaigns } from "@/lib/campaigns/store";
 import {
+  CAMPAIGN_LANGUAGES,
   DEFAULT_AUTOMATION_SETTINGS,
   MAX_SEQUENCE_MESSAGES,
   type CampaignInput,
@@ -28,7 +29,9 @@ export async function POST(request: Request) {
     agentId: body.agentId || null,
     connectionNote: body.connectionNote ?? "",
     messages,
-    replyMode: body.replyMode === "autonomous" ? "autonomous" : "review",
+    language: CAMPAIGN_LANGUAGES.includes(body.language as (typeof CAMPAIGN_LANGUAGES)[number])
+      ? (body.language as (typeof CAMPAIGN_LANGUAGES)[number])
+      : "Italiano",
     automationSettings: { ...DEFAULT_AUTOMATION_SETTINGS, ...body.automationSettings },
   });
 

@@ -1,7 +1,16 @@
 import Papa from "papaparse";
 import type { Lead } from "./types";
 
-type CsvField = "linkedinUrl" | "firstName" | "lastName" | "headline" | "location" | "company" | "position" | "industry";
+type CsvField =
+  | "linkedinUrl"
+  | "firstName"
+  | "lastName"
+  | "headline"
+  | "location"
+  | "company"
+  | "position"
+  | "industry"
+  | "customField";
 
 const HEADER_MAP: Record<string, CsvField> = {
   "linkedin url": "linkedinUrl",
@@ -12,6 +21,7 @@ const HEADER_MAP: Record<string, CsvField> = {
   company: "company",
   position: "position",
   industry: "industry",
+  "custom field": "customField",
 };
 
 export type ParseError =

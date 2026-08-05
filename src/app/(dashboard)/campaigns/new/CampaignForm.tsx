@@ -3,9 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Sparkles, Trash2 } from "lucide-react";
 import type { AgentConfig } from "@/lib/agents/types";
 import {
+  CAMPAIGN_LANGUAGES,
   EMPTY_CAMPAIGN_INPUT,
   MAX_SEQUENCE_MESSAGES,
   newMessageStep,
@@ -40,6 +41,9 @@ export default function CampaignForm({
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Keyed by "connectionNote" or a message step id — which suggest button
+  // is currently loading, so only that one shows a spinner state.
+  const [suggesting, setSuggesting] = useState<string | null>(null);
 
   function set<K extends keyof CampaignInput>(key: K, value: CampaignInput[K]) {
     setValues((v) => ({ ...v, [key]: value }));
@@ -73,6 +77,56 @@ export default function CampaignForm({
         : [...v.automationSettings.workingDays, day];
       return { ...v, automationSettings: { ...v.automationSettings, workingDays: days } };
     });
+  }
+
+  // Fills the field with a draft — never sent as-is: the user still has to
+  // review, edit, or discard it before the campaign is saved.
+  async function suggestConnectionNote() {
+    if (!values.agentId || suggesting) return;
+    setSuggesting("connectionNote");
+    try {
+      const res = await fetch("/api/campaigns/suggest-message", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          agentId: values.agentId,
+          language: values.language,
+          kind: "connectionNote",
+          stepIndex: 0,
+        }),
+      });
+      if (res.ok) {
+        const { text } = await res.json();
+        if (text) set("connectionNote", text);
+      }
+    } finally {
+      setSuggesting(null);
+    }
+  }
+
+  async function suggestMessageStep(index: number) {
+    const step = values.messages[index];
+    if (!values.agentId || !step || suggesting) return;
+    setSuggesting(step.id);
+    try {
+      const res = await fetch("/api/campaigns/suggest-message", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          agentId: values.agentId,
+          language: values.language,
+          kind: index === 0 ? "firstMessage" : "followUp",
+          stepIndex: index,
+          previousStepText: index > 0 ? values.messages[index - 1]?.text : undefined,
+        }),
+      });
+      if (res.ok) {
+        const { text } = await res.json();
+        if (text) updateMessage(index, { text });
+      }
+    } finally {
+      setSuggesting(null);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -110,7 +164,7 @@ export default function CampaignForm({
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-3 gap-3">
         <div>
           <label className="mb-1 block text-xs font-medium text-neutral-500">{t("leadList")}</label>
           <select
@@ -140,10 +194,37 @@ export default function CampaignForm({
             ))}
           </select>
         </div>
+        <div>
+          <label className="mb-1 block text-xs font-medium text-neutral-500">{t("language")}</label>
+          <select
+            value={values.language}
+            onChange={(e) => set("language", e.target.value as CampaignInput["language"])}
+            className="w-full rounded-md border border-neutral-300 px-2.5 py-2 text-sm"
+          >
+            {CAMPAIGN_LANGUAGES.map((lang) => (
+              <option key={lang} value={lang}>
+                {lang}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div>
-        <label className="mb-1 block text-xs font-medium text-neutral-500">{t("connectionNote")}</label>
+        <div className="mb-1 flex items-center justify-between">
+          <label className="block text-xs font-medium text-neutral-500">{t("connectionNote")}</label>
+          {values.agentId && (
+            <button
+              type="button"
+              onClick={suggestConnectionNote}
+              disabled={suggesting !== null}
+              className="flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-700 disabled:opacity-40"
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              {suggesting === "connectionNote" ? t("suggesting") : t("suggestMessage")}
+            </button>
+          )}
+        </div>
         <textarea
           value={values.connectionNote}
           onChange={(e) => set("connectionNote", e.target.value)}
@@ -166,6 +247,7 @@ export default function CampaignForm({
             {t("addMessage")}
           </button>
         </div>
+        <p className="mb-2 text-xs text-neutral-400">{t("variableHint")}</p>
         <div className="space-y-3">
           {values.messages.map((step, i) => (
             <div key={step.id} className="rounded-md border border-neutral-200 p-3">
@@ -173,15 +255,28 @@ export default function CampaignForm({
                 <span className="text-xs font-medium text-neutral-400">
                   {i === 0 ? t("firstMessageLabel") : t("messageLabel", { index: i + 1 })}
                 </span>
-                {values.messages.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeMessage(i)}
-                    className="text-neutral-400 hover:text-red-600"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
-                )}
+                <div className="flex items-center gap-3">
+                  {values.agentId && (
+                    <button
+                      type="button"
+                      onClick={() => suggestMessageStep(i)}
+                      disabled={suggesting !== null}
+                      className="flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-700 disabled:opacity-40"
+                    >
+                      <Sparkles className="h-3.5 w-3.5" />
+                      {suggesting === step.id ? t("suggesting") : t("suggestMessage")}
+                    </button>
+                  )}
+                  {values.messages.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeMessage(i)}
+                      className="text-neutral-400 hover:text-red-600"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="flex gap-2">
                 <textarea
@@ -207,36 +302,6 @@ export default function CampaignForm({
               </div>
             </div>
           ))}
-        </div>
-      </div>
-
-      <div>
-        <label className="mb-1 block text-xs font-medium text-neutral-500">{t("replyMode")}</label>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => set("replyMode", "review")}
-            className={`flex-1 rounded-md border px-3 py-2 text-left text-sm ${
-              values.replyMode === "review"
-                ? "border-indigo-600 bg-neutral-50"
-                : "border-neutral-300 text-neutral-500"
-            }`}
-          >
-            <div className="font-medium text-neutral-900">{t("reviewBeforeSending")}</div>
-            <div className="text-xs text-neutral-400">{t("recommendedToStart")}</div>
-          </button>
-          <button
-            type="button"
-            onClick={() => set("replyMode", "autonomous")}
-            className={`flex-1 rounded-md border px-3 py-2 text-left text-sm ${
-              values.replyMode === "autonomous"
-                ? "border-indigo-600 bg-neutral-50"
-                : "border-neutral-300 text-neutral-500"
-            }`}
-          >
-            <div className="font-medium text-neutral-900">{t("fullyAutonomous")}</div>
-            <div className="text-xs text-neutral-400">{t("repliesSentAutomatically")}</div>
-          </button>
         </div>
       </div>
 

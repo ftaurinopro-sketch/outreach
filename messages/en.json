@@ -427,11 +427,6 @@
     "message1Placeholder": "Hi [First Name], thanks for connecting...",
     "followUpPlaceholder": "Just wanted to make sure my last message...",
     "afterDays": "After (days)",
-    "replyMode": "Reply mode",
-    "reviewBeforeSending": "Review Before Sending",
-    "recommendedToStart": "Recommended to start",
-    "fullyAutonomous": "Fully Autonomous",
-    "repliesSentAutomatically": "Replies sent automatically",
     "automationSettings": "Automation settings",
     "workingDays": "Working days",
     "weekday": {
@@ -450,7 +445,11 @@
     "weeklyCap": "Weekly connection cap",
     "useAccountLimit": "Account limit",
     "creating": "Creating...",
-    "createCampaign": "Create campaign"
+    "createCampaign": "Create campaign",
+    "language": "Language",
+    "suggestMessage": "Suggest message",
+    "suggesting": "Drafting...",
+    "variableHint": "Variables available: '{{first_name}}', '{{last_name}}', '{{company}}', '{{job_title}}', '{{location}}', '{{industry}}', '{{custom_field}}' — replaced with each lead's data when sent."
   },
   "CampaignDetail": {
     "leadList": "Lead list",
@@ -463,9 +462,6 @@
     "messageSequence": "Message sequence",
     "messageStepFirst": "Message 1 — sent after acceptance",
     "messageStepDelayed": "Message {index} — sent {days, plural, one {# day} other {# days}} after the previous one",
-    "replyMode": "Reply mode",
-    "fullyAutonomous": "Fully Autonomous",
-    "reviewBeforeSending": "Review Before Sending",
     "automationSettings": "Automation settings",
     "workingDays": "Working days",
     "everyDay": "Every day",
@@ -483,7 +479,8 @@
     "dailyCap": "Daily cap",
     "weeklyCap": "Weekly cap",
     "useAccountLimit": "Account limit",
-    "rawActionLog": "Show raw action log"
+    "rawActionLog": "Show raw action log",
+    "language": "Language"
   },
   "MonitoringPanel": {
     "title": "Lead status",

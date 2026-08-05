@@ -33,6 +33,11 @@ export type Lead = {
   company: string;
   position: string;
   industry: string;
+  // One arbitrary extra value per lead, carried through to message
+  // personalization as {{customField}}/{{custom_field}} — a CSV import can
+  // populate this via the optional "Custom Field" column. Not a generic
+  // multi-field system; just the single field the product spec asks for.
+  customField?: string;
   // AI scoring (src/lib/leads/scoring.ts) — absent until the list has been
   // analyzed at least once.
   score?: number;
@@ -63,4 +68,5 @@ export const CSV_COLUMNS = [
   "Company",
   "Position",
   "Industry",
+  "Custom Field",
 ] as const;

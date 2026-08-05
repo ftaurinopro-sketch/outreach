@@ -109,9 +109,7 @@ export default async function CampaignDetailPage({ params }: Props) {
             ))}
           </ol>
         </Row>
-        <Row label={t("replyMode")}>
-          {campaign.replyMode === "autonomous" ? t("fullyAutonomous") : t("reviewBeforeSending")}
-        </Row>
+        <Row label={t("language")}>{campaign.language}</Row>
         <Row label={t("automationSettings")}>
           <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
             <span className="text-neutral-500">

@@ -427,11 +427,6 @@
     "message1Placeholder": "Hola [Nombre], gracias por conectar...",
     "followUpPlaceholder": "Solo quería asegurarme de que mi mensaje anterior...",
     "afterDays": "Después de (días)",
-    "replyMode": "Reply mode",
-    "reviewBeforeSending": "Review Before Sending",
-    "recommendedToStart": "Recomendado para empezar",
-    "fullyAutonomous": "Fully Autonomous",
-    "repliesSentAutomatically": "Respuestas enviadas automáticamente",
     "automationSettings": "Ajustes de automatización",
     "workingDays": "Días laborables",
     "weekday": {
@@ -450,7 +445,11 @@
     "weeklyCap": "Límite semanal de conexiones",
     "useAccountLimit": "Límite de la cuenta",
     "creating": "Creando...",
-    "createCampaign": "Crear campaña"
+    "createCampaign": "Crear campaña",
+    "language": "Idioma",
+    "suggestMessage": "Sugerir mensaje",
+    "suggesting": "Redactando...",
+    "variableHint": "Variables disponibles: '{{first_name}}', '{{last_name}}', '{{company}}', '{{job_title}}', '{{location}}', '{{industry}}', '{{custom_field}}' — se sustituyen con los datos de cada lead al enviar."
   },
   "CampaignDetail": {
     "leadList": "Lista de leads",
@@ -463,9 +462,6 @@
     "messageSequence": "Secuencia de mensajes",
     "messageStepFirst": "Mensaje 1 — enviado tras la aceptación",
     "messageStepDelayed": "Mensaje {index} — enviado {days, plural, one {# día} other {# días}} después del anterior",
-    "replyMode": "Reply mode",
-    "fullyAutonomous": "Fully Autonomous",
-    "reviewBeforeSending": "Review Before Sending",
     "automationSettings": "Ajustes de automatización",
     "workingDays": "Días laborables",
     "everyDay": "Todos los días",
@@ -483,7 +479,8 @@
     "dailyCap": "Límite diario",
     "weeklyCap": "Límite semanal",
     "useAccountLimit": "Límite de la cuenta",
-    "rawActionLog": "Mostrar el registro de acciones sin procesar"
+    "rawActionLog": "Mostrar el registro de acciones sin procesar",
+    "language": "Idioma"
   },
   "MonitoringPanel": {
     "title": "Estado de los leads",

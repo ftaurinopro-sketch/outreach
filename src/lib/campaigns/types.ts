@@ -1,7 +1,20 @@
-export type ReplyMode = "review" | "autonomous";
 export type CampaignStatus = "draft" | "active" | "paused";
 
 export const MAX_SEQUENCE_MESSAGES = 5;
+
+// Fixed list, not free text: campaign language only feeds the AI
+// suggest-message prompt and a display label, so a closed set is easier to
+// get right than trusting free-form input to match what the AI expects.
+export const CAMPAIGN_LANGUAGES = [
+  "Italiano",
+  "English",
+  "Español",
+  "Deutsch",
+  "Français",
+  "Português",
+  "Nederlands",
+] as const;
+export type CampaignLanguage = (typeof CAMPAIGN_LANGUAGES)[number];
 
 export type CampaignMessageStep = {
   id: string;
@@ -39,11 +52,12 @@ export type CampaignInput = {
   leadListId: string;
   // Optional — a campaign can run on plain typed message templates without
   // an AI Assistant persona attached. Only needed for AI-driven features
-  // (lead scoring against its ICP, sandbox testing, autonomous replies).
+  // (lead scoring against its ICP, sandbox testing, drafting a message
+  // suggestion — the AI only ever proposes text, never sends anything).
   agentId: string | null;
   connectionNote: string;
   messages: CampaignMessageStep[];
-  replyMode: ReplyMode;
+  language: CampaignLanguage;
   automationSettings: CampaignAutomationSettings;
 };
 
@@ -70,6 +84,6 @@ export const EMPTY_CAMPAIGN_INPUT: CampaignInput = {
   agentId: null,
   connectionNote: "",
   messages: [{ id: "seed-1", text: "", delayDays: 5 }],
-  replyMode: "review",
+  language: "Italiano",
   automationSettings: DEFAULT_AUTOMATION_SETTINGS,
 };

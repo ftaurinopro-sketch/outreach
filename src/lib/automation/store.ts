@@ -31,6 +31,10 @@ type ActionRow = {
   lead_first_name: string;
   lead_last_name: string;
   lead_company: string;
+  lead_position: string;
+  lead_location: string;
+  lead_industry: string;
+  lead_custom_field: string;
   type: AutomationAction["type"];
   payload: AutomationAction["payload"];
   status: ActionStatus;
@@ -50,6 +54,10 @@ function fromRow(row: ActionRow): AutomationAction {
     leadFirstName: row.lead_first_name,
     leadLastName: row.lead_last_name,
     leadCompany: row.lead_company,
+    leadPosition: row.lead_position,
+    leadLocation: row.lead_location,
+    leadIndustry: row.lead_industry,
+    leadCustomField: row.lead_custom_field,
     type: row.type,
     payload: row.payload,
     status: row.status,
@@ -70,6 +78,10 @@ function toRow(action: AutomationAction): ActionRow {
     lead_first_name: action.leadFirstName,
     lead_last_name: action.leadLastName,
     lead_company: action.leadCompany,
+    lead_position: action.leadPosition,
+    lead_location: action.leadLocation,
+    lead_industry: action.leadIndustry,
+    lead_custom_field: action.leadCustomField,
     type: action.type,
     payload: action.payload,
     status: action.status,

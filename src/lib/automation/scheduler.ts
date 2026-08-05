@@ -7,11 +7,36 @@ import type { AutomationAction } from "./types";
 // giving up on it (roughly 20 days at one check/day).
 export const MAX_ACCEPTANCE_CHECKS = 20;
 
-function personalize(template: string, lead: { firstName: string; lastName: string; company: string }): string {
-  return template
-    .replaceAll("{{firstName}}", lead.firstName)
-    .replaceAll("{{lastName}}", lead.lastName)
-    .replaceAll("{{company}}", lead.company);
+// Both casings are accepted for every variable ({{firstName}} and
+// {{first_name}}) so a message written either way personalizes correctly —
+// camelCase was already in use by earlier campaigns, snake_case is what the
+// product spec asks for.
+function personalize(
+  template: string,
+  lead: {
+    firstName: string;
+    lastName: string;
+    company: string;
+    position: string;
+    location: string;
+    industry: string;
+    customField?: string;
+  }
+): string {
+  const replacements: [string, string, string][] = [
+    ["firstName", "first_name", lead.firstName],
+    ["lastName", "last_name", lead.lastName],
+    ["company", "company", lead.company],
+    ["jobTitle", "job_title", lead.position],
+    ["location", "location", lead.location],
+    ["industry", "industry", lead.industry],
+    ["customField", "custom_field", lead.customField ?? ""],
+  ];
+  return replacements.reduce(
+    (text, [camel, snake, value]) =>
+      text.replaceAll(`{{${camel}}}`, value).replaceAll(`{{${snake}}}`, value),
+    template
+  );
 }
 
 function isWorkingDay(date: Date, workingDays: number[]): boolean {
@@ -122,6 +147,10 @@ export async function enqueueConnectionRequests(params: {
         leadFirstName: lead.firstName,
         leadLastName: lead.lastName,
         leadCompany: lead.company,
+        leadPosition: lead.position,
+        leadLocation: lead.location,
+        leadIndustry: lead.industry,
+        leadCustomField: lead.customField ?? "",
         type: "send_connection_request",
         payload: { text: params.connectionNote ? personalize(params.connectionNote, lead) : undefined },
         scheduledAt: scheduledAt.toISOString(),
@@ -146,6 +175,10 @@ export async function enqueueAcceptanceCheck(
       leadFirstName: action.leadFirstName,
       leadLastName: action.leadLastName,
       leadCompany: action.leadCompany,
+      leadPosition: action.leadPosition,
+      leadLocation: action.leadLocation,
+      leadIndustry: action.leadIndustry,
+      leadCustomField: action.leadCustomField,
       type: "check_acceptance",
       payload: {},
       scheduledAt: scheduledAt.toISOString(),
@@ -163,6 +196,10 @@ export async function enqueueMessagesAfterAcceptance(params: {
     firstName: action.leadFirstName,
     lastName: action.leadLastName,
     company: action.leadCompany,
+    position: action.leadPosition,
+    location: action.leadLocation,
+    industry: action.leadIndustry,
+    customField: action.leadCustomField,
   };
 
   const toCreate: AutomationAction[] = [];
@@ -192,6 +229,10 @@ export async function enqueueMessagesAfterAcceptance(params: {
           leadFirstName: action.leadFirstName,
           leadLastName: action.leadLastName,
           leadCompany: action.leadCompany,
+          leadPosition: action.leadPosition,
+          leadLocation: action.leadLocation,
+          leadIndustry: action.leadIndustry,
+          leadCustomField: action.leadCustomField,
           type: "check_reply",
           payload: {},
           scheduledAt: checkAt.toISOString(),
@@ -207,6 +248,10 @@ export async function enqueueMessagesAfterAcceptance(params: {
         leadFirstName: action.leadFirstName,
         leadLastName: action.leadLastName,
         leadCompany: action.leadCompany,
+        leadPosition: action.leadPosition,
+        leadLocation: action.leadLocation,
+        leadIndustry: action.leadIndustry,
+        leadCustomField: action.leadCustomField,
         type: "send_message",
         payload: { text: personalize(step.text, lead) },
         scheduledAt: scheduledAt.toISOString(),

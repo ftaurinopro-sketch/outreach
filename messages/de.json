@@ -427,11 +427,6 @@
     "message1Placeholder": "Hallo [Vorname], danke für die Vernetzung...",
     "followUpPlaceholder": "Ich wollte nur sichergehen, dass meine letzte Nachricht...",
     "afterDays": "Nach (Tagen)",
-    "replyMode": "Reply mode",
-    "reviewBeforeSending": "Review Before Sending",
-    "recommendedToStart": "Empfohlen für den Start",
-    "fullyAutonomous": "Fully Autonomous",
-    "repliesSentAutomatically": "Antworten werden automatisch gesendet",
     "automationSettings": "Automatisierungseinstellungen",
     "workingDays": "Arbeitstage",
     "weekday": {
@@ -450,7 +445,11 @@
     "weeklyCap": "Wochenlimit Kontaktanfragen",
     "useAccountLimit": "Kontolimit",
     "creating": "Wird erstellt...",
-    "createCampaign": "Kampagne erstellen"
+    "createCampaign": "Kampagne erstellen",
+    "language": "Sprache",
+    "suggestMessage": "Nachricht vorschlagen",
+    "suggesting": "Wird entworfen...",
+    "variableHint": "Verfügbare Variablen: '{{first_name}}', '{{last_name}}', '{{company}}', '{{job_title}}', '{{location}}', '{{industry}}', '{{custom_field}}' — werden beim Senden durch die Daten des jeweiligen Leads ersetzt."
   },
   "CampaignDetail": {
     "leadList": "Lead-Liste",
@@ -463,9 +462,6 @@
     "messageSequence": "Nachrichtensequenz",
     "messageStepFirst": "Nachricht 1 — gesendet nach der Annahme",
     "messageStepDelayed": "Nachricht {index} — gesendet {days, plural, one {# Tag} other {# Tage}} nach der vorherigen",
-    "replyMode": "Reply mode",
-    "fullyAutonomous": "Fully Autonomous",
-    "reviewBeforeSending": "Review Before Sending",
     "automationSettings": "Automatisierungseinstellungen",
     "workingDays": "Arbeitstage",
     "everyDay": "Jeden Tag",
@@ -483,7 +479,8 @@
     "dailyCap": "Tageslimit",
     "weeklyCap": "Wochenlimit",
     "useAccountLimit": "Kontolimit",
-    "rawActionLog": "Rohes Aktionsprotokoll anzeigen"
+    "rawActionLog": "Rohes Aktionsprotokoll anzeigen",
+    "language": "Sprache"
   },
   "MonitoringPanel": {
     "title": "Lead-Status",

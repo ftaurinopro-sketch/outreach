@@ -427,11 +427,6 @@
     "message1Placeholder": "Ciao [Nome], grazie per il collegamento...",
     "followUpPlaceholder": "Volevo solo assicurarmi che il messaggio precedente...",
     "afterDays": "Dopo (giorni)",
-    "replyMode": "Reply mode",
-    "reviewBeforeSending": "Review Before Sending",
-    "recommendedToStart": "Consigliata per iniziare",
-    "fullyAutonomous": "Fully Autonomous",
-    "repliesSentAutomatically": "Risposte inviate in automatico",
     "automationSettings": "Impostazioni automazione",
     "workingDays": "Giorni lavorativi",
     "weekday": {
@@ -450,7 +445,11 @@
     "weeklyCap": "Limite settimanale connessioni",
     "useAccountLimit": "Limite account",
     "creating": "Creazione...",
-    "createCampaign": "Crea campagna"
+    "createCampaign": "Crea campagna",
+    "language": "Lingua",
+    "suggestMessage": "Suggerisci messaggio",
+    "suggesting": "Sto scrivendo...",
+    "variableHint": "Variabili disponibili: '{{first_name}}', '{{last_name}}', '{{company}}', '{{job_title}}', '{{location}}', '{{industry}}', '{{custom_field}}' — sostituite con i dati di ogni lead all'invio."
   },
   "CampaignDetail": {
     "leadList": "Lista lead",
@@ -463,9 +462,6 @@
     "messageSequence": "Sequenza messaggi",
     "messageStepFirst": "Messaggio 1 — inviato dopo l'accettazione",
     "messageStepDelayed": "Messaggio {index} — inviato {days, plural, one {# giorno} other {# giorni}} dopo il precedente",
-    "replyMode": "Reply mode",
-    "fullyAutonomous": "Fully Autonomous",
-    "reviewBeforeSending": "Review Before Sending",
     "automationSettings": "Impostazioni automazione",
     "workingDays": "Giorni lavorativi",
     "everyDay": "Tutti i giorni",
@@ -483,7 +479,8 @@
     "dailyCap": "Limite giornaliero",
     "weeklyCap": "Limite settimanale",
     "useAccountLimit": "Limite account",
-    "rawActionLog": "Mostra il registro grezzo delle azioni"
+    "rawActionLog": "Mostra il registro grezzo delle azioni",
+    "language": "Lingua"
   },
   "MonitoringPanel": {
     "title": "Stato dei lead",

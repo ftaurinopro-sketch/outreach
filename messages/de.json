@@ -707,7 +707,12 @@
     "sectionAgents": "AI Assistants",
     "sectionLeadLists": "Lead-Listen",
     "sectionConnections": "Verbindungen",
-    "noneYet": "Noch keine."
+    "noneYet": "Noch keine.",
+    "role": "Rolle",
+    "roleUser": "Benutzer",
+    "roleSuperadmin": "Superadmin",
+    "promoteToSuperadmin": "Zu Superadmin befördern",
+    "demoteToUser": "Zu Benutzer zurückstufen"
   },
   "Billing": {
     "trialExpiredTitle": "Deine Testphase ist beendet",

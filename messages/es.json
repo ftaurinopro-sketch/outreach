@@ -707,7 +707,12 @@
     "sectionAgents": "AI Assistants",
     "sectionLeadLists": "Listas de leads",
     "sectionConnections": "Conexiones",
-    "noneYet": "Todavía ninguno."
+    "noneYet": "Todavía ninguno.",
+    "role": "Rol",
+    "roleUser": "Usuario",
+    "roleSuperadmin": "Superadmin",
+    "promoteToSuperadmin": "Promover a superadmin",
+    "demoteToUser": "Degradar a usuario"
   },
   "Billing": {
     "trialExpiredTitle": "Tu prueba ha terminado",

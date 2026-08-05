@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { createSupabaseUserClient, hasSupabaseAuthConfig } from "@/lib/supabase/user";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { isSuperadminEmail } from "@/lib/auth/superadmin";
+import { isSuperadminEmail, isSuperadminUser } from "@/lib/auth/superadmin";
 import ImpersonateButton from "./ImpersonateButton";
 
 export default async function AdminUsersPage() {
@@ -14,26 +14,35 @@ export default async function AdminUsersPage() {
     data: { user },
   } = await userClient.auth.getUser();
 
-  if (!isSuperadminEmail(user?.email)) notFound();
+  const { data: callerProfile } = user
+    ? await userClient.from("profiles").select("role").eq("id", user.id).maybeSingle()
+    : { data: null };
+  if (!isSuperadminUser(user?.email, callerProfile?.role)) notFound();
 
   const t = await getTranslations("Admin");
   const admin = createSupabaseServerClient();
 
   const [{ data: usersPage }, { data: profiles }] = await Promise.all([
     admin.auth.admin.listUsers({ perPage: 200 }),
-    admin.from("profiles").select("id, created_at, onboarding_completed"),
+    admin.from("profiles").select("id, created_at, onboarding_completed, role"),
   ]);
 
   const profileById = new Map((profiles ?? []).map((p) => [p.id, p]));
   const rows = (usersPage?.users ?? [])
-    .map((u) => ({
-      id: u.id,
-      email: u.email ?? "—",
-      provider: u.app_metadata?.provider ?? "—",
-      createdAt: u.created_at,
-      lastSignInAt: u.last_sign_in_at,
-      onboardingCompleted: profileById.get(u.id)?.onboarding_completed ?? false,
-    }))
+    .map((u) => {
+      const profile = profileById.get(u.id);
+      const isRootSuperadmin = isSuperadminEmail(u.email);
+      return {
+        id: u.id,
+        email: u.email ?? "—",
+        provider: u.app_metadata?.provider ?? "—",
+        createdAt: u.created_at,
+        lastSignInAt: u.last_sign_in_at,
+        onboardingCompleted: profile?.onboarding_completed ?? false,
+        isSuperadmin: isRootSuperadmin || profile?.role === "superadmin",
+        isRootSuperadmin,
+      };
+    })
     .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
 
   return (
@@ -50,6 +59,7 @@ export default async function AdminUsersPage() {
               <th className="px-4 py-2.5 font-medium">{t("joined")}</th>
               <th className="px-4 py-2.5 font-medium">{t("lastSignIn")}</th>
               <th className="px-4 py-2.5 font-medium">{t("onboarded")}</th>
+              <th className="px-4 py-2.5 font-medium">{t("role")}</th>
               <th className="px-4 py-2.5 font-medium">{t("actions")}</th>
             </tr>
           </thead>
@@ -83,13 +93,24 @@ export default async function AdminUsersPage() {
                   </span>
                 </td>
                 <td className="px-4 py-2.5">
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                      row.isSuperadmin
+                        ? "bg-indigo-50 text-indigo-700"
+                        : "bg-neutral-100 text-neutral-600"
+                    }`}
+                  >
+                    {row.isSuperadmin ? t("roleSuperadmin") : t("roleUser")}
+                  </span>
+                </td>
+                <td className="px-4 py-2.5">
                   {row.id !== user?.id && <ImpersonateButton userId={row.id} email={row.email} />}
                 </td>
               </tr>
             ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-center text-neutral-400">
+                <td colSpan={7} className="px-4 py-6 text-center text-neutral-400">
                   {t("empty")}
                 </td>
               </tr>

@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { getTranslations } from "next-intl/server";
 import Sidebar from "@/components/Sidebar";
 import { createSupabaseUserClient, hasSupabaseAuthConfig } from "@/lib/supabase/user";
-import { isSuperadminEmail } from "@/lib/auth/superadmin";
+import { isSuperadminUser } from "@/lib/auth/superadmin";
 import { isAccessBlocked } from "@/lib/billing/subscription";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -18,7 +18,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
       data: { user },
     } = await supabase.auth.getUser();
     if (user) {
-      isSuperadmin = isSuperadminEmail(user.email);
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("onboarding_completed, trial_ends_at, subscription_status, role")
+        .eq("id", user.id)
+        .maybeSingle();
+      isSuperadmin = isSuperadminUser(user.email, profile?.role);
       const cookieStore = await cookies();
       impersonatorEmail = cookieStore.get("impersonator_email")?.value ?? null;
       if (impersonatorEmail) impersonatingAs = user.email ?? null;
@@ -27,11 +32,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
       // regular users. Same exemption while impersonating someone, so
       // support access isn't blocked by the target's own trial state.
       if (!isSuperadmin) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("onboarding_completed, trial_ends_at, subscription_status")
-          .eq("id", user.id)
-          .maybeSingle();
         if (
           !impersonatingAs &&
           profile &&

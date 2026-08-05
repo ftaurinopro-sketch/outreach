@@ -3,9 +3,10 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { createSupabaseUserClient, hasSupabaseAuthConfig } from "@/lib/supabase/user";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { isSuperadminEmail } from "@/lib/auth/superadmin";
+import { isSuperadminEmail, isSuperadminUser } from "@/lib/auth/superadmin";
 import ImpersonateButton from "../ImpersonateButton";
 import BillingActions from "../BillingActions";
+import RoleActions from "../RoleActions";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -38,7 +39,10 @@ export default async function AdminUserDetailPage({ params }: Params) {
   const {
     data: { user: caller },
   } = await userClient.auth.getUser();
-  if (!isSuperadminEmail(caller?.email)) notFound();
+  const { data: callerProfile } = caller
+    ? await userClient.from("profiles").select("role").eq("id", caller.id).maybeSingle()
+    : { data: null };
+  if (!isSuperadminUser(caller?.email, callerProfile?.role)) notFound();
 
   const { id } = await params;
   const t = await getTranslations("Admin");
@@ -56,7 +60,7 @@ export default async function AdminUserDetailPage({ params }: Params) {
     admin.auth.admin.getUserById(id),
     admin
       .from("profiles")
-      .select("onboarding_completed, trial_ends_at, subscription_status")
+      .select("onboarding_completed, trial_ends_at, subscription_status, role")
       .eq("id", id)
       .maybeSingle(),
     admin.from("agents").select("id, config, created_at").eq("user_id", id),
@@ -80,6 +84,8 @@ export default async function AdminUserDetailPage({ params }: Params) {
 
   const subscriptionStatus = profile?.subscription_status ?? "trialing";
   const trialEndsAt = profile?.trial_ends_at ?? null;
+  const isRootSuperadmin = isSuperadminEmail(targetUser.email);
+  const isTargetSuperadmin = isRootSuperadmin || profile?.role === "superadmin";
 
   return (
     <div className="p-6">
@@ -95,13 +101,25 @@ export default async function AdminUserDetailPage({ params }: Params) {
             {new Date(targetUser.created_at).toLocaleDateString()} · {t("lastSignIn")}{" "}
             {targetUser.last_sign_in_at ? new Date(targetUser.last_sign_in_at).toLocaleDateString() : "—"}
           </p>
-          <span
-            className={`mt-2 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
-              profile?.onboarding_completed ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"
-            }`}
-          >
-            {t("onboarded")}: {profile?.onboarding_completed ? t("yes") : t("no")}
-          </span>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <span
+              className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
+                profile?.onboarding_completed ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"
+              }`}
+            >
+              {t("onboarded")}: {profile?.onboarding_completed ? t("yes") : t("no")}
+            </span>
+            <span
+              className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
+                isTargetSuperadmin ? "bg-indigo-50 text-indigo-700" : "bg-neutral-100 text-neutral-600"
+              }`}
+            >
+              {isTargetSuperadmin ? t("roleSuperadmin") : t("roleUser")}
+            </span>
+            {targetUser.id !== caller?.id && !isRootSuperadmin && (
+              <RoleActions userId={targetUser.id} role={isTargetSuperadmin ? "superadmin" : "user"} />
+            )}
+          </div>
         </div>
         {targetUser.id !== caller?.id && (
           <ImpersonateButton userId={targetUser.id} email={targetUser.email ?? ""} />

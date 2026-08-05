@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseUserClient, hasSupabaseAuthConfig } from "@/lib/supabase/user";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { isSuperadminEmail } from "@/lib/auth/superadmin";
+import { isSuperadminUser } from "@/lib/auth/superadmin";
 import { TRIAL_EXTEND_DAYS } from "@/lib/billing/subscription";
 
 type Params = { params: Promise<{ id: string }> };
@@ -18,7 +18,15 @@ export async function POST(request: Request, { params }: Params) {
   const {
     data: { user: caller },
   } = await userClient.auth.getUser();
-  if (!caller || !isSuperadminEmail(caller.email)) {
+  if (!caller) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+  const { data: callerProfile } = await userClient
+    .from("profiles")
+    .select("role")
+    .eq("id", caller.id)
+    .maybeSingle();
+  if (!isSuperadminUser(caller.email, callerProfile?.role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

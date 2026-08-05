@@ -50,40 +50,44 @@ export default function Sidebar({ isSuperadmin = false }: { isSuperadmin?: boole
         <span className="font-semibold text-neutral-900">{t("brand")}</span>
       </div>
       <nav className="flex-1 overflow-y-auto py-3">
-        <div className="mb-4">
-          <div className="px-4 pb-1 text-[11px] font-medium uppercase tracking-wide text-neutral-400">
-            {t("section")}
-          </div>
-          {MAIN_NAV.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`mx-2 mb-0.5 flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm ${
-                isActive(item.href) ? "bg-indigo-600 text-white" : "text-neutral-600 hover:bg-neutral-100"
-              }`}
-            >
-              <item.icon className="h-4 w-4 shrink-0" strokeWidth={2} />
-              {t(item.key)}
-            </Link>
-          ))}
-        </div>
-        <div>
-          <div className="px-4 pb-1 text-[11px] font-medium uppercase tracking-wide text-neutral-400">
-            {t("toolsSection")}
-          </div>
-          {TOOLS_NAV.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`mx-2 mb-0.5 flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm ${
-                isActive(item.href) ? "bg-indigo-600 text-white" : "text-neutral-600 hover:bg-neutral-100"
-              }`}
-            >
-              <item.icon className="h-4 w-4 shrink-0" strokeWidth={2} />
-              {t(item.key)}
-            </Link>
-          ))}
-        </div>
+        {!isSuperadmin && (
+          <>
+            <div className="mb-4">
+              <div className="px-4 pb-1 text-[11px] font-medium uppercase tracking-wide text-neutral-400">
+                {t("section")}
+              </div>
+              {MAIN_NAV.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`mx-2 mb-0.5 flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm ${
+                    isActive(item.href) ? "bg-indigo-600 text-white" : "text-neutral-600 hover:bg-neutral-100"
+                  }`}
+                >
+                  <item.icon className="h-4 w-4 shrink-0" strokeWidth={2} />
+                  {t(item.key)}
+                </Link>
+              ))}
+            </div>
+            <div>
+              <div className="px-4 pb-1 text-[11px] font-medium uppercase tracking-wide text-neutral-400">
+                {t("toolsSection")}
+              </div>
+              {TOOLS_NAV.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`mx-2 mb-0.5 flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm ${
+                    isActive(item.href) ? "bg-indigo-600 text-white" : "text-neutral-600 hover:bg-neutral-100"
+                  }`}
+                >
+                  <item.icon className="h-4 w-4 shrink-0" strokeWidth={2} />
+                  {t(item.key)}
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
         {isSuperadmin && (
           <div>
             <div className="px-4 pb-1 text-[11px] font-medium uppercase tracking-wide text-neutral-400">

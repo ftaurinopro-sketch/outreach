@@ -6,15 +6,19 @@ import LinkedInLoginFlow from "./LinkedInLoginFlow";
 
 export default function ConnectionSetupPanel({
   connection,
+  defaultEmail,
+  advancedDefaultOpen = false,
   onDone,
   onSaved,
 }: {
   connection: { id: string; label: string; token?: string };
+  defaultEmail?: string;
+  advancedDefaultOpen?: boolean;
   onDone?: () => void;
   onSaved?: () => void;
 }) {
   const t = useTranslations("ConnectionsClient");
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(advancedDefaultOpen);
   const [showManualCookie, setShowManualCookie] = useState(false);
   const [cookieValue, setCookieValue] = useState("");
   const [saving, setSaving] = useState(false);
@@ -42,8 +46,9 @@ export default function ConnectionSetupPanel({
       <p className="mt-0.5 text-xs text-neutral-500">{t("loginSectionDescription")}</p>
 
       <div className="mt-3">
-        <LinkedInLoginFlow connectionId={connection.id} onSuccess={onSaved} />
+        <LinkedInLoginFlow connectionId={connection.id} defaultEmail={defaultEmail} onSuccess={onSaved} />
       </div>
+      <p className="mt-2 text-xs text-neutral-400">{t("passwordDifferentNote")}</p>
 
       <button
         onClick={() => setShowAdvanced((v) => !v)}

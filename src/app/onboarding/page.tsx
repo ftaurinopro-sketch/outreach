@@ -6,6 +6,8 @@ import { isSuperadminUser } from "@/lib/auth/superadmin";
 import OnboardingFlow from "./OnboardingFlow";
 
 export default async function OnboardingPage() {
+  let defaultLinkedinEmail: string | undefined;
+
   if (hasSupabaseAuthConfig()) {
     const supabase = await createSupabaseUserClient();
     const {
@@ -20,10 +22,16 @@ export default async function OnboardingPage() {
       if (isSuperadminUser(user.email, profile?.role) || profile?.onboarding_completed) {
         redirect("/");
       }
+      defaultLinkedinEmail = user.email ?? undefined;
     }
   }
 
   const connections = await listConnections();
 
-  return <OnboardingFlow initialConnections={connections.map(toPublicConnection)} />;
+  return (
+    <OnboardingFlow
+      initialConnections={connections.map(toPublicConnection)}
+      defaultLinkedinEmail={defaultLinkedinEmail}
+    />
+  );
 }

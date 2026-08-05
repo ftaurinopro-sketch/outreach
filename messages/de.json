@@ -217,7 +217,9 @@
     "websiteAnalyzedNothing": "Von dieser Seite konnte ich nicht viel entnehmen — kein Problem, gehen wir die Fragen durch.",
     "websiteAnalysisFailed": "Diese Website konnte ich nicht lesen — gehen wir die Fragen durch.",
     "suggestionLabel": "Auf deiner Website gefunden:",
-    "useSuggestion": "Diese Antwort verwenden"
+    "useSuggestion": "Diese Antwort verwenden",
+    "websiteAnalysisNotConfigured": "Die Website-Analyse ist auf diesem Server noch nicht eingerichtet (API-Schlüssel fehlt) — gehen wir die Fragen durch.",
+    "websiteAnalysisBadUrl": "Das sieht nicht nach einer gültigen Website-Adresse aus — gehen wir die Fragen durch."
   },
   "AgentDetail": {
     "testInSandbox": "In Sandbox testen"
@@ -605,7 +607,8 @@
     "confirmCode": "Bestätigen",
     "preferManualCookie": "Lieber den Sitzungscookie manuell einfügen?",
     "showAdvanced": "Erweitert: Self-Hosted-Runner-Einrichtung",
-    "hideAdvanced": "Erweiterte Einrichtung ausblenden"
+    "hideAdvanced": "Erweiterte Einrichtung ausblenden",
+    "passwordDifferentNote": "Das ist dein echtes LinkedIn-Passwort — anders als deine Anmeldung bei ReachOS. Wir können deine ReachOS-Anmeldung hier nicht wiederverwenden, da die Anmeldung mit LinkedIn nur deine Identität bestätigt, aber keine Automatisierungsrechte gewährt."
   },
   "Auth": {
     "loginTitle": "Willkommen zurück",

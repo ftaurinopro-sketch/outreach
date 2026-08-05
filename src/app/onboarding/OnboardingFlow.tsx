@@ -11,7 +11,13 @@ import { detectSourceType } from "@/lib/scrape-jobs/types";
 
 const STEPS = [1, 2, 3] as const;
 
-export default function OnboardingFlow({ initialConnections }: { initialConnections: PublicConnection[] }) {
+export default function OnboardingFlow({
+  initialConnections,
+  defaultLinkedinEmail,
+}: {
+  initialConnections: PublicConnection[];
+  defaultLinkedinEmail?: string;
+}) {
   const t = useTranslations("Onboarding");
   const router = useRouter();
   // If a connection is already on file (e.g. resuming an onboarding that
@@ -116,10 +122,17 @@ export default function OnboardingFlow({ initialConnections }: { initialConnecti
 
           <div className="mt-6">
             {newConnection ? (
-              <ConnectionSetupPanel connection={newConnection} onSaved={() => router.refresh()} />
+              <ConnectionSetupPanel
+                connection={newConnection}
+                defaultEmail={defaultLinkedinEmail}
+                advancedDefaultOpen
+                onSaved={() => router.refresh()}
+              />
             ) : pendingConnection ? (
               <ConnectionSetupPanel
                 connection={{ id: pendingConnection.id, label: pendingConnection.label }}
+                defaultEmail={defaultLinkedinEmail}
+                advancedDefaultOpen
                 onSaved={() => router.refresh()}
               />
             ) : connections.length > 0 ? (

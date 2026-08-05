@@ -217,7 +217,9 @@
     "websiteAnalyzedNothing": "No pude extraer mucho de esa página — no hay problema, sigamos con las preguntas.",
     "websiteAnalysisFailed": "No pude leer ese sitio — sigamos con las preguntas.",
     "suggestionLabel": "Encontrado en tu sitio web:",
-    "useSuggestion": "Usar esta respuesta"
+    "useSuggestion": "Usar esta respuesta",
+    "websiteAnalysisNotConfigured": "El análisis del sitio web aún no está configurado en este servidor (falta la clave API) — sigamos con las preguntas.",
+    "websiteAnalysisBadUrl": "Eso no parece una dirección web válida — sigamos con las preguntas."
   },
   "AgentDetail": {
     "testInSandbox": "Probar en Sandbox"
@@ -605,7 +607,8 @@
     "confirmCode": "Confirmar",
     "preferManualCookie": "¿Prefieres pegar la cookie de sesión manualmente?",
     "showAdvanced": "Avanzado: configuración del runner autoalojado",
-    "hideAdvanced": "Ocultar configuración avanzada"
+    "hideAdvanced": "Ocultar configuración avanzada",
+    "passwordDifferentNote": "Esta es tu contraseña real de LinkedIn — distinta de cómo accediste a ReachOS. No podemos reutilizar tu inicio de sesión de ReachOS aquí, ya que el acceso con LinkedIn solo confirma tu identidad, no concede permisos de automatización."
   },
   "Auth": {
     "loginTitle": "Bienvenido de nuevo",

@@ -217,7 +217,9 @@
     "websiteAnalyzedNothing": "I couldn't pull much from that page — no worries, let's go through the questions instead.",
     "websiteAnalysisFailed": "Couldn't read that site — let's go through the questions instead.",
     "suggestionLabel": "Found on your website:",
-    "useSuggestion": "Use this"
+    "useSuggestion": "Use this",
+    "websiteAnalysisNotConfigured": "Website analysis isn't set up yet on this server (missing API key) — let's go through the questions instead.",
+    "websiteAnalysisBadUrl": "That doesn't look like a valid website address — let's go through the questions instead."
   },
   "AgentDetail": {
     "testInSandbox": "Test in Sandbox"
@@ -605,7 +607,8 @@
     "confirmCode": "Confirm",
     "preferManualCookie": "Prefer to paste the session cookie manually?",
     "showAdvanced": "Advanced: self-hosted runner setup",
-    "hideAdvanced": "Hide advanced setup"
+    "hideAdvanced": "Hide advanced setup",
+    "passwordDifferentNote": "This is your real LinkedIn password — different from how you signed into ReachOS. We can't reuse your ReachOS login here, since LinkedIn's sign-in only proves who you are, it doesn't grant automation access."
   },
   "Auth": {
     "loginTitle": "Welcome back",

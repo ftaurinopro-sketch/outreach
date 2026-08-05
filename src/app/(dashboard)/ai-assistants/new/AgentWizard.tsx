@@ -114,6 +114,14 @@ export default function AgentWizard({ onSaved }: { onSaved?: (agentId: string) =
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url: trimmed }),
       });
+      if (res.status === 501) {
+        advanceToStep(stepIndex + 1, [...baseLog, { from: "bot", text: t("websiteAnalysisNotConfigured") }]);
+        return;
+      }
+      if (res.status === 400) {
+        advanceToStep(stepIndex + 1, [...baseLog, { from: "bot", text: t("websiteAnalysisBadUrl") }]);
+        return;
+      }
       if (!res.ok) throw new Error();
       const data: Record<string, string> = await res.json();
 

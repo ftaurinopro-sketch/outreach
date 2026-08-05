@@ -7,6 +7,7 @@ import { isSuperadminEmail, isSuperadminUser } from "@/lib/auth/superadmin";
 import ImpersonateButton from "../ImpersonateButton";
 import BillingActions from "../BillingActions";
 import RoleActions from "../RoleActions";
+import DeleteUserButton from "../DeleteUserButton";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -234,6 +235,16 @@ export default async function AdminUserDetailPage({ params }: Params) {
           </ul>
         </section>
       </div>
+
+      {targetUser.id !== caller?.id && !isRootSuperadmin && (
+        <div className="mt-6 rounded-xl border border-red-200 bg-red-50 p-5">
+          <p className="text-sm font-medium text-red-800">{t("dangerZone")}</p>
+          <p className="mt-1 text-xs text-red-700">{t("dangerZoneDescription")}</p>
+          <div className="mt-3">
+            <DeleteUserButton userId={targetUser.id} email={targetUser.email ?? ""} redirectAfter="/admin/users" />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

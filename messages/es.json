@@ -712,7 +712,14 @@
     "roleUser": "Usuario",
     "roleSuperadmin": "Superadmin",
     "promoteToSuperadmin": "Promover a superadmin",
-    "demoteToUser": "Degradar a usuario"
+    "demoteToUser": "Degradar a usuario",
+    "searchPlaceholder": "Buscar por email...",
+    "viewDetails": "Ver detalles →",
+    "deleteUser": "Eliminar usuario",
+    "deleteConfirm": "¿Eliminar definitivamente {email}? Se eliminará la cuenta y todo lo que posee (AI Assistants, campañas, listas de leads, conexiones). Esta acción no se puede deshacer.",
+    "deleteError": "No se pudo eliminar el usuario.",
+    "dangerZone": "Zona de peligro",
+    "dangerZoneDescription": "Eliminar este usuario borra permanentemente su cuenta y todos sus datos. Esta acción no se puede deshacer."
   },
   "Billing": {
     "trialExpiredTitle": "Tu prueba ha terminado",

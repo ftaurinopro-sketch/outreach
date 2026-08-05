@@ -712,7 +712,14 @@
     "roleUser": "Utente",
     "roleSuperadmin": "Superadmin",
     "promoteToSuperadmin": "Promuovi a superadmin",
-    "demoteToUser": "Retrocedi a utente"
+    "demoteToUser": "Retrocedi a utente",
+    "searchPlaceholder": "Cerca per email...",
+    "viewDetails": "Vedi dettagli →",
+    "deleteUser": "Elimina utente",
+    "deleteConfirm": "Eliminare definitivamente {email}? Verranno rimossi l'account e tutto ciò che possiede (AI Assistant, campagne, liste lead, connessioni). L'operazione è irreversibile.",
+    "deleteError": "Impossibile eliminare l'utente.",
+    "dangerZone": "Zona pericolosa",
+    "dangerZoneDescription": "Eliminare questo utente rimuove definitivamente l'account e tutti i suoi dati. L'operazione è irreversibile."
   },
   "Billing": {
     "trialExpiredTitle": "Il tuo periodo di prova è terminato",

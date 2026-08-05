@@ -712,7 +712,14 @@
     "roleUser": "User",
     "roleSuperadmin": "Superadmin",
     "promoteToSuperadmin": "Promote to superadmin",
-    "demoteToUser": "Demote to user"
+    "demoteToUser": "Demote to user",
+    "searchPlaceholder": "Search by email...",
+    "viewDetails": "View details →",
+    "deleteUser": "Delete user",
+    "deleteConfirm": "Permanently delete {email}? This removes their account and everything they own (AI Assistants, campaigns, lead lists, connections). This cannot be undone.",
+    "deleteError": "Could not delete this user.",
+    "dangerZone": "Danger zone",
+    "dangerZoneDescription": "Deleting this user permanently removes their account and all of their data. This cannot be undone."
   },
   "Billing": {
     "trialExpiredTitle": "Your trial has ended",

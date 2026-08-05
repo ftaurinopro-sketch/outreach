@@ -712,7 +712,14 @@
     "roleUser": "Benutzer",
     "roleSuperadmin": "Superadmin",
     "promoteToSuperadmin": "Zu Superadmin befördern",
-    "demoteToUser": "Zu Benutzer zurückstufen"
+    "demoteToUser": "Zu Benutzer zurückstufen",
+    "searchPlaceholder": "Nach E-Mail suchen...",
+    "viewDetails": "Details ansehen →",
+    "deleteUser": "Benutzer löschen",
+    "deleteConfirm": "{email} endgültig löschen? Dabei werden das Konto und alles, was ihm gehört (AI Assistants, Kampagnen, Lead-Listen, Verbindungen), entfernt. Dies kann nicht rückgängig gemacht werden.",
+    "deleteError": "Benutzer konnte nicht gelöscht werden.",
+    "dangerZone": "Gefahrenzone",
+    "dangerZoneDescription": "Das Löschen dieses Benutzers entfernt das Konto und alle Daten dauerhaft. Dies kann nicht rückgängig gemacht werden."
   },
   "Billing": {
     "trialExpiredTitle": "Deine Testphase ist beendet",

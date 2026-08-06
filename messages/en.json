@@ -218,8 +218,15 @@
     "websiteAnalysisFailed": "Couldn't read that site — let's go through the questions instead.",
     "suggestionLabel": "Found on your website:",
     "useSuggestion": "Use this",
-    "websiteAnalysisNotConfigured": "Website analysis isn't set up yet on this server (missing API key) — let's go through the questions instead.",
-    "websiteAnalysisBadUrl": "That doesn't look like a valid website address — let's go through the questions instead."
+    "websiteAnalysisNotConfigured": "Automatic analysis isn't set up yet on this server (missing API key) — let's go through the questions instead.",
+    "websiteAnalysisBadUrl": "That doesn't look like a valid website address — let's go through the questions instead.",
+    "introMessage": "Let's build your first AI Assistant together: we'll use your company's information as its knowledge base for your first outreach activities. You'll be able to create more assistants later, for other use cases.",
+    "orUploadPdf": "or",
+    "uploadPdfButton": "upload a PDF with your company info",
+    "pdfUploadedLabel": "PDF uploaded: {name}",
+    "pdfAnalyzing": "Reading your PDF...",
+    "pdfAnalysisBadFile": "That file isn't a valid PDF, or it's over 15MB — let's go through the questions instead.",
+    "pdfAnalysisFailed": "I couldn't read that PDF — let's go through the questions instead."
   },
   "AgentDetail": {
     "testInSandbox": "Test in Sandbox"

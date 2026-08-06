@@ -62,12 +62,16 @@ export default function AgentWizard({ onSaved }: { onSaved?: (agentId: string) =
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<Partial<AgentInput>>({});
   const [suggestions, setSuggestions] = useState<Partial<AgentInput>>({});
-  const [log, setLog] = useState<LogEntry[]>([{ from: "bot", text: questionForStep(STEP_ORDER[0]) }]);
+  const [log, setLog] = useState<LogEntry[]>([
+    { from: "bot", text: t("introMessage") },
+    { from: "bot", text: questionForStep(STEP_ORDER[0]) },
+  ]);
   const [inputValue, setInputValue] = useState("");
   const [saving, setSaving] = useState(false);
-  const [analyzing, setAnalyzing] = useState(false);
+  const [analyzing, setAnalyzing] = useState<"website" | "pdf" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const logEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     logEndRef.current?.scrollIntoView({ block: "end" });
@@ -107,7 +111,7 @@ export default function AgentWizard({ onSaved }: { onSaved?: (agentId: string) =
 
     setLog(baseLog);
     setInputValue("");
-    setAnalyzing(true);
+    setAnalyzing("website");
     try {
       const res = await fetch("/api/agents/analyze-website", {
         method: "POST",
@@ -136,7 +140,41 @@ export default function AgentWizard({ onSaved }: { onSaved?: (agentId: string) =
     } catch {
       advanceToStep(stepIndex + 1, [...baseLog, { from: "bot", text: t("websiteAnalysisFailed") }]);
     } finally {
-      setAnalyzing(false);
+      setAnalyzing(null);
+    }
+  }
+
+  async function handlePdfUpload(file: File) {
+    const baseLog: LogEntry[] = [...log, { from: "user", text: t("pdfUploadedLabel", { name: file.name }) }];
+    setLog(baseLog);
+    setAnalyzing("pdf");
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/agents/analyze-pdf", { method: "POST", body: formData });
+      if (res.status === 501) {
+        advanceToStep(stepIndex + 1, [...baseLog, { from: "bot", text: t("websiteAnalysisNotConfigured") }]);
+        return;
+      }
+      if (res.status === 400) {
+        advanceToStep(stepIndex + 1, [...baseLog, { from: "bot", text: t("pdfAnalysisBadFile") }]);
+        return;
+      }
+      if (!res.ok) throw new Error();
+      const data: Record<string, string> = await res.json();
+
+      const found: Partial<AgentInput> = {};
+      for (const key of AUTO_FILLABLE_KEYS) {
+        if (typeof data[key] === "string" && data[key].trim()) found[key] = data[key].trim();
+      }
+      setSuggestions(found);
+
+      const summary = Object.keys(found).length > 0 ? t("websiteAnalyzed") : t("websiteAnalyzedNothing");
+      advanceToStep(stepIndex + 1, [...baseLog, { from: "bot", text: summary }]);
+    } catch {
+      advanceToStep(stepIndex + 1, [...baseLog, { from: "bot", text: t("pdfAnalysisFailed") }]);
+    } finally {
+      setAnalyzing(null);
     }
   }
 
@@ -191,7 +229,7 @@ export default function AgentWizard({ onSaved }: { onSaved?: (agentId: string) =
         {analyzing && (
           <div className="flex justify-start">
             <div className="max-w-[85%] rounded-lg bg-neutral-100 px-3.5 py-2 text-sm text-neutral-500">
-              {t("websiteAnalyzing")}
+              {analyzing === "pdf" ? t("pdfAnalyzing") : t("websiteAnalyzing")}
             </div>
           </div>
         )}
@@ -220,37 +258,61 @@ export default function AgentWizard({ onSaved }: { onSaved?: (agentId: string) =
             </button>
           </div>
         ) : step?.type === "website" ? (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleWebsiteSubmit(inputValue);
-            }}
-            className="flex items-end gap-2"
-          >
-            <input
-              type="url"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder={t("websitePlaceholder")}
-              disabled={analyzing}
-              className="flex-1 rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-indigo-600 focus:outline-none disabled:opacity-50"
-            />
-            <button
-              type="submit"
-              disabled={analyzing}
-              className="shrink-0 rounded-md bg-indigo-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+          <div>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleWebsiteSubmit(inputValue);
+              }}
+              className="flex items-end gap-2"
             >
-              {analyzing ? t("websiteAnalyzing") : t("websiteAnalyze")}
-            </button>
-            <button
-              type="button"
-              onClick={() => handleWebsiteSubmit("")}
-              disabled={analyzing}
-              className="shrink-0 rounded-md px-2 py-2 text-sm text-neutral-400 hover:text-neutral-700 disabled:opacity-50"
-            >
-              {t("skip")}
-            </button>
-          </form>
+              <input
+                type="url"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder={t("websitePlaceholder")}
+                disabled={Boolean(analyzing)}
+                className="flex-1 rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-indigo-600 focus:outline-none disabled:opacity-50"
+              />
+              <button
+                type="submit"
+                disabled={Boolean(analyzing)}
+                className="shrink-0 rounded-md bg-indigo-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+              >
+                {analyzing === "website" ? t("websiteAnalyzing") : t("websiteAnalyze")}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleWebsiteSubmit("")}
+                disabled={Boolean(analyzing)}
+                className="shrink-0 rounded-md px-2 py-2 text-sm text-neutral-400 hover:text-neutral-700 disabled:opacity-50"
+              >
+                {t("skip")}
+              </button>
+            </form>
+            <div className="mt-2 flex items-center gap-1.5 text-xs text-neutral-400">
+              <span>{t("orUploadPdf")}</span>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={Boolean(analyzing)}
+                className="font-medium text-indigo-600 hover:text-indigo-700 disabled:opacity-50"
+              >
+                {t("uploadPdfButton")}
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="application/pdf"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  e.target.value = "";
+                  if (file) handlePdfUpload(file);
+                }}
+              />
+            </div>
+          </div>
         ) : (
           <div>
             {suggestion && (

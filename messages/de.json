@@ -218,8 +218,15 @@
     "websiteAnalysisFailed": "Diese Website konnte ich nicht lesen — gehen wir die Fragen durch.",
     "suggestionLabel": "Auf deiner Website gefunden:",
     "useSuggestion": "Diese Antwort verwenden",
-    "websiteAnalysisNotConfigured": "Die Website-Analyse ist auf diesem Server noch nicht eingerichtet (API-Schlüssel fehlt) — gehen wir die Fragen durch.",
-    "websiteAnalysisBadUrl": "Das sieht nicht nach einer gültigen Website-Adresse aus — gehen wir die Fragen durch."
+    "websiteAnalysisNotConfigured": "Die automatische Analyse ist auf diesem Server noch nicht eingerichtet (API-Schlüssel fehlt) — gehen wir die Fragen durch.",
+    "websiteAnalysisBadUrl": "Das sieht nicht nach einer gültigen Website-Adresse aus — gehen wir die Fragen durch.",
+    "introMessage": "Lass uns gemeinsam deinen ersten AI Assistant erstellen: Wir nutzen die Informationen deines Unternehmens als Wissensbasis für deine ersten Outreach-Aktivitäten. Später kannst du weitere Assistants für andere Anwendungsfälle erstellen.",
+    "orUploadPdf": "oder",
+    "uploadPdfButton": "ein PDF mit den Infos deines Unternehmens hochladen",
+    "pdfUploadedLabel": "PDF hochgeladen: {name}",
+    "pdfAnalyzing": "Lese dein PDF...",
+    "pdfAnalysisBadFile": "Diese Datei ist kein gültiges PDF oder ist größer als 15MB — gehen wir die Fragen durch.",
+    "pdfAnalysisFailed": "Ich konnte dieses PDF nicht lesen — gehen wir die Fragen durch."
   },
   "AgentDetail": {
     "testInSandbox": "In Sandbox testen"

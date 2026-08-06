@@ -668,7 +668,8 @@
     "startSearch": "Suche starten",
     "skipAndFinish": "Überspringen und abschließen",
     "finishing": "Wird abgeschlossen...",
-    "noReadyConnectionAction": "Jetzt einrichten"
+    "noReadyConnectionAction": "Jetzt einrichten",
+    "signOut": "Abmelden"
   },
   "Admin": {
     "title": "Benutzer",

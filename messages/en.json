@@ -668,7 +668,8 @@
     "startSearch": "Start search",
     "skipAndFinish": "Skip and finish",
     "finishing": "Finishing...",
-    "noReadyConnectionAction": "Set it up now"
+    "noReadyConnectionAction": "Set it up now",
+    "signOut": "Sign out"
   },
   "Admin": {
     "title": "Users",

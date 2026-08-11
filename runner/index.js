@@ -152,6 +152,39 @@ async function pollLoginCode(token, attemptId, timeoutMs = 10 * 60 * 1000, inter
 // CAPTCHA, "approve from your phone" 2FA) which gets reported as a failure
 // pointing back at the manual-cookie fallback in the app — there is no way
 // to solve a CAPTCHA or an out-of-band app approval from here.
+// Summarizes what a page actually contains — title/URL, visible body text,
+// and a label for every input/button/link — so a failure log says "LinkedIn
+// showed X" instead of a bare Playwright timeout with no way to tell a
+// cookie banner from a bot checkpoint from an unrecognized verification
+// step apart. Capped/truncated throughout since this only needs to be
+// enough for a human reading a log line, not a full page dump.
+async function capturePageDiagnostics(page) {
+  const url = page.url();
+  const title = await page.title().catch(() => "");
+  const bodyText = await page
+    .locator("body")
+    .innerText({ timeout: 2000 })
+    .then((t) => t.replace(/\s+/g, " ").trim().slice(0, 500))
+    .catch(() => "(impossibile leggere il testo della pagina)");
+  const interactive = await page
+    .locator("input, button, a")
+    .evaluateAll((els) =>
+      els
+        .slice(0, 30)
+        .map((el) => {
+          const label =
+            (el.textContent || "").trim().slice(0, 30) ||
+            el.getAttribute("aria-label") ||
+            el.getAttribute("placeholder") ||
+            "";
+          return `${el.tagName.toLowerCase()}${el.type ? `[type=${el.type}]` : ""}"${label}"`;
+        })
+        .join(", ")
+    )
+    .catch(() => "(impossibile leggere il DOM)");
+  return `pagina: "${title}" (${url}) — testo: "${bodyText}" — elementi: ${interactive}`;
+}
+
 async function classifyLoginOutcome(page) {
   await page.waitForLoadState("domcontentloaded").catch(() => {});
   const url = page.url();
@@ -168,10 +201,18 @@ async function classifyLoginOutcome(page) {
       const prompt = (await promptEl.count()) ? (await promptEl.innerText().catch(() => "")).trim() : "";
       return { kind: "verification_code", prompt: prompt || "LinkedIn richiede un codice di verifica." };
     }
+    // codeInput above only matches the email/SMS one-time-code pattern —
+    // an authenticator-app (TOTP) challenge is a different LinkedIn flow
+    // that may use a different field entirely, and this branch previously
+    // reported it as an unsupported CAPTCHA/app-approval checkpoint sight
+    // unseen, with no way to tell those apart from a log line. Diagnostics
+    // here turn the next real occurrence into "here's the actual selector
+    // to add" instead of another guess.
+    const diagnostics = await capturePageDiagnostics(page);
     return {
       kind: "unsupported_challenge",
       message:
-        "LinkedIn ha richiesto una verifica che non può essere completata automaticamente (CAPTCHA o approvazione dall'app) — accedi manualmente da un browser e incolla il cookie di sessione da /connections.",
+        `LinkedIn ha richiesto una verifica che non è ancora riconosciuta automaticamente — accedi manualmente da un browser e incolla il cookie di sessione da /connections. Dettaglio tecnico: ${diagnostics}`,
     };
   }
 
@@ -249,37 +290,7 @@ async function runLoginJob(token, job) {
       // actually served at the point of failure turns "the runner is
       // broken" into "LinkedIn showed X page instead" the next time this
       // happens.
-      const diagUrl = page.url();
-      const diagTitle = await page.title().catch(() => "");
-      // Tag/id/name alone (the previous version of this diagnostic) turned
-      // out uninformative — real form fields and a cookie-consent widget's
-      // inputs look identical by tag name alone. Visible text is what
-      // actually distinguishes "this is the login form" from "this is a
-      // cookie banner" from "this is a bot checkpoint".
-      const diagBodyText = await page
-        .locator("body")
-        .innerText({ timeout: 2000 })
-        .then((t) => t.replace(/\s+/g, " ").trim().slice(0, 500))
-        .catch(() => "(impossibile leggere il testo della pagina)");
-      const diagInteractive = await page
-        .locator("input, button, a")
-        .evaluateAll((els) =>
-          els
-            .slice(0, 30)
-            .map((el) => {
-              const label =
-                (el.textContent || "").trim().slice(0, 30) ||
-                el.getAttribute("aria-label") ||
-                el.getAttribute("placeholder") ||
-                "";
-              return `${el.tagName.toLowerCase()}${el.type ? `[type=${el.type}]` : ""}"${label}"`;
-            })
-            .join(", ")
-        )
-        .catch(() => "(impossibile leggere il DOM)");
-      throw new Error(
-        `${e?.message || e} — pagina ottenuta: "${diagTitle}" (${diagUrl}) — testo pagina: "${diagBodyText}" — elementi: ${diagInteractive}`
-      );
+      throw new Error(`${e?.message || e} — ${await capturePageDiagnostics(page)}`);
     }
     const passwordField = page.locator('input[type="password"], input#password').first();
     await passwordField.fill(job.password);

@@ -61,6 +61,32 @@ async function report(token, actionId, result) {
   });
 }
 
+// Sequence-engine equivalent of nextAction/report above — polls
+// /api/extension/next-sequence-action instead of next-action, and reports
+// to report-sequence-action. Kept as separate functions (rather than
+// merging with nextAction/report) since the two systems' action shapes
+// and report payloads differ slightly (connected/replied fields here vs.
+// none on the legacy path) and run through genuinely different backend
+// code (src/lib/execution/engine.ts vs. src/lib/automation/scheduler.ts) —
+// see that engine's own comments for why. Both queues are polled from the
+// same tickForConnection loop below.
+async function nextSequenceAction(token) {
+  const res = await fetch(`${BACKEND_URL}/api/extension/next-sequence-action`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data.action;
+}
+
+async function reportSequenceAction(token, actionId, result) {
+  await fetch(`${BACKEND_URL}/api/extension/report-sequence-action`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ actionId, ...result }),
+  });
+}
+
 async function nextScrapeJob(token) {
   const res = await fetch(`${BACKEND_URL}/api/extension/next-scrape-job`, {
     headers: { Authorization: `Bearer ${token}` },
@@ -502,6 +528,47 @@ async function runAction(token, action) {
   }
 }
 
+// Action types the sequence engine can define on a step but that have no
+// real Playwright implementation yet (Phase 12 territory) — reported as an
+// honest failure rather than pretending to do something. Keeping this as
+// an explicit list (not just falling through a switch's default) makes it
+// obvious at a glance which of the six SEQUENCE_ACTION_TYPES
+// (src/lib/sequences/types.ts) are and aren't wired up.
+const NOT_YET_IMPLEMENTED_ACTIONS = new Set(["view_profile", "like_recent_post", "follow_profile", "manual_linkedin_action"]);
+
+async function runSequenceAction(token, action) {
+  if (NOT_YET_IMPLEMENTED_ACTIONS.has(action.type)) {
+    return { success: false, error: `Azione non ancora implementata: ${action.type}` };
+  }
+
+  const { browser, context } = await openConnectionContext(token);
+  try {
+    const page = await context.newPage();
+    await page.goto(action.leadLinkedinUrl, { waitUntil: "domcontentloaded", timeout: 30000 });
+    await page.waitForTimeout(2500);
+
+    switch (action.type) {
+      case "send_connection_request":
+        return await sendConnectionRequest(page, action.text);
+      case "send_message":
+        return await sendMessage(page, action.text);
+      case "check_connection_status": {
+        const result = await checkAcceptance(page);
+        // checkAcceptance's field is named "accepted" (it's shared with the
+        // legacy check_acceptance action type) — the sequence engine's
+        // report-sequence-action route expects "connected" instead.
+        return { success: result.success, error: result.error, connected: result.accepted };
+      }
+      case "check_reply":
+        return await checkForReply(page);
+      default:
+        return { success: false, error: `Azione sconosciuta: ${action.type}` };
+    }
+  } finally {
+    await browser.close().catch(() => {});
+  }
+}
+
 // At most one job per connection per cycle, same priority as before
 // (pending login blocks everything else for that connection, since there's
 // no session cookie yet to run regular actions with). Errors are caught
@@ -535,6 +602,22 @@ async function tickForConnection(conn) {
     }
     console.log(`[ReachOS runner] [${conn.label}] esito:`, result);
     await report(conn.token, action.id, result);
+    return;
+  }
+
+  const sequenceAction = await nextSequenceAction(conn.token);
+  if (sequenceAction) {
+    console.log(
+      `[ReachOS runner] [${conn.label}] eseguo (sequence) ${sequenceAction.type} per ${sequenceAction.leadFirstName || sequenceAction.leadLinkedinUrl}`
+    );
+    let result;
+    try {
+      result = await runSequenceAction(conn.token, sequenceAction);
+    } catch (e) {
+      result = { success: false, error: String(e?.message || e) };
+    }
+    console.log(`[ReachOS runner] [${conn.label}] esito (sequence):`, result);
+    await reportSequenceAction(conn.token, sequenceAction.id, result);
     return;
   }
 

@@ -25,7 +25,10 @@ async function listConnections() {
     headers: { Authorization: `Bearer ${MASTER_KEY}` },
   });
   if (!res.ok) {
-    console.error(`[ReachOS runner] impossibile elencare le connessioni (HTTP ${res.status})`);
+    const body = await res.json().catch(() => ({}));
+    console.error(
+      `[ReachOS runner] impossibile elencare le connessioni (HTTP ${res.status}): ${body.error || "(nessun dettaglio)"}`
+    );
     return [];
   }
   const data = await res.json();

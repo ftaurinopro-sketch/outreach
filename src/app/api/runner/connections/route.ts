@@ -11,6 +11,12 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Invalid runner key" }, { status: 401 });
   }
 
-  const connections = await listAllConnectionTokens();
-  return NextResponse.json({ connections });
+  try {
+    const connections = await listAllConnectionTokens();
+    return NextResponse.json({ connections });
+  } catch (err) {
+    console.error("[runner/connections] failed to list connections:", err);
+    const message = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }

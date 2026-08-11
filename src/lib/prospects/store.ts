@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import { promises as fs } from "fs";
 import path from "path";
 import { createSupabaseUserClient, hasSupabaseAuthConfig, getCurrentUserId } from "@/lib/supabase/user";
+import { createSupabaseServerClient, hasSupabaseConfig } from "@/lib/supabase/server";
 import type { Prospect, ProspectInput } from "./types";
 
 const DATA_DIR = path.join(process.cwd(), ".data");
@@ -136,27 +137,10 @@ export async function getProspectsByIds(ids: string[]): Promise<Prospect[]> {
   return prospects.filter((p) => idSet.has(p.id));
 }
 
-// The dedup entry point: every CSV row, scraped search result, or manual
-// add goes through here instead of a plain insert. Matches on
-// (user, linkedinUrl) — the DB-level UNIQUE constraint backs this up, but
-// we upsert explicitly (rather than relying on a 409) so a re-import that
-// finds newer data (e.g. an updated headline) merges it onto the existing
-// prospect instead of failing or creating a duplicate.
-export async function upsertProspects(inputs: ProspectInput[]): Promise<Prospect[]> {
-  if (inputs.length === 0) return [];
-
-  if (hasSupabaseAuthConfig()) {
-    const supabase = await createSupabaseUserClient();
-    const rows = inputs.map(inputToRow);
-    const { data, error } = await supabase
-      .from("prospects")
-      .upsert(rows, { onConflict: "user_id,linkedin_url" })
-      .select("*");
-    if (error) throw error;
-    return (data as ProspectRow[]).map(fromRow);
-  }
-
-  const userId = await getCurrentUserId();
+// Shared local-file merge logic for both upsertProspects and
+// upsertProspectsAsUser below — matches the Supabase path's ON CONFLICT
+// (user_id, linkedin_url) DO UPDATE semantics by hand.
+async function mergeLocalUpsert(userId: string, inputs: ProspectInput[]): Promise<LocalProspect[]> {
   const prospects = await readLocalFile();
   const byUrl = new Map(
     prospects.filter((p) => p.userId === userId).map((p) => [p.linkedinUrl, p] as const)
@@ -219,6 +203,52 @@ export async function upsertProspects(inputs: ProspectInput[]): Promise<Prospect
 
   await writeLocalFile(prospects);
   return results;
+}
+
+// The dedup entry point: every CSV row, scraped search result, or manual
+// add goes through here instead of a plain insert. Matches on
+// (user, linkedinUrl) — the DB-level UNIQUE constraint backs this up, but
+// we upsert explicitly (rather than relying on a 409) so a re-import that
+// finds newer data (e.g. an updated headline) merges it onto the existing
+// prospect instead of failing or creating a duplicate.
+export async function upsertProspects(inputs: ProspectInput[]): Promise<Prospect[]> {
+  if (inputs.length === 0) return [];
+
+  if (hasSupabaseAuthConfig()) {
+    const supabase = await createSupabaseUserClient();
+    const rows = inputs.map(inputToRow);
+    const { data, error } = await supabase
+      .from("prospects")
+      .upsert(rows, { onConflict: "user_id,linkedin_url" })
+      .select("*");
+    if (error) throw error;
+    return (data as ProspectRow[]).map(fromRow);
+  }
+
+  const userId = await getCurrentUserId();
+  return mergeLocalUpsert(userId, inputs);
+}
+
+// Same dedup-upsert as upsertProspects, but for the extension/runner's
+// bearer-token context (no Supabase session, so RLS's auth.uid() default
+// isn't available) — the caller supplies the owning user explicitly and
+// this goes through the service-role client instead. Used by the search-
+// import scrape-report route, which knows job.userId but has no cookies.
+export async function upsertProspectsAsUser(userId: string, inputs: ProspectInput[]): Promise<Prospect[]> {
+  if (inputs.length === 0) return [];
+
+  if (hasSupabaseConfig()) {
+    const supabase = createSupabaseServerClient();
+    const rows = inputs.map((input) => ({ ...inputToRow(input), user_id: userId }));
+    const { data, error } = await supabase
+      .from("prospects")
+      .upsert(rows, { onConflict: "user_id,linkedin_url" })
+      .select("*");
+    if (error) throw error;
+    return (data as ProspectRow[]).map(fromRow);
+  }
+
+  return mergeLocalUpsert(userId, inputs);
 }
 
 export async function updateProspectScore(

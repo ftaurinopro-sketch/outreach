@@ -17,7 +17,8 @@
     "settings": "Ajustes",
     "signOut": "Cerrar sesión",
     "admin": "Admin",
-    "adminSection": "Administración"
+    "adminSection": "Administración",
+    "prospects": "Prospectos"
   },
   "ComingSoon": {
     "notBuiltYet": "Módulo aún no construido — consulta la hoja de ruta en el plan de producto."
@@ -738,5 +739,39 @@
     "trialExpiredTitle": "Tu prueba ha terminado",
     "trialExpiredBody": "Contáctanos para activar tu suscripción y seguir usando ReachOS — todavía no hemos activado el pago self-service.",
     "signOut": "Cerrar sesión"
+  },
+  "Prospects": {
+    "title": "Prospectos",
+    "description": "Todos los prospectos de tus importaciones y búsquedas, deduplicados por URL de LinkedIn — el directorio global del que se nutren las campañas.",
+    "searchPlaceholder": "Buscar nombre, empresa, titular...",
+    "allSources": "Todas las fuentes",
+    "sourceCsv": "CSV",
+    "sourceManual": "Manual",
+    "sourceSearch": "Búsqueda LinkedIn",
+    "sourceSalesNav": "Sales Navigator",
+    "countLabel": "{count} mostrados",
+    "importCsv": "Importar CSV",
+    "importing": "Importando...",
+    "csvMissingColumn": "Falta la columna \"LinkedIn URL\": es el único campo obligatorio.",
+    "csvEmpty": "No se encontraron filas válidas en ese archivo.",
+    "csvImportError": "Error al importar",
+    "addProspect": "+ Añadir prospecto",
+    "empty": "Aún no hay prospectos. Importa un CSV o añade uno manualmente para empezar.",
+    "noResults": "Ningún prospecto coincide con estos filtros.",
+    "colName": "Nombre",
+    "colCompany": "Empresa",
+    "colPosition": "Puesto",
+    "colLocation": "Ubicación",
+    "colSource": "Fuente",
+    "colFit": "Fit",
+    "linkedinUrlPlaceholder": "URL de LinkedIn",
+    "firstNamePlaceholder": "Nombre",
+    "lastNamePlaceholder": "Apellido",
+    "companyPlaceholder": "Empresa",
+    "positionPlaceholder": "Puesto",
+    "saving": "Guardando...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "addError": "No se pudo añadir el prospecto"
   }
 }

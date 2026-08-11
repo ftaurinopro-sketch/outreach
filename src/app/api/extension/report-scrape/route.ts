@@ -3,6 +3,7 @@ import { authenticateExtension } from "@/lib/connections/auth";
 import { completeScrapeJob, failScrapeJob, getScrapeJob } from "@/lib/scrape-jobs/store";
 import { createLeadListAsUser } from "@/lib/leads/store";
 import type { Lead } from "@/lib/leads/types";
+import { upsertProspectsAsUser } from "@/lib/prospects/store";
 
 type ReportBody = {
   jobId: string;
@@ -52,6 +53,23 @@ export async function POST(request: Request) {
 
   const list = await createLeadListAsUser(job.userId, job.listName, job.sourceType, leads);
   await completeScrapeJob(job.id, { resultListId: list.id, resultCount: leads.length });
+
+  // Also feed the new global, deduplicated prospect directory — additive,
+  // doesn't change the lead-list result the old Lead Finder UI reads.
+  await upsertProspectsAsUser(
+    job.userId,
+    leads.map((l) => ({
+      linkedinUrl: l.linkedinUrl,
+      firstName: l.firstName,
+      lastName: l.lastName,
+      headline: l.headline,
+      company: l.company,
+      position: l.position,
+      location: l.location,
+      industry: l.industry,
+      source: job.sourceType,
+    }))
+  );
 
   return NextResponse.json({ ok: true });
 }

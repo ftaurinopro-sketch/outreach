@@ -17,7 +17,8 @@
     "settings": "Einstellungen",
     "signOut": "Abmelden",
     "admin": "Admin",
-    "adminSection": "Verwaltung"
+    "adminSection": "Verwaltung",
+    "prospects": "Prospects"
   },
   "ComingSoon": {
     "notBuiltYet": "Modul noch nicht gebaut — siehe die Roadmap im Produktplan."
@@ -738,5 +739,39 @@
     "trialExpiredTitle": "Deine Testphase ist beendet",
     "trialExpiredBody": "Kontaktiere uns, um zu upgraden und ReachOS weiter zu nutzen — Self-Service-Zahlungen sind noch nicht aktiv.",
     "signOut": "Abmelden"
+  },
+  "Prospects": {
+    "title": "Prospects",
+    "description": "Jeder Prospect aus all deinen Importen und Suchen, dedupliziert nach LinkedIn-URL — das globale Verzeichnis, aus dem Kampagnen schöpfen.",
+    "searchPlaceholder": "Name, Firma, Headline suchen...",
+    "allSources": "Alle Quellen",
+    "sourceCsv": "CSV",
+    "sourceManual": "Manuell",
+    "sourceSearch": "LinkedIn-Suche",
+    "sourceSalesNav": "Sales Navigator",
+    "countLabel": "{count} angezeigt",
+    "importCsv": "CSV importieren",
+    "importing": "Importiere...",
+    "csvMissingColumn": "Spalte \"LinkedIn URL\" fehlt: sie ist das einzige Pflichtfeld.",
+    "csvEmpty": "Keine gültigen Zeilen in dieser Datei gefunden.",
+    "csvImportError": "Fehler beim Import",
+    "addProspect": "+ Prospect hinzufügen",
+    "empty": "Noch keine Prospects. Importiere eine CSV oder füge einen manuell hinzu, um zu starten.",
+    "noResults": "Kein Prospect entspricht diesen Filtern.",
+    "colName": "Name",
+    "colCompany": "Firma",
+    "colPosition": "Position",
+    "colLocation": "Standort",
+    "colSource": "Quelle",
+    "colFit": "Fit",
+    "linkedinUrlPlaceholder": "LinkedIn-URL",
+    "firstNamePlaceholder": "Vorname",
+    "lastNamePlaceholder": "Nachname",
+    "companyPlaceholder": "Firma",
+    "positionPlaceholder": "Position",
+    "saving": "Speichern...",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "addError": "Prospect konnte nicht hinzugefügt werden"
   }
 }

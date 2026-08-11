@@ -17,7 +17,8 @@
     "settings": "Settings",
     "signOut": "Sign out",
     "admin": "Admin",
-    "adminSection": "Admin"
+    "adminSection": "Admin",
+    "prospects": "Prospects"
   },
   "ComingSoon": {
     "notBuiltYet": "Module not built yet — see the roadmap in the product plan."
@@ -738,5 +739,39 @@
     "trialExpiredTitle": "Your trial has ended",
     "trialExpiredBody": "Reach out to us to upgrade and keep using ReachOS — we haven't turned on self-serve billing yet.",
     "signOut": "Sign out"
+  },
+  "Prospects": {
+    "title": "Prospects",
+    "description": "Every prospect across all your imports and searches, deduplicated by LinkedIn URL — the global directory campaigns enroll from.",
+    "searchPlaceholder": "Search name, company, headline...",
+    "allSources": "All sources",
+    "sourceCsv": "CSV",
+    "sourceManual": "Manual",
+    "sourceSearch": "LinkedIn Search",
+    "sourceSalesNav": "Sales Navigator",
+    "countLabel": "{count} shown",
+    "importCsv": "Import CSV",
+    "importing": "Importing...",
+    "csvMissingColumn": "Missing \"LinkedIn URL\" column: it's the only required field.",
+    "csvEmpty": "No valid rows found in that file.",
+    "csvImportError": "Import error",
+    "addProspect": "+ Add prospect",
+    "empty": "No prospects yet. Import a CSV or add one manually to get started.",
+    "noResults": "No prospects match these filters.",
+    "colName": "Name",
+    "colCompany": "Company",
+    "colPosition": "Position",
+    "colLocation": "Location",
+    "colSource": "Source",
+    "colFit": "Fit",
+    "linkedinUrlPlaceholder": "LinkedIn URL",
+    "firstNamePlaceholder": "First name",
+    "lastNamePlaceholder": "Last name",
+    "companyPlaceholder": "Company",
+    "positionPlaceholder": "Position",
+    "saving": "Saving...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "addError": "Couldn't add prospect"
   }
 }

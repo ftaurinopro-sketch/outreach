@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import {
   LayoutDashboard,
   Search,
+  Contact,
   Megaphone,
   Bot,
   Users,
@@ -21,6 +22,7 @@ import LanguageSwitcher from "./LanguageSwitcher";
 const MAIN_NAV: { href: string; key: string; icon: LucideIcon }[] = [
   { href: "/", key: "dashboard", icon: LayoutDashboard },
   { href: "/lead-finder", key: "leadFinder", icon: Search },
+  { href: "/prospects", key: "prospects", icon: Contact },
   { href: "/campaigns", key: "campaigns", icon: Megaphone },
   { href: "/ai-assistants", key: "aiAssistants", icon: Bot },
   { href: "/connections", key: "accounts", icon: Users },

@@ -17,7 +17,8 @@
     "settings": "Impostazioni",
     "signOut": "Esci",
     "admin": "Admin",
-    "adminSection": "Amministrazione"
+    "adminSection": "Amministrazione",
+    "prospects": "Prospect"
   },
   "ComingSoon": {
     "notBuiltYet": "Modulo non ancora costruito — vedi la roadmap nel piano di prodotto."
@@ -738,5 +739,39 @@
     "trialExpiredTitle": "Il tuo periodo di prova è terminato",
     "trialExpiredBody": "Contattaci per attivare l'abbonamento e continuare a usare ReachOS — i pagamenti self-service non sono ancora attivi.",
     "signOut": "Esci"
+  },
+  "Prospects": {
+    "title": "Prospect",
+    "description": "Ogni prospect da tutti i tuoi import e ricerche, deduplicato per URL LinkedIn — la directory globale da cui le campagne reclutano.",
+    "searchPlaceholder": "Cerca nome, azienda, headline...",
+    "allSources": "Tutte le fonti",
+    "sourceCsv": "CSV",
+    "sourceManual": "Manuale",
+    "sourceSearch": "Ricerca LinkedIn",
+    "sourceSalesNav": "Sales Navigator",
+    "countLabel": "{count} mostrati",
+    "importCsv": "Importa CSV",
+    "importing": "Importazione...",
+    "csvMissingColumn": "Colonna \"LinkedIn URL\" mancante: è l'unico campo obbligatorio.",
+    "csvEmpty": "Nessuna riga valida trovata nel file.",
+    "csvImportError": "Errore nell'importazione",
+    "addProspect": "+ Aggiungi prospect",
+    "empty": "Nessun prospect ancora. Importa un CSV o aggiungine uno manualmente per iniziare.",
+    "noResults": "Nessun prospect corrisponde a questi filtri.",
+    "colName": "Nome",
+    "colCompany": "Azienda",
+    "colPosition": "Posizione",
+    "colLocation": "Località",
+    "colSource": "Fonte",
+    "colFit": "Fit",
+    "linkedinUrlPlaceholder": "URL LinkedIn",
+    "firstNamePlaceholder": "Nome",
+    "lastNamePlaceholder": "Cognome",
+    "companyPlaceholder": "Azienda",
+    "positionPlaceholder": "Posizione",
+    "saving": "Salvataggio...",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "addError": "Impossibile aggiungere il prospect"
   }
 }

@@ -609,7 +609,14 @@
     "showAdvanced": "Avanzado: configuración del runner autoalojado",
     "hideAdvanced": "Ocultar configuración avanzada",
     "passwordDifferentNote": "Esta es tu contraseña real de LinkedIn — distinta de cómo accediste a ReachOS. No podemos reutilizar tu inicio de sesión de ReachOS aquí, ya que el acceso con LinkedIn solo confirma tu identidad, no concede permisos de automatización.",
-    "sharedRunnerNote": "La automatización se ejecuta en el runner compartido de ReachOS — no hay nada que instalar ni configurar aquí, la toma automáticamente en cuanto está configurada."
+    "sharedRunnerNote": "La automatización se ejecuta en el runner compartido de ReachOS — no hay nada que instalar ni configurar aquí, la toma automáticamente en cuanto está configurada.",
+    "editLimits": "Editar límites",
+    "saveLimits": "Guardar límites",
+    "status": {
+      "active": "activo",
+      "paused": "en pausa",
+      "disabled": "desactivado"
+    }
   },
   "Auth": {
     "loginTitle": "Bienvenido de nuevo",

@@ -66,6 +66,7 @@ export default function OnboardingFlow({
           hasSessionCookie: false,
           createdAt: new Date().toISOString(),
           lastSeenAt: null,
+          status: "active" as const,
         },
         ...prev,
       ]);

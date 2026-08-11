@@ -609,7 +609,14 @@
     "showAdvanced": "Avanzate: setup del runner self-hosted",
     "hideAdvanced": "Nascondi impostazioni avanzate",
     "passwordDifferentNote": "Questa è la tua vera password LinkedIn — diversa da come hai fatto accesso a ReachOS. Non possiamo riusare il tuo login ReachOS qui, perché l'accesso con LinkedIn prova solo la tua identità, non concede permessi di automazione.",
-    "sharedRunnerNote": "L'automazione gira sul runner condiviso di ReachOS — non c'è nulla da installare o configurare qui, la prende in carico automaticamente una volta impostata."
+    "sharedRunnerNote": "L'automazione gira sul runner condiviso di ReachOS — non c'è nulla da installare o configurare qui, la prende in carico automaticamente una volta impostata.",
+    "editLimits": "Modifica limiti",
+    "saveLimits": "Salva limiti",
+    "status": {
+      "active": "attivo",
+      "paused": "in pausa",
+      "disabled": "disattivato"
+    }
   },
   "Auth": {
     "loginTitle": "Bentornato",

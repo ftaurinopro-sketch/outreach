@@ -609,7 +609,14 @@
     "showAdvanced": "Erweitert: Self-Hosted-Runner-Einrichtung",
     "hideAdvanced": "Erweiterte Einrichtung ausblenden",
     "passwordDifferentNote": "Das ist dein echtes LinkedIn-Passwort — anders als deine Anmeldung bei ReachOS. Wir können deine ReachOS-Anmeldung hier nicht wiederverwenden, da die Anmeldung mit LinkedIn nur deine Identität bestätigt, aber keine Automatisierungsrechte gewährt.",
-    "sharedRunnerNote": "Die Automatisierung läuft auf dem gemeinsamen Runner von ReachOS — hier musst du nichts installieren oder konfigurieren, er übernimmt diese Verbindung automatisch, sobald sie eingerichtet ist."
+    "sharedRunnerNote": "Die Automatisierung läuft auf dem gemeinsamen Runner von ReachOS — hier musst du nichts installieren oder konfigurieren, er übernimmt diese Verbindung automatisch, sobald sie eingerichtet ist.",
+    "editLimits": "Limits bearbeiten",
+    "saveLimits": "Limits speichern",
+    "status": {
+      "active": "aktiv",
+      "paused": "pausiert",
+      "disabled": "deaktiviert"
+    }
   },
   "Auth": {
     "loginTitle": "Willkommen zurück",

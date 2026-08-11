@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import type { PublicConnection } from "@/lib/connections/types";
+import type { ConnectionStatus, PublicConnection } from "@/lib/connections/types";
 import { DEFAULT_CONNECTION_LIMITS } from "@/lib/connections/types";
 import ConnectionSetupPanel from "@/components/ConnectionSetupPanel";
 import LinkedInLoginFlow from "@/components/LinkedInLoginFlow";
@@ -54,6 +54,7 @@ export default function ConnectionsClient({
           weeklyConnectionLimit: connection.weeklyConnectionLimit,
           dailyMessageLimit: connection.dailyMessageLimit,
           lastSeenAt: connection.lastSeenAt,
+          status: connection.status,
           online: false,
         },
         ...prev,
@@ -73,6 +74,10 @@ export default function ConnectionsClient({
     await fetch(`/api/connections/${id}`, { method: "DELETE" });
     setConnections((prev) => prev.filter((c) => c.id !== id));
     router.refresh();
+  }
+
+  function handleUpdated(id: string, patch: Partial<ConnectionWithStatus>) {
+    setConnections((prev) => prev.map((c) => (c.id === id ? { ...c, ...patch } : c)));
   }
 
   return (
@@ -155,7 +160,12 @@ export default function ConnectionsClient({
       ) : (
         <ul className="divide-y divide-neutral-200 rounded-xl border border-neutral-200 bg-white shadow-sm">
           {connections.map((c) => (
-            <ConnectionRow key={c.id} connection={c} onDelete={() => handleDelete(c.id)} />
+            <ConnectionRow
+              key={c.id}
+              connection={c}
+              onDelete={() => handleDelete(c.id)}
+              onUpdated={(patch) => handleUpdated(c.id, patch)}
+            />
           ))}
         </ul>
       )}
@@ -163,12 +173,20 @@ export default function ConnectionsClient({
   );
 }
 
+const STATUS_COLOR: Record<ConnectionStatus, string> = {
+  active: "bg-green-100 text-green-700",
+  paused: "bg-amber-100 text-amber-700",
+  disabled: "bg-neutral-200 text-neutral-600",
+};
+
 function ConnectionRow({
   connection,
   onDelete,
+  onUpdated,
 }: {
   connection: ConnectionWithStatus;
   onDelete: () => void;
+  onUpdated: (patch: Partial<ConnectionWithStatus>) => void;
 }) {
   const router = useRouter();
   const t = useTranslations("ConnectionsClient");
@@ -176,6 +194,14 @@ function ConnectionRow({
   const [cookieValue, setCookieValue] = useState("");
   const [saving, setSaving] = useState(false);
   const [loggingIn, setLoggingIn] = useState(false);
+  const [editingLimits, setEditingLimits] = useState(false);
+  const [limitsDraft, setLimitsDraft] = useState({
+    dailyConnectionLimit: connection.dailyConnectionLimit,
+    weeklyConnectionLimit: connection.weeklyConnectionLimit,
+    dailyMessageLimit: connection.dailyMessageLimit,
+  });
+  const [savingLimits, setSavingLimits] = useState(false);
+  const [statusUpdating, setStatusUpdating] = useState(false);
 
   async function saveCookie() {
     if (!cookieValue.trim()) return;
@@ -194,11 +220,42 @@ function ConnectionRow({
     }
   }
 
+  async function saveLimits() {
+    setSavingLimits(true);
+    try {
+      const res = await fetch(`/api/connections/${connection.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(limitsDraft),
+      });
+      if (res.ok) {
+        onUpdated(limitsDraft);
+        setEditingLimits(false);
+      }
+    } finally {
+      setSavingLimits(false);
+    }
+  }
+
+  async function changeStatus(status: ConnectionStatus) {
+    setStatusUpdating(true);
+    try {
+      const res = await fetch(`/api/connections/${connection.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      if (res.ok) onUpdated({ status });
+    } finally {
+      setStatusUpdating(false);
+    }
+  }
+
   return (
     <li className="px-4 py-3 text-sm">
       <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className={`h-2 w-2 rounded-full ${connection.online ? "bg-green-500" : "bg-neutral-300"}`} />
             <span className="font-medium text-neutral-900">{connection.label}</span>
             <span className="text-xs text-neutral-400">{connection.online ? t("online") : t("offline")}</span>
@@ -208,6 +265,9 @@ function ConnectionRow({
               }`}
             >
               {connection.hasSessionCookie ? t("cookieConfigured") : t("cookieMissing")}
+            </span>
+            <span className={`rounded-full px-2 py-0.5 text-xs ${STATUS_COLOR[connection.status]}`}>
+              {t(`status.${connection.status}`)}
             </span>
           </div>
           <div className="mt-0.5 text-xs text-neutral-400">
@@ -219,10 +279,31 @@ function ConnectionRow({
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <select
+            value={connection.status}
+            disabled={statusUpdating}
+            onChange={(e) => changeStatus(e.target.value as ConnectionStatus)}
+            className="rounded-md border border-neutral-300 px-2 py-1 text-xs disabled:opacity-50"
+          >
+            <option value="active">{t("status.active")}</option>
+            <option value="paused">{t("status.paused")}</option>
+            <option value="disabled">{t("status.disabled")}</option>
+          </select>
+          <button
+            onClick={() => {
+              setEditingLimits((v) => !v);
+              setEditingCookie(false);
+              setLoggingIn(false);
+            }}
+            className="text-xs text-neutral-600 hover:text-neutral-900"
+          >
+            {t("editLimits")}
+          </button>
           <button
             onClick={() => {
               setLoggingIn((v) => !v);
               setEditingCookie(false);
+              setEditingLimits(false);
             }}
             className="text-xs text-neutral-600 hover:text-neutral-900"
           >
@@ -232,6 +313,7 @@ function ConnectionRow({
             onClick={() => {
               setEditingCookie((v) => !v);
               setLoggingIn(false);
+              setEditingLimits(false);
             }}
             className="text-xs text-neutral-600 hover:text-neutral-900"
           >
@@ -271,6 +353,33 @@ function ConnectionRow({
             className="mt-2 rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
           >
             {saving ? t("saving") : t("saveCookie")}
+          </button>
+        </div>
+      )}
+
+      {editingLimits && (
+        <div className="mt-3 grid grid-cols-3 gap-3 rounded-md border border-neutral-200 bg-neutral-50 p-3">
+          <NumberField
+            label={t("connectionsPerDay")}
+            value={limitsDraft.dailyConnectionLimit}
+            onChange={(v) => setLimitsDraft((l) => ({ ...l, dailyConnectionLimit: v }))}
+          />
+          <NumberField
+            label={t("connectionsPerWeek")}
+            value={limitsDraft.weeklyConnectionLimit}
+            onChange={(v) => setLimitsDraft((l) => ({ ...l, weeklyConnectionLimit: v }))}
+          />
+          <NumberField
+            label={t("messagesPerDay")}
+            value={limitsDraft.dailyMessageLimit}
+            onChange={(v) => setLimitsDraft((l) => ({ ...l, dailyMessageLimit: v }))}
+          />
+          <button
+            onClick={saveLimits}
+            disabled={savingLimits}
+            className="col-span-3 rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+          >
+            {savingLimits ? t("saving") : t("saveLimits")}
           </button>
         </div>
       )}

@@ -21,7 +21,19 @@ export type Connection = {
   weeklyConnectionLimit: number;
   dailyMessageLimit: number;
   lastSeenAt: string | null;
+  status: ConnectionStatus;
 };
+
+// active = runner processes this account normally. paused = the user
+// stepped back temporarily (e.g. noticed unusual LinkedIn activity) without
+// losing the saved session; disabled is the same effect, framed as a more
+// deliberate "stop using this account." Either way, the runner is simply
+// never told about the connection — see listAllConnectionTokens in
+// store.ts, which only returns 'active' rows — so nothing needs to check
+// this status at execution time, it can't reach the runner in the first
+// place.
+export const CONNECTION_STATUSES = ["active", "paused", "disabled"] as const;
+export type ConnectionStatus = (typeof CONNECTION_STATUSES)[number];
 
 // Connection fields ever safe to send to the browser. Excludes the bearer
 // token (only returned once, at creation), the LinkedIn session cookie, and
@@ -43,6 +55,7 @@ export function toPublicConnection(connection: Connection): PublicConnection {
     weeklyConnectionLimit: connection.weeklyConnectionLimit,
     dailyMessageLimit: connection.dailyMessageLimit,
     lastSeenAt: connection.lastSeenAt,
+    status: connection.status,
   };
 }
 

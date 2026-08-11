@@ -215,8 +215,17 @@ async function runLoginJob(token, job) {
       // happens.
       const diagUrl = page.url();
       const diagTitle = await page.title().catch(() => "");
+      const diagInputs = await page
+        .locator("input, button, a")
+        .evaluateAll((els) =>
+          els
+            .slice(0, 40)
+            .map((el) => `${el.tagName.toLowerCase()}#${el.id || ""}[name=${el.getAttribute("name") || ""}]`)
+            .join(", ")
+        )
+        .catch(() => "(impossibile leggere il DOM)");
       throw new Error(
-        `${e?.message || e} — pagina ottenuta: "${diagTitle}" (${diagUrl})`
+        `${e?.message || e} — pagina ottenuta: "${diagTitle}" (${diagUrl}) — elementi trovati: ${diagInputs}`
       );
     }
     await page.locator("#password").fill(job.password);

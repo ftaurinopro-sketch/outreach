@@ -31,6 +31,7 @@ export default function OnboardingFlow({
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
   const [finishing, setFinishing] = useState(false);
+  const [finishError, setFinishError] = useState<string | null>(null);
   const autoCreateAttempted = useRef(false);
 
   // initialConnections only feeds the two useState initializers above, so a
@@ -93,9 +94,19 @@ export default function OnboardingFlow({
 
   async function finish() {
     setFinishing(true);
-    await fetch("/api/onboarding/complete", { method: "POST" });
-    router.push("/");
-    router.refresh();
+    setFinishError(null);
+    try {
+      const res = await fetch("/api/onboarding/complete", { method: "POST" });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || t("finishError"));
+      }
+      router.push("/");
+      router.refresh();
+    } catch (err) {
+      setFinishError(err instanceof Error ? err.message : t("finishError"));
+      setFinishing(false);
+    }
   }
 
   return (
@@ -209,6 +220,7 @@ export default function OnboardingFlow({
             )}
           </div>
 
+          {finishError && <p className="mt-4 text-sm text-red-600">{finishError}</p>}
           <div className="mt-6 flex justify-between">
             <button onClick={finish} disabled={finishing} className="text-sm text-neutral-400 hover:text-neutral-700">
               {finishing ? t("finishing") : t("skipAndFinish")}

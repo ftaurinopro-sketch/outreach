@@ -669,7 +669,8 @@
     "skipAndFinish": "Salta e termina",
     "finishing": "Completamento...",
     "noReadyConnectionAction": "Configuralo ora",
-    "signOut": "Esci"
+    "signOut": "Esci",
+    "finishError": "Impossibile completare la configurazione — riprova."
   },
   "Admin": {
     "title": "Utenti",

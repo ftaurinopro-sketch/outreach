@@ -669,7 +669,8 @@
     "skipAndFinish": "Überspringen und abschließen",
     "finishing": "Wird abgeschlossen...",
     "noReadyConnectionAction": "Jetzt einrichten",
-    "signOut": "Abmelden"
+    "signOut": "Abmelden",
+    "finishError": "Einrichtung konnte nicht abgeschlossen werden — versuche es erneut."
   },
   "Admin": {
     "title": "Benutzer",

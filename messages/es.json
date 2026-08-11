@@ -669,7 +669,8 @@
     "skipAndFinish": "Omitir y terminar",
     "finishing": "Terminando...",
     "noReadyConnectionAction": "Configúralo ahora",
-    "signOut": "Cerrar sesión"
+    "signOut": "Cerrar sesión",
+    "finishError": "No se pudo completar la configuración — inténtalo de nuevo."
   },
   "Admin": {
     "title": "Usuarios",

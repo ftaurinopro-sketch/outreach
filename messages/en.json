@@ -669,7 +669,8 @@
     "skipAndFinish": "Skip and finish",
     "finishing": "Finishing...",
     "noReadyConnectionAction": "Set it up now",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "finishError": "Couldn't finish setup — try again."
   },
   "Admin": {
     "title": "Users",

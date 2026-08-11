@@ -184,9 +184,45 @@ async function classifyLoginOutcome(page) {
   return { kind: "unknown", message: "Esito del login non determinabile (selettore da aggiornare?)." };
 }
 
+// Both the login flow and the ongoing per-connection actions launched a
+// bare `chromium.launch({headless}).newContext()` with none of Playwright's
+// context options set — no viewport, no locale/timezone, no removal of the
+// `navigator.webdriver` flag automation frameworks set by default. That's
+// not why LinkedIn's checkpoint appeared (the checkpoint is IP-reputation
+// driven — see the comment below `runLoginJob`, this alone won't make it
+// go away), but it's a real, easy gap: a completely unconfigured context is
+// itself an automation tell, and closing it is legitimate hardening
+// (matching environment to the real outbound IP's locale, hiding a
+// framework flag), not an attempt to defeat an active CAPTCHA — this code
+// never tries to solve or click through one, it still just reports failure
+// and defers to the manual cookie option.
+async function launchLinkedInBrowser() {
+  const browser = await chromium.launch({
+    headless: HEADLESS,
+    args: ["--disable-blink-features=AutomationControlled"],
+  });
+  const context = await browser.newContext({
+    viewport: { width: 1366, height: 768 },
+    locale: "en-US",
+    timezoneId: "America/New_York",
+  });
+  await context.addInitScript(() => {
+    Object.defineProperty(navigator, "webdriver", { get: () => undefined });
+  });
+  return { browser, context };
+}
+
+// GitHub Actions' free scheduled runners get a fresh IP from a large shared
+// pool on every single run — so from LinkedIn's side, even a *retry* of the
+// same login looks like a brand-new, never-seen environment each time,
+// which is close to the worst-case pattern for a risk-based checkpoint.
+// The fingerprint hardening above can't fix that; a runner host with a
+// stable outbound IP (see "Opzione a pagamento" in README.md) is the
+// change actually likely to matter, since LinkedIn's risk engine builds
+// trust in an IP+account pairing over repeated successful logins from it —
+// something that structurally cannot happen while the IP changes every run.
 async function runLoginJob(token, job) {
-  const loginBrowser = await chromium.launch({ headless: HEADLESS });
-  const loginContext = await loginBrowser.newContext();
+  const { browser: loginBrowser, context: loginContext } = await launchLinkedInBrowser();
   const page = await loginContext.newPage();
   try {
     await page.goto("https://www.linkedin.com/login", { waitUntil: "domcontentloaded", timeout: 30000 });
@@ -318,8 +354,7 @@ async function runLoginJob(token, job) {
 // connection per cycle anyway, so relaunching is cheap by comparison.
 async function openConnectionContext(token) {
   const sessionCookie = await fetchSessionCookie(token);
-  const browser = await chromium.launch({ headless: HEADLESS });
-  const context = await browser.newContext();
+  const { browser, context } = await launchLinkedInBrowser();
   await context.addCookies([
     {
       name: "li_at",

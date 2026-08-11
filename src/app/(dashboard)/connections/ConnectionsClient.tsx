@@ -340,6 +340,12 @@ function ConnectionRow({
 
       {editingCookie && (
         <div className="mt-3 rounded-md border border-neutral-200 bg-neutral-50 p-3">
+          <p className="mb-2 text-xs text-neutral-500">
+            {t.rich("setupStep2", {
+              strong: (chunks) => <strong>{chunks}</strong>,
+              code: (chunks) => <code className="font-mono">{chunks}</code>,
+            })}
+          </p>
           <label className="mb-1 block text-xs font-medium text-neutral-500">{t("sessionCookieLabel")}</label>
           <input
             value={cookieValue}

@@ -4,12 +4,16 @@ import { getLoginAttempt, updateLoginAttempt } from "@/lib/connections/login-sto
 
 type Params = { params: Promise<{ id: string; attemptId: string }> };
 
-// No runner is running by default — it's a local process the user starts
-// themselves (see the "Advanced" setup instructions). Without this, an
-// attempt no runner ever picks up just sits at "pending"/"in_progress"
-// forever, and the UI would poll it forever too, leaving the user staring
-// at "Logging in..." with no way to know anything is actually wrong.
-const PENDING_TIMEOUT_MS = 30_000;
+// The shared runner is a GitHub Actions cron job (see runner/README.md),
+// not an always-on process — it claims pending jobs on its next pass,
+// nominally every ~15 minutes but GitHub's free scheduled-workflow queue
+// does not guarantee that cadence, so a job can sit "pending" for well
+// over 15 minutes before anything picks it up. PENDING_TIMEOUT_MS must
+// stay comfortably above that or the UI declares failure before the
+// runner ever had a chance to run. Once a run does claim the job (status
+// flips to "in_progress"), the actual browser automation is fast, so
+// IN_PROGRESS_TIMEOUT_MS can stay short.
+const PENDING_TIMEOUT_MS = 20 * 60 * 1000;
 const IN_PROGRESS_TIMEOUT_MS = 120_000;
 
 // Polled by the web UI to show live login progress. Never returns
@@ -37,8 +41,8 @@ export async function GET(_request: Request, { params }: Params) {
         status: "failed",
         error:
           attempt.status === "pending"
-            ? "No runner picked up this login. Make sure the runner is running on your computer (see Advanced below), or paste a session cookie manually instead."
-            : "The runner started this login but didn't finish in time. Check the runner's terminal for errors, or try again.",
+            ? "Il runner condiviso non ha ancora ripreso questo accesso (gira ogni ~15 minuti, a volte di più). Riprova tra qualche minuto, oppure incolla subito il cookie di sessione per un risultato immediato."
+            : "Il runner ha avviato l'accesso ma non l'ha completato in tempo — riprova, oppure incolla il cookie di sessione manualmente.",
       })) ?? attempt;
   }
 

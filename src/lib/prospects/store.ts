@@ -124,6 +124,20 @@ export async function getProspect(id: string): Promise<Prospect | null> {
   return prospects.find((p) => p.id === id) ?? null;
 }
 
+// Service-role-scoped read for the execution engine's runner-triggered
+// context (bearer token, no Supabase session) — see
+// campaignProspects/store.ts's *ForEngine functions for the same pattern.
+export async function getProspectForEngine(id: string): Promise<Prospect | null> {
+  if (hasSupabaseConfig()) {
+    const supabase = createSupabaseServerClient();
+    const { data, error } = await supabase.from("prospects").select("*").eq("id", id).maybeSingle();
+    if (error) throw error;
+    return data ? fromRow(data as ProspectRow) : null;
+  }
+  const prospects = await readLocalFile();
+  return prospects.find((p) => p.id === id) ?? null;
+}
+
 export async function getProspectsByIds(ids: string[]): Promise<Prospect[]> {
   if (ids.length === 0) return [];
   if (hasSupabaseAuthConfig()) {

@@ -117,6 +117,39 @@ export async function listActivityEventsForCampaign(campaignId: string): Promise
     .sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt));
 }
 
+export async function getActivityEvent(id: string): Promise<ActivityEvent | null> {
+  if (hasSupabaseConfig()) {
+    const supabase = createSupabaseServerClient();
+    const { data, error } = await supabase.from("activity_events").select("*").eq("id", id).maybeSingle();
+    if (error) throw error;
+    return data ? fromRow(data as ActivityEventRow) : null;
+  }
+  const events = await readLocalFile();
+  return events.find((e) => e.id === id) ?? null;
+}
+
+// Used by the engine's rate-limit check (send_connection_request events
+// created for this account since the start of the current week) — see
+// src/lib/execution/engine.ts isConnectionRequestRateLimited.
+export async function listActivityEventsForAccountSince(
+  accountId: string,
+  sinceIso: string
+): Promise<ActivityEvent[]> {
+  if (hasSupabaseConfig()) {
+    const supabase = createSupabaseServerClient();
+    const { data, error } = await supabase
+      .from("activity_events")
+      .select("*")
+      .eq("account_id", accountId)
+      .gte("scheduled_at", sinceIso)
+      .neq("status", "cancelled");
+    if (error) throw error;
+    return (data as ActivityEventRow[]).map(fromRow);
+  }
+  const events = await readLocalFile();
+  return events.filter((e) => e.accountId === accountId && e.scheduledAt >= sinceIso && e.status !== "cancelled");
+}
+
 export async function listActivityEventsForCampaignProspect(
   campaignProspectId: string
 ): Promise<ActivityEvent[]> {

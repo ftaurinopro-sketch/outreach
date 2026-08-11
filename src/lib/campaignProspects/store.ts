@@ -2,7 +2,8 @@ import { randomUUID } from "crypto";
 import { promises as fs } from "fs";
 import path from "path";
 import { createSupabaseUserClient, hasSupabaseAuthConfig } from "@/lib/supabase/user";
-import { getCampaign } from "@/lib/campaigns/store";
+import { createSupabaseServerClient, hasSupabaseConfig } from "@/lib/supabase/server";
+import { getCampaign, getCampaignForExtension } from "@/lib/campaigns/store";
 import type { CampaignProspect, CampaignProspectOverlap, CampaignProspectStatus } from "./types";
 import { TERMINAL_STATUSES } from "./types";
 
@@ -202,6 +203,117 @@ export async function updateCampaignProspect(
   all[idx] = { ...all[idx], ...patch };
   await writeLocalFile(all);
   return all[idx];
+}
+
+// --- Service-role-scoped variants for the execution engine ---
+// The engine runs in the runner-triggered context (bearer token, no
+// Supabase session), where RLS's auth.uid() = user_id can never match —
+// same trust boundary as campaigns/store.ts's getCampaignForExtension.
+// User-facing pages/routes should keep using the functions above.
+
+export async function getCampaignProspectForEngine(id: string): Promise<CampaignProspect | null> {
+  if (hasSupabaseConfig()) {
+    const supabase = createSupabaseServerClient();
+    const { data, error } = await supabase.from("campaign_prospects").select("*").eq("id", id).maybeSingle();
+    if (error) throw error;
+    return data ? fromRow(data as CampaignProspectRow) : null;
+  }
+  const rows = await readLocalFile();
+  return rows.find((r) => r.id === id) ?? null;
+}
+
+export async function listCampaignProspectsForEngine(campaignId: string): Promise<CampaignProspect[]> {
+  if (hasSupabaseConfig()) {
+    const supabase = createSupabaseServerClient();
+    const { data, error } = await supabase
+      .from("campaign_prospects")
+      .select("*")
+      .eq("campaign_id", campaignId);
+    if (error) throw error;
+    return (data as CampaignProspectRow[]).map(fromRow);
+  }
+  const rows = await readLocalFile();
+  return rows.filter((r) => r.campaignId === campaignId);
+}
+
+export async function updateCampaignProspectForEngine(
+  id: string,
+  patch: Partial<
+    Pick<
+      CampaignProspect,
+      "status" | "currentStepPosition" | "nextAction" | "nextExecutionAt" | "lastActionAt" | "stoppedReason"
+    >
+  >
+): Promise<CampaignProspect | null> {
+  if (hasSupabaseConfig()) {
+    const supabase = createSupabaseServerClient();
+    const row: Record<string, unknown> = {};
+    if (patch.status !== undefined) row.status = patch.status;
+    if (patch.currentStepPosition !== undefined) row.current_step_position = patch.currentStepPosition;
+    if (patch.nextAction !== undefined) row.next_action = patch.nextAction;
+    if (patch.nextExecutionAt !== undefined) row.next_execution_at = patch.nextExecutionAt;
+    if (patch.lastActionAt !== undefined) row.last_action_at = patch.lastActionAt;
+    if (patch.stoppedReason !== undefined) row.stopped_reason = patch.stoppedReason;
+
+    const { data, error } = await supabase
+      .from("campaign_prospects")
+      .update(row)
+      .eq("id", id)
+      .select("*")
+      .maybeSingle();
+    if (error) throw error;
+    return data ? fromRow(data as CampaignProspectRow) : null;
+  }
+
+  const all = await readLocalFile();
+  const idx = all.findIndex((r) => r.id === id);
+  if (idx === -1) return null;
+  all[idx] = { ...all[idx], ...patch };
+  await writeLocalFile(all);
+  return all[idx];
+}
+
+// Every non-terminal campaign_prospect that's due (next_execution_at in the
+// past) for an ACTIVE campaign running on this LinkedIn account — what the
+// engine's tick (scheduleNextDueAction) polls. Two-step because
+// campaign_prospects has no account_id of its own (the account is the
+// owning campaign's connection_id, campaigns being the RLS/service-role
+// boundary already established for that field).
+export async function listDueCampaignProspectsForAccount(accountId: string): Promise<CampaignProspect[]> {
+  const now = new Date().toISOString();
+
+  if (hasSupabaseConfig()) {
+    const supabase = createSupabaseServerClient();
+    const { data: campaignRows, error: campaignError } = await supabase
+      .from("campaigns")
+      .select("id")
+      .eq("connection_id", accountId)
+      .eq("status", "active");
+    if (campaignError) throw campaignError;
+    const campaignIds = (campaignRows as { id: string }[]).map((c) => c.id);
+    if (campaignIds.length === 0) return [];
+
+    const { data, error } = await supabase
+      .from("campaign_prospects")
+      .select("*")
+      .in("campaign_id", campaignIds)
+      .not("status", "in", `(${TERMINAL_STATUSES.join(",")})`)
+      .lte("next_execution_at", now)
+      .order("next_execution_at", { ascending: true })
+      .limit(20);
+    if (error) throw error;
+    return (data as CampaignProspectRow[]).map(fromRow);
+  }
+
+  const rows = await readLocalFile();
+  const due: CampaignProspect[] = [];
+  for (const r of rows) {
+    if (TERMINAL_STATUSES.includes(r.status)) continue;
+    if (!r.nextExecutionAt || r.nextExecutionAt > now) continue;
+    const campaign = await getCampaignForExtension(r.campaignId);
+    if (campaign?.connectionId === accountId && campaign.status === "active") due.push(r);
+  }
+  return due.sort((a, b) => (a.nextExecutionAt ?? "").localeCompare(b.nextExecutionAt ?? ""));
 }
 
 // Automatic stop-for-this-prospect — the persisted equivalent of the old

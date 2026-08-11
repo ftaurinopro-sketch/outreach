@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import { promises as fs } from "fs";
 import path from "path";
 import { createSupabaseUserClient, hasSupabaseAuthConfig } from "@/lib/supabase/user";
+import { createSupabaseServerClient, hasSupabaseConfig } from "@/lib/supabase/server";
 import type { SequenceStep, SequenceStepInput } from "./types";
 
 const DATA_DIR = path.join(process.cwd(), ".data");
@@ -119,9 +120,44 @@ export async function replaceSequenceSteps(
   return steps;
 }
 
+// Service-role-scoped read, for the execution engine's runner-triggered
+// context (bearer token, no Supabase session — RLS's auth.uid() isn't
+// available there, same trust boundary as getCampaignForExtension in
+// campaigns/store.ts). User-facing pages should keep using
+// listSequenceSteps above.
+export async function listSequenceStepsForEngine(campaignId: string): Promise<SequenceStep[]> {
+  if (hasSupabaseConfig()) {
+    const supabase = createSupabaseServerClient();
+    const { data, error } = await supabase
+      .from("sequence_steps")
+      .select("*")
+      .eq("campaign_id", campaignId)
+      .order("position", { ascending: true });
+    if (error) throw error;
+    return (data as SequenceStepRow[]).map(fromRow);
+  }
+  const steps = await readLocalFile();
+  return steps
+    .filter((s) => s.campaignId === campaignId)
+    .sort((a, b) => a.position - b.position);
+}
+
 export async function getSequenceStep(id: string): Promise<SequenceStep | null> {
   if (hasSupabaseAuthConfig()) {
     const supabase = await createSupabaseUserClient();
+    const { data, error } = await supabase.from("sequence_steps").select("*").eq("id", id).maybeSingle();
+    if (error) throw error;
+    return data ? fromRow(data as SequenceStepRow) : null;
+  }
+  const steps = await readLocalFile();
+  return steps.find((s) => s.id === id) ?? null;
+}
+
+// Service-role-scoped variant for the execution engine's runner-triggered
+// context — see listSequenceStepsForEngine above for the same rationale.
+export async function getSequenceStepForEngine(id: string): Promise<SequenceStep | null> {
+  if (hasSupabaseConfig()) {
+    const supabase = createSupabaseServerClient();
     const { data, error } = await supabase.from("sequence_steps").select("*").eq("id", id).maybeSingle();
     if (error) throw error;
     return data ? fromRow(data as SequenceStepRow) : null;

@@ -76,7 +76,11 @@ export default async function CampaignDetailPage({ params }: Props) {
 
       {campaign.status === "draft" ? (
         <div className="mt-6">
-          <ActivateCampaignPanel campaignId={campaign.id} connections={connections.map(toPublicConnection)} />
+          <ActivateCampaignPanel
+            campaignId={campaign.id}
+            connections={connections.map(toPublicConnection)}
+            isSequenceMode={isSequenceMode}
+          />
         </div>
       ) : (
         <div className="mt-6 space-y-6">

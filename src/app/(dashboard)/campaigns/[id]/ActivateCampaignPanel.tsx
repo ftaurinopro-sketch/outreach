@@ -10,9 +10,11 @@ import { isConnectionOnline } from "@/lib/connections/types";
 export default function ActivateCampaignPanel({
   campaignId,
   connections,
+  isSequenceMode = false,
 }: {
   campaignId: string;
   connections: PublicConnection[];
+  isSequenceMode?: boolean;
 }) {
   const router = useRouter();
   const t = useTranslations("ActivateCampaignPanel");
@@ -39,7 +41,8 @@ export default function ActivateCampaignPanel({
     setActivating(true);
     setError(null);
     try {
-      const res = await fetch(`/api/campaigns/${campaignId}/activate`, {
+      const endpoint = isSequenceMode ? "activate-sequence" : "activate";
+      const res = await fetch(`/api/campaigns/${campaignId}/${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ connectionId }),

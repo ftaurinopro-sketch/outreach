@@ -93,6 +93,20 @@ export async function getConnection(id: string): Promise<Connection | null> {
   return connections.find((c) => c.id === id) ?? null;
 }
 
+// Same trust boundary as getConnectionByToken below — the execution
+// engine's runner-triggered context has no Supabase session, so it needs
+// this by-id lookup via the admin client instead of getConnection above.
+export async function getConnectionForEngine(id: string): Promise<Connection | null> {
+  if (hasSupabaseConfig()) {
+    const supabase = createSupabaseServerClient();
+    const { data, error } = await supabase.from("connections").select("*").eq("id", id).maybeSingle();
+    if (error) throw error;
+    return data ? fromRow(data as ConnectionRow) : null;
+  }
+  const connections = await readLocalFile();
+  return connections.find((c) => c.id === id) ?? null;
+}
+
 // Extension/runner auth (bearer token, no Supabase session) — must use the
 // admin client since RLS on `connections` requires auth.uid(), which isn't
 // set for these requests.

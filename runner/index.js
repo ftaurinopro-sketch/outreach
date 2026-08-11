@@ -280,7 +280,13 @@ async function runLoginJob(token, job) {
       .catch(() => {});
 
     try {
-      await page.locator('input[type="email"], input#username').first().fill(job.email);
+      // LinkedIn's markup includes two copies of the sign-in form (visible
+      // elements list above always came back doubled) — presumably a
+      // responsive/hydration artifact — and .first() with no visibility
+      // filter can land on the hidden copy, which just times out with
+      // "element is not visible" instead of erroring clearly. :visible
+      // restricts the match to whichever copy is actually on screen.
+      await page.locator('input[type="email"]:visible, input#username:visible').first().fill(job.email);
     } catch (e) {
       // The bare Playwright timeout ("Timeout 30000ms exceeded") gives no
       // clue why the field never appeared — LinkedIn may have served an
@@ -292,7 +298,7 @@ async function runLoginJob(token, job) {
       // happens.
       throw new Error(`${e?.message || e} — ${await capturePageDiagnostics(page)}`);
     }
-    const passwordField = page.locator('input[type="password"], input#password').first();
+    const passwordField = page.locator('input[type="password"]:visible, input#password:visible').first();
     await passwordField.fill(job.password);
     // LinkedIn's current sign-in button is a plain <button type="button">
     // wired to a JS click handler, not a native form submit — a
@@ -323,7 +329,9 @@ async function runLoginJob(token, job) {
       }
 
       const codeInput = page
-        .locator('input[name="pin"], input#input__email_verification_pin, input[autocomplete="one-time-code"]')
+        .locator(
+          'input[name="pin"]:visible, input#input__email_verification_pin:visible, input[autocomplete="one-time-code"]:visible'
+        )
         .first();
       await codeInput.fill(code);
       await codeInput.press("Enter");

@@ -161,7 +161,35 @@ async function runLoginJob(token, job) {
   const page = await loginContext.newPage();
   try {
     await page.goto("https://www.linkedin.com/login", { waitUntil: "domcontentloaded", timeout: 30000 });
-    await page.locator("#username").fill(job.email);
+
+    // A cookie-consent banner (OneTrust or LinkedIn's own) can overlay the
+    // form and block the username field from being interactable even
+    // though it's present in the DOM — dismiss it first if present. Short
+    // timeout and swallowed error since most of the time there's nothing
+    // to dismiss at all.
+    await page
+      .locator('#onetrust-accept-btn-handler, button:has-text("Accetta"), button:has-text("Accept")')
+      .first()
+      .click({ timeout: 3000 })
+      .catch(() => {});
+
+    try {
+      await page.locator("#username").fill(job.email);
+    } catch (e) {
+      // The bare Playwright timeout ("Timeout 30000ms exceeded") gives no
+      // clue why the field never appeared — LinkedIn may have served an
+      // anti-automation checkpoint instead of the normal login form for
+      // this request (headless browser + shared/CI IP is exactly the kind
+      // of traffic it's built to catch). Recording the URL/title LinkedIn
+      // actually served at the point of failure turns "the runner is
+      // broken" into "LinkedIn showed X page instead" the next time this
+      // happens.
+      const diagUrl = page.url();
+      const diagTitle = await page.title().catch(() => "");
+      throw new Error(
+        `${e?.message || e} — pagina ottenuta: "${diagTitle}" (${diagUrl})`
+      );
+    }
     await page.locator("#password").fill(job.password);
     await page.locator('button[type="submit"]').first().click();
     await page.waitForTimeout(3000);

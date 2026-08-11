@@ -570,8 +570,20 @@ process.on("SIGINT", () => {
 // (nothing here needs sub-minute latency).
 if (process.env.RUN_ONCE === "true") {
   tick()
-    .catch((e) => console.error("[ReachOS runner] errore nel ciclo:", e))
-    .finally(() => process.exit(0));
+    .catch((e) => {
+      console.error("[ReachOS runner] errore nel ciclo:", e);
+      process.exitCode = 1;
+    })
+    // Deliberately not calling process.exit() here: under CI, stdout is a
+    // pipe, and Node's writes to pipes are asynchronous — an immediate
+    // process.exit() can silently drop buffered console.log/error output
+    // written just before it (this is how every run ended up with zero
+    // logs even on success). Setting process.exitCode and letting Node
+    // exit naturally once the event loop is empty lets the output flush
+    // first; every browser context is already closed via `finally` blocks
+    // earlier in the pass, so nothing should be left keeping the process
+    // alive.
+    .finally(() => {});
 } else {
   loop();
 }

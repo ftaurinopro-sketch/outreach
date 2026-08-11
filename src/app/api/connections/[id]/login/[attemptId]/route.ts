@@ -50,5 +50,6 @@ export async function GET(_request: Request, { params }: Params) {
     status: attempt.status,
     verificationPrompt: attempt.verificationPrompt,
     error: attempt.error,
+    screenshot: attempt.screenshot,
   });
 }

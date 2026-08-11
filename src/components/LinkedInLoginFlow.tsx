@@ -2,8 +2,16 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+import { LOGIN_SCREENSHOT_VIEWPORT } from "@/lib/connections/types";
 
-type Status = "idle" | "pending" | "in_progress" | "awaiting_verification" | "success" | "failed";
+type Status =
+  | "idle"
+  | "pending"
+  | "in_progress"
+  | "awaiting_verification"
+  | "awaiting_manual_captcha"
+  | "success"
+  | "failed";
 
 // Drives the automated email/password LinkedIn login for an existing
 // connection: submits credentials, polls the attempt's status, and
@@ -31,6 +39,9 @@ export default function LinkedInLoginFlow({
   const [prompt, setPrompt] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [screenshot, setScreenshot] = useState<string | null>(null);
+  const [interactText, setInteractText] = useState("");
+  const [sendingInteraction, setSendingInteraction] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -48,6 +59,7 @@ export default function LinkedInLoginFlow({
       setStatus(data.status);
       setPrompt(data.verificationPrompt ?? null);
       setError(data.error ?? null);
+      setScreenshot(data.screenshot ?? null);
       if (data.status === "success" || data.status === "failed") {
         if (pollRef.current) clearInterval(pollRef.current);
         if (data.status === "success") onSuccess?.();
@@ -100,8 +112,90 @@ export default function LinkedInLoginFlow({
     }
   }
 
+  // Relays one click/keystroke into the live page the runner is holding
+  // open on the user's behalf — see the "awaiting_manual_captcha" branch
+  // below and runner/index.js's liveAssistLogin. One at a time: the user
+  // is looking at a screenshot that's already a couple seconds stale, so
+  // firing several actions ahead of seeing the result would be guesswork.
+  async function sendInteraction(interaction: { type: "click"; x: number; y: number } | { type: "type"; text: string } | { type: "key"; key: string }) {
+    if (!attemptId || sendingInteraction) return;
+    setSendingInteraction(true);
+    try {
+      await fetch(`/api/connections/${connectionId}/login/${attemptId}/interact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(interaction),
+      });
+    } finally {
+      setSendingInteraction(false);
+    }
+  }
+
+  function handleScreenshotClick(e: React.MouseEvent<HTMLImageElement>) {
+    const img = e.currentTarget;
+    const rect = img.getBoundingClientRect();
+    const x = Math.round(((e.clientX - rect.left) / rect.width) * LOGIN_SCREENSHOT_VIEWPORT.width);
+    const y = Math.round(((e.clientY - rect.top) / rect.height) * LOGIN_SCREENSHOT_VIEWPORT.height);
+    void sendInteraction({ type: "click", x, y });
+  }
+
+  async function handleSendText() {
+    if (!interactText.trim()) return;
+    await sendInteraction({ type: "type", text: interactText });
+    setInteractText("");
+  }
+
   if (status === "success") {
     return <p className="text-sm text-green-700">{t("loginSuccess")}</p>;
+  }
+
+  if (status === "awaiting_manual_captcha") {
+    return (
+      <div className="space-y-2">
+        <p className="text-xs text-neutral-600">{t("captchaAssistDescription")}</p>
+        {screenshot ? (
+          <img
+            src={screenshot}
+            alt={t("captchaScreenshotAlt")}
+            onClick={handleScreenshotClick}
+            className="w-full cursor-crosshair rounded-md border border-neutral-300"
+          />
+        ) : (
+          <p className="text-xs text-neutral-400">{t("captchaLoadingScreenshot")}</p>
+        )}
+        <div className="flex items-center gap-2">
+          <input
+            value={interactText}
+            onChange={(e) => setInteractText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                void handleSendText();
+              }
+            }}
+            placeholder={t("captchaTypePlaceholder")}
+            className="flex-1 rounded-md border border-neutral-300 px-2.5 py-1.5 text-sm"
+          />
+          <button
+            type="button"
+            disabled={sendingInteraction || !interactText.trim()}
+            onClick={() => void handleSendText()}
+            className="shrink-0 rounded-md bg-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-300 disabled:opacity-50"
+          >
+            {t("captchaSendText")}
+          </button>
+          <button
+            type="button"
+            disabled={sendingInteraction}
+            onClick={() => void sendInteraction({ type: "key", key: "Enter" })}
+            className="shrink-0 rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+          >
+            {t("captchaPressEnter")}
+          </button>
+        </div>
+        {error && <p className="text-xs text-red-600">{error}</p>}
+      </div>
+    );
   }
 
   if (status === "awaiting_verification") {

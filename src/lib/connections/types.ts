@@ -82,7 +82,30 @@ export function isConnectionOnline(connection: { lastSeenAt: string | null }): b
   return Date.now() - new Date(connection.lastSeenAt).getTime() < 5 * 60 * 1000;
 }
 
-export type LoginAttemptStatus = "pending" | "in_progress" | "awaiting_verification" | "success" | "failed";
+export type LoginAttemptStatus =
+  | "pending"
+  | "in_progress"
+  | "awaiting_verification"
+  | "awaiting_manual_captcha"
+  | "success"
+  | "failed";
+
+// A single relayed input event: the runner applies it to the live page
+// (page.mouse.click / page.keyboard.type / page.keyboard.press) then
+// clears it and reports a fresh screenshot. One at a time by design — the
+// user is watching a screenshot that's a few seconds stale, so queuing
+// multiple actions ahead of seeing their result would be error-prone.
+export type LoginAttemptInteraction =
+  | { type: "click"; x: number; y: number }
+  | { type: "type"; text: string }
+  | { type: "key"; key: string };
+
+// The fixed viewport the runner's browser launches with (see
+// launchLinkedInBrowser in runner/index.js) — screenshot pixel coordinates
+// map 1:1 to this, so the UI can translate a click on the displayed image
+// straight into page coordinates without the runner needing to report its
+// own viewport size back.
+export const LOGIN_SCREENSHOT_VIEWPORT = { width: 1366, height: 768 } as const;
 
 export type LoginAttempt = {
   id: string;
@@ -97,4 +120,11 @@ export type LoginAttempt = {
   // it's waiting inside the still-open browser session.
   verificationCode: string | null;
   error: string | null;
+  // A data: URL JPEG of the live page, set while status is
+  // "awaiting_manual_captcha" — see LOGIN_SCREENSHOT_VIEWPORT for how to
+  // map clicks on it back to page coordinates.
+  screenshot: string | null;
+  // Queued by the user (POST .../interact), consumed by the runner's poll
+  // loop, then cleared — see LoginAttemptInteraction.
+  pendingInteraction: LoginAttemptInteraction | null;
 };

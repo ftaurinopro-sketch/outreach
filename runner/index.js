@@ -124,6 +124,62 @@ async function reportLogin(token, result) {
   });
 }
 
+// Live-assist relay: LinkedIn served a challenge classifyLoginOutcome
+// can't drive on its own (CAPTCHA, an authenticator-app code, anything
+// else this file doesn't have a selector for). This does not attempt to
+// solve it — it screenshots the still-open page, reports it so the real
+// account owner can see it in the ReachOS UI, then waits for them to
+// relay a click/keystroke (POST .../interact) and applies exactly that
+// one action, same as if they were driving the browser themselves. Only
+// "success" or a hard "error" end the loop; every other outcome (still
+// challenged, an unrecognized state) just re-screenshots and keeps
+// waiting, since the user is the one deciding what to do next, not this
+// code. Gives up after timeoutMs so a session can't hold a browser open
+// forever if the user walks away.
+async function liveAssistLogin(token, attemptId, page, timeoutMs = 10 * 60 * 1000) {
+  const deadline = Date.now() + timeoutMs;
+
+  async function reportScreenshot() {
+    const screenshot = await page
+      .screenshot({ type: "jpeg", quality: 60 })
+      .then((buf) => `data:image/jpeg;base64,${buf.toString("base64")}`)
+      .catch(() => null);
+    await reportLogin(token, { attemptId, status: "awaiting_manual_captcha", screenshot });
+  }
+
+  await reportScreenshot();
+
+  while (Date.now() < deadline) {
+    const res = await fetch(`${BACKEND_URL}/api/extension/login-attempts/${attemptId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    }).catch(() => null);
+    const data = res && res.ok ? await res.json().catch(() => null) : null;
+    const interaction = data?.pendingInteraction;
+
+    if (!interaction) {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      continue;
+    }
+
+    if (interaction.type === "click") {
+      await page.mouse.click(interaction.x, interaction.y).catch(() => {});
+    } else if (interaction.type === "type") {
+      await page.keyboard.type(interaction.text).catch(() => {});
+    } else if (interaction.type === "key") {
+      await page.keyboard.press(interaction.key).catch(() => {});
+    }
+    await page.waitForTimeout(1000);
+
+    const outcome = await classifyLoginOutcome(page);
+    if (outcome.kind === "success" || outcome.kind === "error") {
+      return outcome;
+    }
+    await reportScreenshot();
+  }
+
+  return { kind: "error", message: "Tempo scaduto in attesa di un'interazione dall'utente (10 minuti)." };
+}
+
 // Polls for the verification code the user submits in the app while this
 // browser session sits on LinkedIn's checkpoint page waiting. Gives up
 // after timeoutMs so a login attempt can't hold a browser open forever if
@@ -143,15 +199,6 @@ async function pollLoginCode(token, attemptId, timeoutMs = 10 * 60 * 1000, inter
   return null;
 }
 
-// Classifies what LinkedIn's login form did after a submit. Best-effort,
-// unverified against a real account (same caveat as every other selector in
-// this file) — three real outcomes are handled: a clean success (nav bar
-// present), an email/SMS verification-code checkpoint (the only challenge
-// type this can drive automatically, since it's just a code the user
-// relays from their inbox/phone), and everything else (wrong credentials,
-// CAPTCHA, "approve from your phone" 2FA) which gets reported as a failure
-// pointing back at the manual-cookie fallback in the app — there is no way
-// to solve a CAPTCHA or an out-of-band app approval from here.
 // Summarizes what a page actually contains — title/URL, visible body text,
 // and a label for every input/button/link — so a failure log says "LinkedIn
 // showed X" instead of a bare Playwright timeout with no way to tell a
@@ -185,6 +232,16 @@ async function capturePageDiagnostics(page) {
   return `pagina: "${title}" (${url}) — testo: "${bodyText}" — elementi: ${interactive}`;
 }
 
+// Classifies what LinkedIn's login form did after a submit. Best-effort,
+// unverified against a real account beyond this session's own live tests —
+// three real outcomes are handled: a clean success (nav bar present), an
+// email/SMS verification-code checkpoint (a code the user relays from
+// their inbox/phone), and everything else (wrong credentials, CAPTCHA,
+// "approve from your phone" 2FA, an authenticator-app code this file
+// doesn't recognize the field for). That last bucket used to be a dead
+// end pointing at the manual-cookie fallback; runLoginJob now instead
+// hands it to a live-assist loop that relays the real account owner's own
+// clicks/keystrokes into this same page — see the comment above that loop.
 async function classifyLoginOutcome(page) {
   await page.waitForLoadState("domcontentloaded").catch(() => {});
   const url = page.url();
@@ -337,6 +394,10 @@ async function runLoginJob(token, job) {
       await codeInput.press("Enter");
       await page.waitForTimeout(3000);
       outcome = await classifyLoginOutcome(page);
+    }
+
+    if (outcome.kind === "unsupported_challenge") {
+      outcome = await liveAssistLogin(token, job.attemptId, page);
     }
 
     if (outcome.kind === "success") {

@@ -10,6 +10,7 @@ type ReportBody = {
   verificationPrompt?: string;
   sessionCookie?: string;
   error?: string;
+  screenshot?: string;
 };
 
 export async function POST(request: Request) {
@@ -32,6 +33,7 @@ export async function POST(request: Request) {
     status: body.status,
     verificationPrompt: body.verificationPrompt ?? attempt.verificationPrompt,
     error: body.error ?? null,
+    screenshot: body.screenshot ?? null,
   });
 
   if (body.status === "success" && body.sessionCookie) {

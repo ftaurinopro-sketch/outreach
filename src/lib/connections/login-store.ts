@@ -2,7 +2,7 @@ import { randomUUID } from "crypto";
 import { promises as fs } from "fs";
 import path from "path";
 import { createSupabaseServerClient, hasSupabaseConfig } from "@/lib/supabase/server";
-import type { LoginAttempt, LoginAttemptStatus } from "./types";
+import type { LoginAttempt, LoginAttemptInteraction, LoginAttemptStatus } from "./types";
 
 const DATA_DIR = path.join(process.cwd(), ".data");
 const DATA_FILE = path.join(DATA_DIR, "login-attempts.json");
@@ -30,6 +30,8 @@ type LoginAttemptRow = {
   verification_prompt: string | null;
   verification_code: string | null;
   error: string | null;
+  screenshot: string | null;
+  pending_interaction: LoginAttemptInteraction | null;
 };
 
 function fromRow(row: LoginAttemptRow): LoginAttempt {
@@ -42,6 +44,8 @@ function fromRow(row: LoginAttemptRow): LoginAttempt {
     verificationPrompt: row.verification_prompt,
     verificationCode: row.verification_code,
     error: row.error,
+    screenshot: row.screenshot ?? null,
+    pendingInteraction: row.pending_interaction ?? null,
   };
 }
 
@@ -62,6 +66,8 @@ export async function createLoginAttempt(connectionId: string): Promise<LoginAtt
     verificationPrompt: null,
     verificationCode: null,
     error: null,
+    screenshot: null,
+    pendingInteraction: null,
   };
 
   if (hasSupabaseConfig()) {
@@ -75,6 +81,8 @@ export async function createLoginAttempt(connectionId: string): Promise<LoginAtt
       verification_prompt: null,
       verification_code: null,
       error: null,
+      screenshot: null,
+      pending_interaction: null,
     });
     if (error) throw error;
     return attempt;
@@ -140,7 +148,12 @@ export async function claimNextLoginAttempt(connectionId: string): Promise<Login
 
 export async function updateLoginAttempt(
   id: string,
-  patch: Partial<Pick<LoginAttempt, "status" | "verificationPrompt" | "verificationCode" | "error">>
+  patch: Partial<
+    Pick<
+      LoginAttempt,
+      "status" | "verificationPrompt" | "verificationCode" | "error" | "screenshot" | "pendingInteraction"
+    >
+  >
 ): Promise<LoginAttempt | null> {
   const now = new Date().toISOString();
 
@@ -151,6 +164,8 @@ export async function updateLoginAttempt(
     if (patch.verificationPrompt !== undefined) row.verification_prompt = patch.verificationPrompt;
     if (patch.verificationCode !== undefined) row.verification_code = patch.verificationCode;
     if (patch.error !== undefined) row.error = patch.error;
+    if (patch.screenshot !== undefined) row.screenshot = patch.screenshot;
+    if (patch.pendingInteraction !== undefined) row.pending_interaction = patch.pendingInteraction;
 
     const { data, error } = await supabase
       .from("login_attempts")

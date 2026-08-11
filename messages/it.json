@@ -407,7 +407,8 @@
     "description": "Collega una lista lead a un AI Assistant e definisci la sequenza di messaggi.",
     "newCampaign": "+ Nuova Campagna",
     "draftNotice": "Le campagne partono in <strong>bozza</strong>. Per attivarle serve una <link>connessione LinkedIn</link> — vedi il dettaglio di ogni campagna.",
-    "empty": "Nessuna campagna ancora. Assicurati di avere almeno una lista lead (Lead Finder) e un AI Assistant prima di crearne una."
+    "empty": "Nessuna campagna ancora. Assicurati di avere almeno una lista lead (Lead Finder) e un AI Assistant prima di crearne una.",
+    "newSequenceCampaign": "+ Nuova Campagna (Sequenza)"
   },
   "NewCampaign": {
     "title": "Nuova Campagna",
@@ -489,7 +490,10 @@
     "weeklyCap": "Limite settimanale",
     "useAccountLimit": "Limite account",
     "rawActionLog": "Mostra il registro grezzo delle azioni",
-    "language": "Lingua"
+    "language": "Lingua",
+    "sequenceSteps": "Sequenza",
+    "sequenceStepLabel": "Step {index} — {type} ({mode})",
+    "enrolledProspects": "Prospect iscritti ({count})"
   },
   "MonitoringPanel": {
     "title": "Stato dei lead",
@@ -773,5 +777,49 @@
     "save": "Salva",
     "cancel": "Annulla",
     "addError": "Impossibile aggiungere il prospect"
+  },
+  "NewSequenceCampaign": {
+    "title": "Nuova Campagna",
+    "description": "Dalle un nome, costruisci una sequenza passo passo, poi iscrivi i prospect — il motore di esecuzione decide cosa succede dopo per ciascuno.",
+    "needProspects": "Serve almeno un prospect prima di creare una campagna a sequenza.",
+    "addSome": "aggiungine qualcuno",
+    "campaignName": "Nome campagna",
+    "campaignNamePlaceholder": "Es. CEOs agenzie marketing USA",
+    "descriptionLabel": "Descrizione (opzionale)",
+    "descriptionPlaceholder": "A cosa serve questa campagna?",
+    "aiAssistant": "AI Assistant",
+    "noAiAssistant": "Nessuno — uso i miei modelli",
+    "language": "Lingua",
+    "sequence": "Sequenza",
+    "addStep": "Aggiungi step",
+    "stepLabel": "Step {index}",
+    "actionType": {
+      "view_profile": "Visualizza profilo",
+      "send_connection_request": "Invia richiesta di connessione",
+      "send_message": "Invia messaggio",
+      "like_recent_post": "Metti like a un post recente",
+      "follow_profile": "Segui profilo",
+      "manual_linkedin_action": "Azione manuale LinkedIn"
+    },
+    "executionMode": {
+      "automatic": "Automatica",
+      "manual": "Manuale"
+    },
+    "delayMinutes": "min",
+    "delayHours": "ore",
+    "delayDays": "giorni",
+    "actionNotYetImplemented": "Questo tipo di azione non è ancora eseguibile — lo step resta definito nella sequenza finché l'automazione LinkedIn corrispondente non sarà costruita.",
+    "messageTemplatePlaceholder": "Ciao '{{first_name}}', ...",
+    "prospectsLabel": "Prospect ({count} selezionati)",
+    "searchProspects": "Cerca prospect...",
+    "noProspectsFound": "Nessun prospect corrisponde alla ricerca.",
+    "overlapTitle": "Alcuni prospect sono già attivi in un'altra campagna",
+    "overlapItem": "Già in \"{campaign}\" ({status})",
+    "addAnyway": "Aggiungi comunque",
+    "skipOverlapping": "Torna indietro",
+    "createError": "Errore nella creazione della campagna",
+    "unexpectedError": "Errore inatteso",
+    "creating": "Creazione...",
+    "createCampaign": "Crea campagna"
   }
 }

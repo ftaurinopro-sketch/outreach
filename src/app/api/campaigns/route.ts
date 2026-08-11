@@ -25,6 +25,7 @@ export async function POST(request: Request) {
 
   const campaign = await createCampaign({
     name: body.name,
+    description: body.description ?? "",
     leadListId: body.leadListId,
     agentId: body.agentId || null,
     connectionNote: body.connectionNote ?? "",

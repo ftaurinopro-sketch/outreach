@@ -407,7 +407,8 @@
     "description": "Verknüpfe eine Lead-Liste mit einem AI Assistant und lege die Nachrichtensequenz fest.",
     "newCampaign": "+ Neue Kampagne",
     "draftNotice": "Kampagnen starten als <strong>Entwurf</strong>. Zum Aktivieren brauchst du eine <link>LinkedIn-Verbindung</link> — siehe die Detailseite jeder Kampagne.",
-    "empty": "Noch keine Kampagnen vorhanden. Stelle sicher, dass mindestens eine Lead-Liste (Lead Finder) und ein AI Assistant vorhanden sind, bevor du eine erstellst."
+    "empty": "Noch keine Kampagnen vorhanden. Stelle sicher, dass mindestens eine Lead-Liste (Lead Finder) und ein AI Assistant vorhanden sind, bevor du eine erstellst.",
+    "newSequenceCampaign": "+ Neue Kampagne (Sequenz)"
   },
   "NewCampaign": {
     "title": "Neue Kampagne",
@@ -489,7 +490,10 @@
     "weeklyCap": "Wochenlimit",
     "useAccountLimit": "Kontolimit",
     "rawActionLog": "Rohes Aktionsprotokoll anzeigen",
-    "language": "Sprache"
+    "language": "Sprache",
+    "sequenceSteps": "Sequenz",
+    "sequenceStepLabel": "Schritt {index} — {type} ({mode})",
+    "enrolledProspects": "Angemeldete Prospects ({count})"
   },
   "MonitoringPanel": {
     "title": "Lead-Status",
@@ -773,5 +777,49 @@
     "save": "Speichern",
     "cancel": "Abbrechen",
     "addError": "Prospect konnte nicht hinzugefügt werden"
+  },
+  "NewSequenceCampaign": {
+    "title": "Neue Kampagne",
+    "description": "Gib ihr einen Namen, baue eine Schritt-für-Schritt-Sequenz und füge dann Prospects hinzu — die Ausführungs-Engine entscheidet, was als Nächstes für jeden passiert.",
+    "needProspects": "Du brauchst mindestens einen Prospect, bevor du eine Sequenz-Kampagne erstellen kannst.",
+    "addSome": "füge welche hinzu",
+    "campaignName": "Kampagnenname",
+    "campaignNamePlaceholder": "Z. B. CEOs von Marketingagenturen in den USA",
+    "descriptionLabel": "Beschreibung (optional)",
+    "descriptionPlaceholder": "Wofür ist diese Kampagne?",
+    "aiAssistant": "AI Assistant",
+    "noAiAssistant": "Keiner — eigene Vorlagen verwenden",
+    "language": "Sprache",
+    "sequence": "Sequenz",
+    "addStep": "Schritt hinzufügen",
+    "stepLabel": "Schritt {index}",
+    "actionType": {
+      "view_profile": "Profil ansehen",
+      "send_connection_request": "Kontaktanfrage senden",
+      "send_message": "Nachricht senden",
+      "like_recent_post": "Aktuellen Beitrag liken",
+      "follow_profile": "Profil folgen",
+      "manual_linkedin_action": "Manuelle LinkedIn-Aktion"
+    },
+    "executionMode": {
+      "automatic": "Automatisch",
+      "manual": "Manuell"
+    },
+    "delayMinutes": "Min",
+    "delayHours": "Std",
+    "delayDays": "Tage",
+    "actionNotYetImplemented": "Dieser Aktionstyp ist noch nicht ausführbar — der Schritt bleibt in der Sequenz definiert, bis die entsprechende LinkedIn-Automatisierung gebaut ist.",
+    "messageTemplatePlaceholder": "Hallo '{{first_name}}', ...",
+    "prospectsLabel": "Prospects ({count} ausgewählt)",
+    "searchProspects": "Prospects suchen...",
+    "noProspectsFound": "Kein Prospect entspricht der Suche.",
+    "overlapTitle": "Einige Prospects sind bereits in einer anderen Kampagne aktiv",
+    "overlapItem": "Bereits in \"{campaign}\" ({status})",
+    "addAnyway": "Trotzdem hinzufügen",
+    "skipOverlapping": "Zurück",
+    "createError": "Fehler beim Erstellen der Kampagne",
+    "unexpectedError": "Unerwarteter Fehler",
+    "creating": "Erstellen...",
+    "createCampaign": "Kampagne erstellen"
   }
 }

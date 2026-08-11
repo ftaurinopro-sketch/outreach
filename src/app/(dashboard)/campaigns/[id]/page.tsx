@@ -8,6 +8,9 @@ import { listConnections } from "@/lib/connections/store";
 import { toPublicConnection } from "@/lib/connections/types";
 import { listActionsForCampaign } from "@/lib/automation/store";
 import { getCampaignMonitoring } from "@/lib/campaigns/monitoring";
+import { listSequenceSteps } from "@/lib/sequences/store";
+import { listCampaignProspects } from "@/lib/campaignProspects/store";
+import { getProspectsByIds } from "@/lib/prospects/store";
 import DeleteCampaignButton from "./DeleteCampaignButton";
 import ActivateCampaignPanel from "./ActivateCampaignPanel";
 import ActionsQueue from "./ActionsQueue";
@@ -21,14 +24,30 @@ export default async function CampaignDetailPage({ params }: Props) {
   const campaign = await getCampaign(id);
   if (!campaign) notFound();
 
-  const [agent, leadList, connections, actions, t, locale] = await Promise.all([
+  // A campaign with no leadListId was created through the newer sequence
+  // flow (POST /api/campaigns/sequence) rather than the legacy one — it has
+  // sequence_steps/campaign_prospects instead of messages/a lead list.
+  // A dedicated detail view for these (sequence builder, real-time
+  // execution status) is upcoming work; for now this renders what actually
+  // exists for it instead of the legacy fields, which would otherwise show
+  // a misleading "list deleted".
+  const isSequenceMode = !campaign.leadListId;
+
+  const [agent, leadList, connections, actions, sequenceSteps, campaignProspects, t, locale] = await Promise.all([
     campaign.agentId ? getAgent(campaign.agentId) : Promise.resolve(null),
-    getLeadList(campaign.leadListId),
+    isSequenceMode ? Promise.resolve(null) : getLeadList(campaign.leadListId),
     listConnections(),
     campaign.status !== "draft" ? listActionsForCampaign(campaign.id) : Promise.resolve([]),
+    isSequenceMode ? listSequenceSteps(campaign.id) : Promise.resolve([]),
+    isSequenceMode ? listCampaignProspects(campaign.id) : Promise.resolve([]),
     getTranslations("CampaignDetail"),
     getLocale(),
   ]);
+
+  const enrolledProspects = isSequenceMode
+    ? await getProspectsByIds(campaignProspects.map((cp) => cp.prospectId))
+    : [];
+  const prospectById = new Map(enrolledProspects.map((p) => [p.id, p] as const));
 
   const monitoring = getCampaignMonitoring(leadList?.leads ?? [], actions);
 
@@ -74,41 +93,91 @@ export default async function CampaignDetailPage({ params }: Props) {
       )}
 
       <div className="mt-6 space-y-4 rounded-xl border border-neutral-200 bg-white shadow-sm p-5 text-sm">
-        <Row label={t("leadList")}>
-          {leadList ? (
-            <Link href={`/lead-finder/${leadList.id}`} className="text-neutral-900 hover:underline">
-              {leadList.name} ({leadList.leads.length} {t("leads")})
-            </Link>
-          ) : (
-            <span className="text-red-600">{t("listDeleted")}</span>
-          )}
-        </Row>
-        <Row label={t("aiAssistant")}>
-          {agent ? (
-            <Link href={`/ai-assistants/${agent.id}`} className="text-neutral-900 hover:underline">
-              {agent.name}
-            </Link>
-          ) : campaign.agentId ? (
-            <span className="text-red-600">{t("agentDeleted")}</span>
-          ) : (
-            <span className="text-neutral-400">{t("noAiAssistant")}</span>
-          )}
-        </Row>
-        <Row label={t("connectionNote")}>
-          {campaign.connectionNote || <span className="text-neutral-400">—</span>}
-        </Row>
-        <Row label={t("messageSequence")}>
-          <ol className="space-y-2">
-            {campaign.messages.map((step, i) => (
-              <li key={step.id} className="rounded-md border border-neutral-100 bg-neutral-50 p-2.5">
-                <div className="text-xs font-medium text-neutral-500">
-                  {i === 0 ? t("messageStepFirst") : t("messageStepDelayed", { index: i + 1, days: step.delayDays })}
-                </div>
-                <div className="mt-1 text-neutral-800">{step.text}</div>
-              </li>
-            ))}
-          </ol>
-        </Row>
+        {isSequenceMode ? (
+          <>
+            <Row label={t("aiAssistant")}>
+              {agent ? (
+                <Link href={`/ai-assistants/${agent.id}`} className="text-neutral-900 hover:underline">
+                  {agent.name}
+                </Link>
+              ) : (
+                <span className="text-neutral-400">{t("noAiAssistant")}</span>
+              )}
+            </Row>
+            <Row label={t("sequenceSteps")}>
+              {sequenceSteps.length === 0 ? (
+                <span className="text-neutral-400">—</span>
+              ) : (
+                <ol className="space-y-2">
+                  {sequenceSteps.map((step, i) => (
+                    <li key={step.id} className="rounded-md border border-neutral-100 bg-neutral-50 p-2.5">
+                      <div className="text-xs font-medium text-neutral-500">
+                        {t("sequenceStepLabel", { index: i + 1, type: step.actionType, mode: step.executionMode })}
+                        {step.delayMinutes > 0 && ` · +${step.delayMinutes}min`}
+                      </div>
+                      {step.messageTemplate && <div className="mt-1 text-neutral-800">{step.messageTemplate}</div>}
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </Row>
+            <Row label={t("enrolledProspects", { count: campaignProspects.length })}>
+              {campaignProspects.length === 0 ? (
+                <span className="text-neutral-400">—</span>
+              ) : (
+                <ul className="space-y-1">
+                  {campaignProspects.map((cp) => {
+                    const p = prospectById.get(cp.prospectId);
+                    return (
+                      <li key={cp.id} className="flex items-center justify-between text-xs">
+                        <span className="text-neutral-800">{p ? `${p.firstName} ${p.lastName}` : cp.prospectId}</span>
+                        <span className="text-neutral-400">{cp.status}</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </Row>
+          </>
+        ) : (
+          <>
+            <Row label={t("leadList")}>
+              {leadList ? (
+                <Link href={`/lead-finder/${leadList.id}`} className="text-neutral-900 hover:underline">
+                  {leadList.name} ({leadList.leads.length} {t("leads")})
+                </Link>
+              ) : (
+                <span className="text-red-600">{t("listDeleted")}</span>
+              )}
+            </Row>
+            <Row label={t("aiAssistant")}>
+              {agent ? (
+                <Link href={`/ai-assistants/${agent.id}`} className="text-neutral-900 hover:underline">
+                  {agent.name}
+                </Link>
+              ) : campaign.agentId ? (
+                <span className="text-red-600">{t("agentDeleted")}</span>
+              ) : (
+                <span className="text-neutral-400">{t("noAiAssistant")}</span>
+              )}
+            </Row>
+            <Row label={t("connectionNote")}>
+              {campaign.connectionNote || <span className="text-neutral-400">—</span>}
+            </Row>
+            <Row label={t("messageSequence")}>
+              <ol className="space-y-2">
+                {campaign.messages.map((step, i) => (
+                  <li key={step.id} className="rounded-md border border-neutral-100 bg-neutral-50 p-2.5">
+                    <div className="text-xs font-medium text-neutral-500">
+                      {i === 0 ? t("messageStepFirst") : t("messageStepDelayed", { index: i + 1, days: step.delayDays })}
+                    </div>
+                    <div className="mt-1 text-neutral-800">{step.text}</div>
+                  </li>
+                ))}
+              </ol>
+            </Row>
+          </>
+        )}
         <Row label={t("language")}>{campaign.language}</Row>
         <Row label={t("automationSettings")}>
           <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">

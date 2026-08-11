@@ -16,12 +16,20 @@ export default async function CampaignsPage() {
           <h1 className="text-2xl font-semibold text-neutral-900">{t("title")}</h1>
           <p className="mt-1 text-sm text-neutral-500">{t("description")}</p>
         </div>
-        <Link
-          href="/campaigns/new"
-          className="rounded-md bg-indigo-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-indigo-700"
-        >
-          {t("newCampaign")}
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/campaigns/new-sequence"
+            className="rounded-md bg-indigo-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+          >
+            {t("newSequenceCampaign")}
+          </Link>
+          <Link
+            href="/campaigns/new"
+            className="rounded-md border border-neutral-300 px-3.5 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50"
+          >
+            {t("newCampaign")}
+          </Link>
+        </div>
       </div>
 
       <div className="mt-4 rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">

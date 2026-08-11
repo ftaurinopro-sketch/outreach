@@ -1,4 +1,7 @@
-export type CampaignStatus = "draft" | "active" | "paused";
+// completed/archived are only ever reached by sequence-mode campaigns
+// (Phase 6 execution engine territory) — legacy campaigns built via
+// POST /api/campaigns never transition past paused today.
+export type CampaignStatus = "draft" | "active" | "paused" | "completed" | "archived";
 
 export const MAX_SEQUENCE_MESSAGES = 5;
 
@@ -49,6 +52,7 @@ export const DEFAULT_AUTOMATION_SETTINGS: CampaignAutomationSettings = {
 
 export type CampaignInput = {
   name: string;
+  description: string;
   leadListId: string;
   // Optional — a campaign can run on plain typed message templates without
   // an AI Assistant persona attached. Only needed for AI-driven features
@@ -80,6 +84,7 @@ export function newMessageStep(): CampaignMessageStep {
 
 export const EMPTY_CAMPAIGN_INPUT: CampaignInput = {
   name: "",
+  description: "",
   leadListId: "",
   agentId: null,
   connectionNote: "",

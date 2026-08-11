@@ -42,7 +42,23 @@ export default async function DashboardLayout({ children }: { children: React.Re
         ) {
           trialBlocked = true;
         } else if (!profile?.onboarding_completed) {
-          redirect("/onboarding");
+          // onboarding_completed is only ever set by a client-side call to
+          // /api/onboarding/complete after the wizard's last step — if that
+          // write fails for any reason (RLS, a flaky request, whatever),
+          // the flag stays false forever and every future page load bounces
+          // back here, even though the user already did the one thing that
+          // actually matters (connecting a LinkedIn account). So: only force
+          // the onboarding wizard on someone who hasn't set up a connection
+          // yet: real first-time users. Anyone with at least one connection
+          // already did the meaningful part and can go straight in — the
+          // AI Assistant / lead list steps stay reachable from their own
+          // pages instead of being a hard gate.
+          const { count } = await supabase
+            .from("connections")
+            .select("id", { count: "exact", head: true });
+          if (!count) {
+            redirect("/onboarding");
+          }
         }
       }
     }

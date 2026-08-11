@@ -203,7 +203,7 @@ async function runLoginJob(token, job) {
       .catch(() => {});
 
     try {
-      await page.locator("#username").fill(job.email);
+      await page.locator('input[type="email"], input#username').first().fill(job.email);
     } catch (e) {
       // The bare Playwright timeout ("Timeout 30000ms exceeded") gives no
       // clue why the field never appeared — LinkedIn may have served an
@@ -245,8 +245,15 @@ async function runLoginJob(token, job) {
         `${e?.message || e} — pagina ottenuta: "${diagTitle}" (${diagUrl}) — testo pagina: "${diagBodyText}" — elementi: ${diagInteractive}`
       );
     }
-    await page.locator("#password").fill(job.password);
-    await page.locator('button[type="submit"]').first().click();
+    const passwordField = page.locator('input[type="password"], input#password').first();
+    await passwordField.fill(job.password);
+    // LinkedIn's current sign-in button is a plain <button type="button">
+    // wired to a JS click handler, not a native form submit — a
+    // button[type="submit"] selector never matches it (this is exactly
+    // what stalled here before the #username fix). Enter in the password
+    // field submits the surrounding <form> regardless of the button's own
+    // type, so it doesn't depend on LinkedIn's button markup at all.
+    await passwordField.press("Enter");
     await page.waitForTimeout(3000);
 
     let outcome = await classifyLoginOutcome(page);
@@ -272,7 +279,7 @@ async function runLoginJob(token, job) {
         .locator('input[name="pin"], input#input__email_verification_pin, input[autocomplete="one-time-code"]')
         .first();
       await codeInput.fill(code);
-      await page.locator('button[type="submit"]').first().click();
+      await codeInput.press("Enter");
       await page.waitForTimeout(3000);
       outcome = await classifyLoginOutcome(page);
     }

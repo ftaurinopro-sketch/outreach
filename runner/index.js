@@ -215,17 +215,34 @@ async function runLoginJob(token, job) {
       // happens.
       const diagUrl = page.url();
       const diagTitle = await page.title().catch(() => "");
-      const diagInputs = await page
+      // Tag/id/name alone (the previous version of this diagnostic) turned
+      // out uninformative — real form fields and a cookie-consent widget's
+      // inputs look identical by tag name alone. Visible text is what
+      // actually distinguishes "this is the login form" from "this is a
+      // cookie banner" from "this is a bot checkpoint".
+      const diagBodyText = await page
+        .locator("body")
+        .innerText({ timeout: 2000 })
+        .then((t) => t.replace(/\s+/g, " ").trim().slice(0, 500))
+        .catch(() => "(impossibile leggere il testo della pagina)");
+      const diagInteractive = await page
         .locator("input, button, a")
         .evaluateAll((els) =>
           els
-            .slice(0, 40)
-            .map((el) => `${el.tagName.toLowerCase()}#${el.id || ""}[name=${el.getAttribute("name") || ""}]`)
+            .slice(0, 30)
+            .map((el) => {
+              const label =
+                (el.textContent || "").trim().slice(0, 30) ||
+                el.getAttribute("aria-label") ||
+                el.getAttribute("placeholder") ||
+                "";
+              return `${el.tagName.toLowerCase()}${el.type ? `[type=${el.type}]` : ""}"${label}"`;
+            })
             .join(", ")
         )
         .catch(() => "(impossibile leggere il DOM)");
       throw new Error(
-        `${e?.message || e} — pagina ottenuta: "${diagTitle}" (${diagUrl}) — elementi trovati: ${diagInputs}`
+        `${e?.message || e} — pagina ottenuta: "${diagTitle}" (${diagUrl}) — testo pagina: "${diagBodyText}" — elementi: ${diagInteractive}`
       );
     }
     await page.locator("#password").fill(job.password);
